@@ -320,7 +320,9 @@ const FileUpload = () => {
         myHeaders.append("Content-Type", "application/json");
         myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
-        var raw = JSON.stringify(selectedFiles);
+        var raw = JSON.stringify({
+          "fileIds": selectedFiles
+        });
 
         var requestOptions = {
           method: 'DELETE',
