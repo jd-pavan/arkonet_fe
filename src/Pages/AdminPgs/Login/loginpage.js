@@ -36,18 +36,21 @@ const Loginpage = ({ setLoggedIn }) => {
         },
         data: JSON.stringify(formdata),
       });
-
+      console.log(formdata)
       if (result.status === 200) {
+
         const jwtToken = result.data.token;
         const user_id = result.data.user.regId;
         const user_name = result.data.user.name;
+        const user_mobile = result.data.user.mobile;
 
         localStorage.setItem('jwtToken', jwtToken);
         localStorage.setItem('user_name', user_name);
         localStorage.setItem('user_id', user_id);
         localStorage.setItem('LogedIn', 'true');
+        localStorage.setItem('mobile', user_mobile);
 
-        await swal("Success", "Logged in successfully.", "success");
+
         Navigate('dashboard');
         setLoggedIn(true);
 

@@ -7,6 +7,7 @@ import {
 
 import Adminhome from './Pages/AdminPgs/Adminhome';
 import ClientPages from './Pages/ClientMobilePgs/ClientPages';
+import MasterLogIn from './Pages/MasterAdmin/MasterLogIn/MasterLogIn';
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
       <Router>
         <Routes>
 
+          <Route path='/masteradmin/*' element={<MasterLogIn />} />
           <Route path='/admin/*' element={<Adminhome />} />
           <Route path='/client/*' element={<ClientPages />} />
         </Routes>

@@ -5,10 +5,10 @@ import styles from './Uupdate.module.css';
 import DropDown from '../../../components/DropDown/DropDown';
 import Uprofesion_obj from '../../../ObjData/CProf.json';
 import States_obj from '../../../ObjData/States.json';
-import swal from 'sweetalert';
+import swal from 'sweetalert2';
 
 import { url_ } from '../../../Config';
-import { Navigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 const Uupdate = () => {
   const user_id = window.localStorage.getItem('user_id');
@@ -31,12 +31,56 @@ const Uupdate = () => {
 
   })
 
+  const [ClientPayment, setClientPayment] = useState({
+    total_bill: 0,
+    received_bill: 0,
+    discount: 0
+
+  })
+
+  const [totalPayment, settotalpayment] = useState()
+  const [receivedPayment, setreceivedPayment] = useState()
+  const [pendingPayment, setpendingPayment] = useState()
+  const [paymentlastupdate, setpaymentlastupdate] = useState()
 
   useEffect(() => {
     GetClient();
+    GetClientPayment();
 
   }, [])
 
+  function GetClientPayment() {
+    try {
+
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+      var requestOptions = {
+        method: 'GET',
+        headers: myHeaders,
+        redirect: 'follow'
+      };
+
+      fetch(`${url_}/sumOFPaymentClient/${user_id}/${id}`, requestOptions)
+        .then(response => response.json())
+        .then(result => {
+
+          setpendingPayment(result.pendingPayment)
+          setreceivedPayment(result.receivedPayment)
+          settotalpayment(result.totalPayment)
+          setpaymentlastupdate(result.lastUpdateDate);
+          // if (result.pendingPayment === 0) {
+          //   setClienttotalpayment(false)
+          // } else {
+          //   setClienttotalpayment(true)
+          // }
+          console.log(result)
+        })
+        .catch(error => console.log('error', error));
+    } catch (error) {
+      console.warn("Error on function calling...")
+    }
+  }
 
 
   function GetClient() {
@@ -114,6 +158,96 @@ const Uupdate = () => {
     window.history.back(); // This will navigate to the previous page in the browser's history
   }
 
+  const handlepaymentChange = (e) => {
+    setClientPayment({ ...ClientPayment, [e.target.name]: e.target.value });
+  };
+
+  const handelPaymentSaveDetails = async (e) => {
+    try {
+      e.preventDefault();
+      // console.log(ClientPayment.total_bill)
+      // console.log(ClientPayment.received_bill)
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+      var raw = JSON.stringify({
+        "userid": user_id,
+        "clientid": id,
+        "totalPayment": ClientPayment.total_bill,
+        "receivedPayment": ClientPayment.received_bill
+      });
+
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+
+      const response = await fetch(`${url_}/Client_Payment_Details`, requestOptions);
+      const result = await response.text();
+      console.log(result);
+      if (response.status === 200) {
+        const noti = await swal.fire("Success", "Payment Saved.", "success")
+        window.location.reload()
+        setClientPayment({
+          total_bill: "",
+          received_bill: ""
+
+        })
+      } else {
+        swal.fire("Failed!", "Failed to save payment.", "error")
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+
+
+
+
+
+
+  const handelPaymentUpdateDetails = async (e) => {
+
+
+
+    try {
+      e.preventDefault();
+
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+      var requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        redirect: 'follow'
+      };
+
+      const response = await fetch(`${url_}/updateClientPaymentDetails/${user_id}/${id}/${ClientPayment.received_bill}/${ClientPayment.discount}/${ClientPayment.total_bill}`, requestOptions);
+      const result = await response.json();
+      console.log(result);
+      if (response.status === 200) {
+        const noti = await swal.fire("Success", "Payment updated.", "success")
+        // window.location.reload()
+        // setClientPayment({
+
+        //   received_bill: ""
+
+        // })
+      } else if (result.status === "NOT_FOUND") {
+        swal.fire("Failed!", `${result.message}`, "error")
+      }
+
+      console.log(ClientPayment.received_bill)
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
+
+
 
   return (
     <div>
@@ -145,53 +279,66 @@ const Uupdate = () => {
             <DropDown value_array={States_obj} lblname='State' name='state' value={values.state} onChange={handleChange} />
 
 
-            {/* <div className={`container ${styles.container} m-4`}>
+            <div className={`container ${styles.container} m-4`}>
               <div className="row justify-content-md-center">
                 <div className="col-md-auto font-weight-bold m-3 h4">
                   FEE PAYMENTS DETAILS
                 </div>
               </div>
               <div className='text-center h6'>Last updated on</div>
-              <div className='text-center h6 text-primary'>20/02/2023</div>
+              <div className='text-center h6 text-primary'>{paymentlastupdate}</div>
               <div className="row">
                 <div className="col-6">
                   <div className="form-group row">
                     <label htmlFor="inputEmail3" className="col-sm-3 col-form-label">Total Bill</label>
                     <div className="col-sm-8">
-                      <input type="number" className="form-control" id="inputEmail3" />
+                      <input type="text" className="form-control" id="inputEmail3" name='total_bill' value={ClientPayment.total_bill} onChange={handlepaymentChange} autoComplete='off' />
                     </div>
                   </div>
 
                   <div className="form-group row">
                     <label htmlFor="inputEmail3" className={`col-sm-3 col-form-label ${styles.green}`}>Received</label>
                     <div className="col-sm-8">
-                      <input type="email" className="form-control" id="inputEmail3" />
+                      <input type="text" className="form-control" id="inputEmail3" name='received_bill' value={ClientPayment.received_bill} onChange={handlepaymentChange} autoComplete='off' />
                     </div>
                   </div>
 
                   <div className="form-group row">
                     <label htmlFor="inputEmail3" className={`col-sm-3 col-form-label ${styles.red}`}>Pending</label>
-                    <div className="col-sm-8">
+                    {/* <div className="col-sm-8">
                       <input type="email" className="form-control" id="inputEmail3" />
-                    </div>
+                    </div> */}
                   </div>
 
                 </div>
                 <div className="col-2 ">
                   <ul className="list-group">
-                    <li className="list-group-item bg-transparent font-weight-bold">{value1}</li>
-                    <li className={`list-group-item bg-transparent font-weight-bold ${styles.green}`}>{value1}</li>
-                    <li className={`list-group-item bg-transparent font-weight-bold  ${styles.red}`}>{value1}</li>
+                    <li className="list-group-item bg-transparent font-weight-bold">{totalPayment}</li>
+                    <li className={`list-group-item bg-transparent font-weight-bold ${styles.green}`}>{receivedPayment}</li>
+                    <li className={`list-group-item bg-transparent font-weight-bold  ${styles.red}`}>{pendingPayment}</li>
                   </ul>
 
                 </div>
                 <div className={`col-3 ${styles.center}`}>
-                  <div className={styles.ubtn_submit}>
-                    <button type="submit" onClick={handleSubmit}>UPDATE</button>
+
+                  <div className=" row">
+                    <div className={styles.discount_input}>
+                      <input type="text" placeholder='Enter discount amount' name='discount' value={ClientPayment.discount} onChange={handlepaymentChange} autoComplete='off' />
+                    </div>
                   </div>
+
+                  <div className={`${styles.ubtn_submit} mt-5`}>
+                    {totalPayment === 0 ?
+                      (
+                        <button type="submit" onClick={handelPaymentSaveDetails}>SAVE</button>
+                      ) : (
+                        <button type="submit" onClick={handelPaymentUpdateDetails}>UPDATE</button>
+                      )}
+                  </div>
+
                 </div>
               </div>
-            </div> */}
+            </div>
           </div>
         </div >
 

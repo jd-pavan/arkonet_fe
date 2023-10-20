@@ -4,8 +4,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { url_ } from "../../../Config";
 import swal from "sweetalert2";
-
+import "../../../Images/Twittericon.css"
 function ClientLogin() {
+
+
+  localStorage.clear();
+  sessionStorage.clear();
+
   const Navigate = useNavigate();
 
   const [credentials, setCredentials] = useState({
@@ -51,7 +56,7 @@ function ClientLogin() {
       await fetch(`${url_}/client/isPasswordNull`, requestOptions)
         .then((response) => {
           if (response.status === 404) {
-            swal.fire("Failed!", "Invalid login credential !!!", "error");
+            swal.fire("Failed!", "User Not Found !!!", "error");
             setCredentials({ UID: "" });
             // Handle 404 Not Found error here
             // For example: throw new Error('Resource not found');
@@ -116,7 +121,7 @@ function ClientLogin() {
             className={`${style.login}`}
             onClick={handleLogin}
           >
-            Next
+            NEXT
           </button>
           {/* <a href="previous link" id={`${style.forgot}`}>
             <u>Forgot Password?</u>
@@ -144,10 +149,11 @@ function ClientLogin() {
               href="https://twitter.com/arkonetglobal?s=11&t=_tXcbzY9oJ0xsskd5YCcMw"
               id={`${style.twitter}`}
             >
-              <i
-                className="fa-brands fa-twitter"
+               <i className="bi-twitter-x fs-1 inverted"></i>
+              {/* <i
+                class="bi-twitter-x fs-3"
                 style={{ color: "#05022c" }}
-              ></i>
+              ></i> */}
             </a>
             <a
               href="https://www.facebook.com/arkonetglobal"

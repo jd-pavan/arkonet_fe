@@ -16,7 +16,8 @@ const PasswordField = (props) => {
           className={props.className}
           value={props.value}
           onChange={props.onChange}
-          autoComplete='off' />
+          autoComplete='off'
+          disabled={props.disabled} />
         {props.name === "confirmpassword" && (
           !props.isPasswordMatch && <ValidationError validationmsg={props.validationmsg} />
         )}

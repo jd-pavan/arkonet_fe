@@ -30,6 +30,12 @@ const URegistration = () => {
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isValidMobile, setIsValidMobile] = useState(true);
   const [isValidPAN, setIsValidPAN] = useState(true);
+  const [fieldDisable, setFieldDisable] = useState('');
+  const [SUbmitbtn, setSUbmitbtn] = useState(false);
+
+  const [Income_Tax_Radio, setIncome_Tax_Radio] = useState(false);
+  const [GST_Radio, setGST_Radio] = useState(false);
+  const [Both_Radio, setBoth_Radio] = useState(false);
 
   const [formdata, setFormdata] = useState({
     address: "",
@@ -49,8 +55,19 @@ const URegistration = () => {
 
 
 
+
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "pan") {
+      if (value.length === 10) {
+        FetchClientDATA(value);
+      }
+      // console.log(value)
+    }
+
     //=============================================================================
     switch (name) {
 
@@ -112,6 +129,74 @@ const URegistration = () => {
 
   };
 
+
+
+
+
+
+  const FetchClientDATA = async (Cpan) => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+
+    try {
+      const response = await fetch(`${url_}/pan?pan=${Cpan}`, requestOptions);
+      const result = await response.json();
+      console.log(result);
+
+
+
+
+      const extractedData = result.users[0];
+
+
+      let usersLength = result.users;
+
+      if (usersLength.length === 2) {
+        swal.fire("Client Already registered for Income Tax and GST");
+        setFormdata({
+          pan: ""
+        })
+      } else if (result.users[0].category === "Both") {
+        swal.fire("Client Already registered for Income Tax and GST");
+        setFormdata({
+          pan: ""
+        })
+      } else if (result.users[0].userid == user_id) {
+        swal.fire(`Client Already registered for ${extractedData.category}`);
+        setFieldDisable(true);
+        setIncome_Tax_Radio(true);
+        setGST_Radio(true);
+        setFormdata(extractedData);
+      } else {
+        if (result.users[0].category === "GST") {
+          swal.fire(`Client Already registered for ${extractedData.category}`);
+          setFieldDisable(true);
+          setGST_Radio(true);
+          setBoth_Radio(true)
+          setFormdata(extractedData);
+        } else {
+          swal.fire(`Client Already registered for ${extractedData.category}`);
+          setFieldDisable(true);
+          setIncome_Tax_Radio(true);
+          setBoth_Radio(true)
+          setFormdata(extractedData);
+        }
+      }
+
+
+    } catch (error) {
+      console.log('error', error);
+    }
+  }
+
+
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -156,26 +241,48 @@ const URegistration = () => {
     } else {
       const url = `${url_}/createclient`;
       console.log(url);
+      console.log(formdata);
+      console.log(user_id)
+
+
+
+
 
       try {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${storedToken}`
-          },
-          body: JSON.stringify(formdata),
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append(
+          "Authorization",
+          `Bearer ${storedToken}`);
+
+        const raw = JSON.stringify({
+          name: formdata.name,
+          dob: formdata.dob,
+          profession: formdata.profession,
+          pan: formdata.pan,
+          telephone: formdata.telephone,
+          mobile: formdata.mobile,
+          email: formdata.email,
+          address: formdata.address,
+          pin_code: formdata.pin_Code,
+          state: formdata.state,
+          residential_status: formdata.residential_status,
+          category: formdata.category,
+          userid: user_id,
         });
 
+        const requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        };
 
-        const result = await response.json()
-        console.log("response", result);
-
-        if (result.status === "NOT_FOUND") {
-          swal.fire("Failed!", `${result.message}`, "error");
-        } else if (result.status === "UNAUTHORIZED") {
-          swal.fire("Failed!", `${result.message}`, "error");
-        } else {
+        const response = await fetch(`${url_}/createclient`, requestOptions);
+        const result = await response.text();
+        console.log(result);
+        if (response.status === 200) {
+          swal.fire("Success!", `${result}`, "success");
           setFormdata({
             address: "",
             email: "",
@@ -189,23 +296,17 @@ const URegistration = () => {
             dob: "",
             name: "",
             residential_status: "",
-            userid: `${user_id}`,
+            userid: "",
           });
-          swal.fire(
-            "Success",
-            "Registered successful.",
-            "success"
-          );
-          Navigate(-1)
+          setFieldDisable(false)
+        } else {
+          swal.fire("Failed!", `${result}`, "error");
         }
       } catch (error) {
-        swal.fire(
-          "Failed!",
-          "Server Down!! Please try again later!!!!",
-          "error"
-        );
-        console.error(error);
+        console.error('error', error);
       }
+
+
     }
   };
 
@@ -225,8 +326,9 @@ const URegistration = () => {
           <form action="/" onSubmit={handleSubmit}>
 
             <div className={styles.radio}>
-              <RadioInput name='category' label='Income Tax' value='Income_Tax' checked={formdata.category === 'Income_Tax'} onChange={handleChange} manadatory='*' />
-              <RadioInput name='category' label='Demo' value='Demo' checked={formdata.category === 'Demo'} onChange={handleChange} manadatory='*' />
+              <RadioInput name='category' label='Income Tax' value='Income_Tax' checked={formdata.category === 'Income_Tax'} onChange={handleChange} manadatory='*' disabled={Income_Tax_Radio} />
+              <RadioInput name='category' label='GST' value='GST' checked={formdata.category === 'GST'} onChange={handleChange} manadatory='*' disabled={GST_Radio} />
+              <RadioInput name='category' label='Both' value='Both' checked={formdata.category === 'Both'} onChange={handleChange} manadatory='*' disabled={Both_Radio} />
 
             </div>
 
@@ -237,9 +339,10 @@ const URegistration = () => {
                 name={formfield.name}
                 type={formfield.type}
                 placeholder={formfield.placeholder}
-                value={formdata.value}
+                value={formdata[formfield.name]}
                 mandatory={formfield.mandatory}
                 onChange={handleChange}
+                disabled={fieldDisable}
                 validationmsg={formfield.validationmsg}
                 // strengh/tScore={formfield.name === "password" ? strenghtScore : ""}
                 isNameNull={formfield.name === "name" && isNameNull}
@@ -253,7 +356,10 @@ const URegistration = () => {
 
 
             <div className={styles.btn_submit}>
-              <button type="submit" onClick={handleSubmit}>SUBMIT</button>
+              {SUbmitbtn ? null : (
+
+                <button type="submit" onClick={handleSubmit}>SUBMIT</button>
+              )}
             </div>
 
           </form>

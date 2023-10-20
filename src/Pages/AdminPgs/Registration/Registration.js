@@ -37,6 +37,7 @@ const Registration = () => {
     state: "",
     whatsApp_Link: "",
     investNow_Email: "",
+    refrenceId: "",
     password: "",
     confirmpassword: ""
   });
@@ -227,6 +228,7 @@ const Registration = () => {
             state: "",
             whatsApp_Link: "",
             investNow_Email: "",
+            refrenceId: "",
             password: "",
             confirmpassword: "",
           });
