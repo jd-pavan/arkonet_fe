@@ -2,6 +2,7 @@ import style from './MasterLogIn.module.css';
 import mlogo from '../../../Images/masterlogo.jpg';
 import IntroPage from '../IntroPage/IntroPage';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 function MasterLogIn() {
     const Navigate = useNavigate();
