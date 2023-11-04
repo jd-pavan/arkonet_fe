@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import style from './SubscriptionPlan.module.css'
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const SubscriptionPlan = () => {
   const Navigate = useNavigate()
@@ -58,17 +59,28 @@ const SubscriptionPlan = () => {
     }
   };
 
-  const GOTO = (title) => {
-    Navigate('subcription')
-    //   , {
-    //   state: {
-    //     clientId: clientid,
-    //     Year: year,
-    //     Title: title
-    //   },
-    // })
+  const GOTO = (selectedPlan) => {
+    if (selectedPlan) {
+      // console.log("Selected Plan Total Clients:", selectedPlan.ttota_clients);
+      // console.log("Selected Plan Subscription:", selectedPlan.subscription);
+
+
+      Navigate('subcription', {
+        state: {
+          totalClients: selectedPlan.ttota_clients,
+          subscription: selectedPlan.subscription,
+        },
+      })
+
+
+    } else {
+      // Handle case where no plan is selected
+      Swal.fire("Please select the plan!!")
+    }
+
 
   }
+
   return (
     <div style={{ margin: "0 70px" }}>
       <div className={`${style.Subplan_title} text-center mt-4 mb-2`}>
@@ -92,7 +104,7 @@ const SubscriptionPlan = () => {
           <tbody>
             {Plans.map((item, index) => (
               <tr key={index}>
-                <td scope="row" class="text-center"><input type="checkbox" name={item.subsplan} id="" checked={selectedCheckbox === index}
+                <td scope="row" className="text-center "><input type="checkbox" name={item.subsplan} id="" checked={selectedCheckbox === index}
                   onChange={(e) => handleCheckboxChange(e, index)} /></td>
                 <td className='text-center'>{item.ttota_clients}</td>
                 <td className='text-center'>&#8377;{item.subscription}/-</td>
@@ -109,7 +121,7 @@ const SubscriptionPlan = () => {
           </p>
         </div>
         <div className={`d-flex justify-content-center ${style.sub_paybtn}`}>
-          <button onClick={GOTO}>PAY NOW</button>
+          <button onClick={() => GOTO(Plans[selectedCheckbox])}>PAY NOW</button>
         </div>
       </div>
     </div>

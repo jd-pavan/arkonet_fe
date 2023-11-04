@@ -228,6 +228,9 @@ ul {
 .rightconttop {
   margin-left: 10vw;
   text-wrap: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .card1 {

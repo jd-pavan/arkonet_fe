@@ -191,7 +191,7 @@ const Registration = () => {
     ) {
       swal.fire("Failed!", "Please fill the mandatory fields!!", "error");
       console.log(formdata);
-      return;
+      // return;
     } else {
       const url = `${url_}/createuser`;
       console.log(url);

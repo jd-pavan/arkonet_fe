@@ -227,7 +227,11 @@ const FileUpload = () => {
     });
 
     if (result.isConfirmed) {
-
+      console.log("file", file);
+      console.log("userid", user_id);
+      console.log("clientid", clientid);
+      console.log("accountyear", year);
+      console.log("filename", filename);
 
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${storedToken}`);

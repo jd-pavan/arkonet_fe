@@ -1,11 +1,12 @@
 import styles from './DashBoard.module.css'
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { url_ } from '../../../Config';
 
 const DashBoard = () => {
 
-
+  const Navigate = useNavigate();
   const [Totalclient, setTotalclient] = useState();
   const [TotalIncomeclient, setTotalIncomeclient] = useState();
   const [TotalGSTClients, setTotalGSTClients] = useState();
@@ -17,7 +18,7 @@ const DashBoard = () => {
 
 
   const [filedata, setFiledata] = useState([]);
-  const [latestupdatedata, setLatestupdatedata] = useState();
+  const [incomelatestupdatedata, setincomelatestupdatedata] = useState();
 
 
 
@@ -69,7 +70,7 @@ const DashBoard = () => {
 
 
   const currentYear = new Date().getFullYear();
-
+  const fyyear = `${currentYear}-${(currentYear + 1).toString().slice(-2)}`
 
 
 
@@ -84,7 +85,7 @@ const DashBoard = () => {
         redirect: 'follow'
       };
 
-      const response = await fetch(`${url_}/sumOFPaymentClient/${user_id}`, requestOptions);
+      const response = await fetch(`${url_}/sumOFPaymentClientByUserid/${user_id}/${fyyear}`, requestOptions);
       const result = await response.json();
       // console.log(result);
       // console.log(result.totalPayment);
@@ -148,7 +149,11 @@ const DashBoard = () => {
       })
         .then(response => response.json())
         .then(data => {
-          setLatestupdatedata(data.lastUpdateDate)
+          const date = new Date(data.lastUpdateDate);
+          const options = { day: 'numeric', month: 'long', year: 'numeric' };
+          const formattedDate = date.toLocaleDateString('en-GB', options);
+          setincomelatestupdatedata(formattedDate)
+          // console.log(data)
         })
         .catch(error => console.log(error));
     } catch (error) {
@@ -171,7 +176,7 @@ const DashBoard = () => {
 
       const response = await fetch(`${url_}/getGSTData?userid=${user_id}`, requestOptions);
       const result = await response.json();
-      console.log(result);
+      // console.log(result);
 
 
       let data = [];
@@ -181,12 +186,12 @@ const DashBoard = () => {
           month: item.month,
           GSTR1FD: item.filed,
           GSTR1NFD: item.notfiled,
-          GSTR3BFD: result["GSTR3B"][index].filed,
-          GSTR3BNFD: result["GSTR3B"][index].notfiled,
+          GSTR3BFD: result["GSTR-3B"][index].filed,
+          GSTR3BNFD: result["GSTR-3B"][index].notfiled,
         });
       });
 
-      console.log(data);
+      // console.log(data);
       setgstdata(data)
 
     } catch (error) {
@@ -197,7 +202,7 @@ const DashBoard = () => {
 
   const GST_LatestUpdate = () => {
 
-    const url = `${url_}/maxLastUpdateDate/${user_id}`;
+    const url = `${url_}/GSTmaxLastUpdateDate/${user_id}`;
 
 
 
@@ -212,7 +217,11 @@ const DashBoard = () => {
       })
         .then(response => response.json())
         .then(data => {
-          setLatestupdatedata(data.lastUpdateDate)
+          // console.log(data.MaxDate)
+          const date = new Date(data.MaxDate);
+          const options = { day: 'numeric', month: 'long', year: 'numeric' };
+          const formattedDate = date.toLocaleDateString('en-GB', options);
+          setgstLatestupdatedata(formattedDate)
         })
         .catch(error => console.log(error));
     } catch (error) {
@@ -220,11 +229,17 @@ const DashBoard = () => {
     }
   };
 
+  const GOTO = (category, cmonth) => {
+    Navigate('clientlist'
+      , {
+        state: {
+          ClientStateCategory: category,
+          ClientStateCategorymonth: cmonth
+        },
+      });
 
-  // function GSTData() {
+  }
 
-
-  // }
   return (
 
 
@@ -236,7 +251,7 @@ const DashBoard = () => {
           <div className="col-6">
             <div className={`card m-4 ${styles.cardd} text-center`} >
               <div className={`m-3 w-100 `}>
-                <h5 className={`card-title font-weight-bold ${styles.green}`}>F.Y. {currentYear}-{(currentYear + 1).toString().slice(-2)}</h5>
+                <h5 className={`card-title font-weight-bold ${styles.green}`}>F.Y. {fyyear}</h5>
                 <div className={`${styles.count} d-flex justify-content-around`}>
                   <Link to="tc" className={` h6 card-link ${styles.black}`}>Total Clients
                     <h6 className={`${styles.black} font-weight-bold`}>{Totalclient}</h6>
@@ -258,13 +273,13 @@ const DashBoard = () => {
             <div className={`card m-4 ${styles.cardd} text-center`} >
               <h2 className='ml-4'>&lt;</h2>
               <div className={`m-3 w-100`}>
-                <h5 className={`card-title font-weight-bold text-primary`}>FY {currentYear}-{(currentYear + 1).toString().slice(-2)}</h5>
+                <h5 className={`card-title font-weight-bold text-primary`}>FY {fyyear}</h5>
                 <div className={styles.count}>
-                  <Link to="#" className={`h6 card-link ${styles.black}`}>Total Bill<h6 className={`${styles.black} font-weight-bold`}>{TotalclientPayment}</h6></Link>
-                  <Link to="#" className={`h6 card-link ${styles.black}`}>Received<h6 className={`${styles.green} font-weight-bold`}>{TotalClientsreceivedPayment}
-                  </h6></Link>
-                  <Link to="#" className={`h6 card-link ${styles.black}`}>Pending<h6 className={`text-danger font-weight-bold`}>{TotalclientpendingPayment}
-                  </h6></Link>
+                  <div className={`h6 card-link ${styles.black}`}>Total Bill<h6 className={`${styles.black} font-weight-bold`}>{TotalclientPayment}</h6></div>
+                  <div className={`h6 card-link ${styles.black}`}>Received<h6 className={`${styles.green} font-weight-bold`}>{TotalClientsreceivedPayment}
+                  </h6></div>
+                  <div className={`h6 card-link ${styles.black}`} style={{ cursor: "pointer" }} onClick={() => GOTO("Pending", fyyear)}>Pending<h6 className={`text-danger font-weight-bold`}>{TotalclientpendingPayment}
+                  </h6></div>
                 </div>
                 <h6 className={`${styles.green} text-primary`}>As on date</h6>
               </div>
@@ -301,15 +316,15 @@ const DashBoard = () => {
                         return (
                           <tr key={index} >
                             <td>{items.accountyear}</td>
-                            <td className={`${styles.green} `}>{items.filed}</td>
-                            <td className={`text-danger `}>{items.notfiled}</td>
+                            <td className={`${styles.green} `} onClick={() => GOTO("IncomeFD", items.accountyear)} style={{ cursor: "pointer" }}>{items.filed}</td>
+                            <td className={`text-danger `} onClick={() => GOTO("IncomeNFD", items.accountyear)} style={{ cursor: "pointer" }}>{items.notfiled}</td>
                           </tr>
                         );
                       })}
                     </tbody>
                   </table>
 
-                  <small >Last updated on {latestupdatedata}</small>
+                  <small >Last updated on {incomelatestupdatedata}</small>
 
 
                 </div>
@@ -350,11 +365,11 @@ const DashBoard = () => {
                       {displayData.map((items, index) => {
                         return (
                           <tr key={index}>
-                            <td className='text-black'>{items.month}</td>
-                            <td className=' text-success'>{items.GSTR1FD}</td>
-                            <td className=' text-danger'>{items.GSTR1NFD}</td>
-                            <td className=' text-success'>{items.GSTR3BFD}</td>
-                            <td className=' text-danger'>{items.GSTR3BNFD}</td>
+                            <td className='text-black' >{items.month}</td>
+                            <td className=' text-success' onClick={() => GOTO("GSTR1FD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR1FD}</td>
+                            <td className=' text-danger' onClick={() => GOTO("GSTR1NFD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR1NFD}</td>
+                            <td className=' text-success' onClick={() => GOTO("GSTR3BFD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR3BFD}</td>
+                            <td className=' text-danger' onClick={() => GOTO("GSTR3BNFD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR3BNFD}</td>
                           </tr>
                         );
                       })}
@@ -362,7 +377,7 @@ const DashBoard = () => {
                   </table>
 
                   <div className="top d-flex justify-content-between">
-                    <small >Last updated on {latestupdatedata}</small>
+                    <small >Last updated on {gstlatestupdatedata}</small>
                     {showAll ? (
                       <h6>
                         <span

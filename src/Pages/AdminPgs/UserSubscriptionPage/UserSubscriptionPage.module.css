@@ -91,7 +91,7 @@ ul {
 }
 
 .maincont {
-  overflow: hidden;
+  /* overflow: hidden; */
   margin: 0;
   padding: 0;
   width: 80%;
@@ -146,14 +146,15 @@ ul {
   margin-top: 1vh;
   background-color: #ffd402;
   text-align: center;
-  height: 3.5vh;
+  height: 5vh;
   width: 15vw;
-  border-radius: 2vw;
+  border-radius: 0.7vw;
   box-shadow: 0 6px 3px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
   vertical-align: middle;
   color: white;
   text-shadow: 1px 4px 4px rgba(0, 0, 0, 0.24);
   font-size: 130%;
+  font-weight: 600;
   padding: 2px 0 0 0;
 }
 
@@ -177,6 +178,19 @@ ul {
   box-shadow: 0 6px 3px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
 }
 
+.cardp {
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+
+.card3:hover,
+.card3:active {
+  background-color: rgba(255, 213, 0, 0.814);
+  /* Change background color on hover */
+}
+
 .title {
   width: 30%;
   margin-left: 10vw;
@@ -186,6 +200,32 @@ ul {
   color: #ffd500;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.24);
   font-size: 110%;
+}
+
+.subs_end {
+  color: red;
+  animation: blink 2s linear infinite;
+}
+
+.subs_about_end {
+  color: rgb(232, 129, 50);
+  animation: blink 2s linear infinite;
+}
+
+
+
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: .5;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 .value {
@@ -209,14 +249,15 @@ ul {
   margin-top: 1vh;
   background-color: #ffd402;
   text-align: center;
-  height: 4vh;
+  height: 5vh;
   width: 30%;
-  border-radius: 2vw;
+  border-radius: 0.7vw;
   box-shadow: 0 6px 3px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
   vertical-align: middle;
   color: white;
   text-shadow: 1px 4px 4px rgba(0, 0, 0, 0.24);
   font-size: 130%;
+  font-weight: 600;
   padding-top: 0.3%;
 }
 
@@ -242,7 +283,7 @@ ul {
 
 .formtitle {
   width: 30%;
-  margin-left: 10vw;
+  margin-left: 5vw;
   vertical-align: middle;
   padding-top: 1%;
   font-weight: bold;
@@ -255,7 +296,7 @@ ul {
   padding-top: 1%;
   font-size: 110%;
   height: 100%;
-  width: 100%;
+  width: 70%;
   margin-right: 1vw;
 }
 
@@ -279,41 +320,101 @@ ul {
 }
 
 .bottombtn {
-  margin-top: 1vh;
+  /* margin-top: 1vh; */
   background-color: #ffd402;
   width: 30%;
-  border-radius: 2vw;
+  border-radius: 0.7vw;
   box-shadow: 0 6px 3px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
   vertical-align: middle;
   color: white;
   text-shadow: 1px 4px 4px rgba(0, 0, 0, 0.24);
   font-size: 130%;
+  font-weight: 600;
   padding-top: 0.3%;
   outline: none;
   border: none;
 }
 
-@media only screen and (min-height: 1000px) {
-  .card2 {
-    font-size: 200%;
-    padding-top: 0.3%;
+
+
+@media only screen and (max-width: 600px) {
+
+  /* Adjust styles for smaller screens */
+  .sidebar {
+    width: 100%;
+    height: auto;
   }
 
+  .maincont {
+    width: 100%;
+    margin: 0;
+  }
+
+  .logo,
+  .Dashboard {
+    margin-left: 0;
+  }
+
+  .mainhead {
+    text-align: center;
+  }
+
+  .card3,
+  .card2 {
+    font-size: 100%;
+  }
+
+  .formtitle,
+  .title {
+    font-size: 100%;
+  }
+
+  .p1 {
+    font-size: 100%;
+  }
+
+
+}
+
+
+@media only screen and (max-width: 1024px) {
+
+  .cardp,
+  .p1,
+  .title,
+  .formtitle,
+  .bottombtn {
+    font-size: 1rem;
+  }
+
+}
+
+@media only screen and (max-width: 768px) {
+
+  .cardp,
+  .p1,
+  .title,
+  .formtitle,
+  .bottombtn {
+    font-size: 0.85rem;
+  }
+}
+
+@media only screen and (min-height: 1000px) {
+
+  /* Adjust styles for taller screens */
+  .card2,
   .card3 {
     font-size: 200%;
     padding-top: 0.3%;
   }
 
-  .formtitle {
-    font-size: 200%;
-  }
-
+  .formtitle,
   .title {
     font-size: 200%;
   }
 
   .p1 {
     font-size: 150%;
-
   }
 }

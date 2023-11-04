@@ -14,7 +14,8 @@ const Uupdate = () => {
   const user_id = window.localStorage.getItem('user_id');
   const storedToken = window.localStorage.getItem('jwtToken');
   const { id } = useParams();
-
+  const currentYear = new Date().getFullYear();
+  const fyyear = `${currentYear}-${(currentYear + 1).toString().slice(-2)}`
   const [values, setValues] = useState({
     id: id,
     address: "",
@@ -41,6 +42,7 @@ const Uupdate = () => {
   const [totalPayment, settotalpayment] = useState()
   const [receivedPayment, setreceivedPayment] = useState()
   const [pendingPayment, setpendingPayment] = useState()
+  const [DiscountPayment, setDiscountPayment] = useState()
   const [paymentlastupdate, setpaymentlastupdate] = useState()
 
   useEffect(() => {
@@ -51,6 +53,7 @@ const Uupdate = () => {
 
   function GetClientPayment() {
     try {
+
 
       var myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${storedToken}`);
@@ -64,16 +67,13 @@ const Uupdate = () => {
       fetch(`${url_}/sumOFPaymentClient/${user_id}/${id}`, requestOptions)
         .then(response => response.json())
         .then(result => {
-
-          setpendingPayment(result.pendingPayment)
-          setreceivedPayment(result.receivedPayment)
-          settotalpayment(result.totalPayment)
+          console.log(result)
+          setpendingPayment(result.pendingPayment);
+          setreceivedPayment(result.receivedPayment);
+          settotalpayment(result.totalPayment);
           setpaymentlastupdate(result.lastUpdateDate);
-          // if (result.pendingPayment === 0) {
-          //   setClienttotalpayment(false)
-          // } else {
-          //   setClienttotalpayment(true)
-          // }
+          setDiscountPayment(result.discountPayment);
+
           console.log(result)
         })
         .catch(error => console.log('error', error));
@@ -142,12 +142,12 @@ const Uupdate = () => {
         body: JSON.stringify(values),
       })
         .then(res => {
-          swal("Success", "Data updated successfully.", "success");
+          swal.fire("Success", "Data updated successfully.", "success");
           window.history.back();
           console.log(values)
         })
         .catch(error => {
-          swal("Failed!", " Failed to update.!!!!", "error");
+          swal.fire("Failed!", " Failed to update.!!!!", "error");
           console.log(error)
         });
     } catch (error) {
@@ -175,7 +175,8 @@ const Uupdate = () => {
         "userid": user_id,
         "clientid": id,
         "totalPayment": ClientPayment.total_bill,
-        "receivedPayment": ClientPayment.received_bill
+        "receivedPayment": ClientPayment.received_bill,
+        "year": fyyear
       });
 
       var requestOptions = {
@@ -231,7 +232,7 @@ const Uupdate = () => {
       console.log(result);
       if (response.status === 200) {
         const noti = await swal.fire("Success", "Payment updated.", "success")
-        // window.location.reload()
+        window.location.reload()
         // setClientPayment({
 
         //   received_bill: ""
@@ -319,11 +320,16 @@ const Uupdate = () => {
                   </ul>
 
                 </div>
-                <div className={`col-3 ${styles.center}`}>
+                <div className={`col-4 ${styles.center}`}>
 
                   <div className=" row">
                     <div className={styles.discount_input}>
-                      <input type="text" placeholder='Enter discount amount' name='discount' value={ClientPayment.discount} onChange={handlepaymentChange} autoComplete='off' />
+                      <h6 className='mt-2'>Enter discount amount</h6>
+                      <div className='d-flex row'>
+                        <input type="text" name='discount' value={ClientPayment.discount} onChange={handlepaymentChange} autoComplete='off' />
+                        <span className=" bg-transparent font-weight-bold ml-2 d-flex align-items-center justify-content-center text-success" style={{ border: "1px solid gray", borderRadius: "5px", width: "5rem" }}>{DiscountPayment}</span>
+                      </div>
+
                     </div>
                   </div>
 
