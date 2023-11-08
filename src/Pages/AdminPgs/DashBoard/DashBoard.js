@@ -6,7 +6,7 @@ import { url_ } from '../../../Config';
 import Swal from 'sweetalert2';
 
 const DashBoard = () => {
-  const subscription_status=localStorage.getItem(`subscription_status`)
+  const subscription_status = localStorage.getItem(`subscription_status`)
 
   const Navigate = useNavigate();
   const [Totalclient, setTotalclient] = useState();
@@ -17,6 +17,7 @@ const DashBoard = () => {
   const [TotalclientPayment, setTotalclientPayment] = useState();
   const [TotalclientpendingPayment, setTotalclientpendingPayment] = useState();
   const [TotalClientsreceivedPayment, setTotalClientsreceivedPayment] = useState();
+  const [TotalClientsdiscountPayment, setTotalClientsdiscountPayment] = useState();
 
 
   const [filedata, setFiledata] = useState([]);
@@ -31,11 +32,12 @@ const DashBoard = () => {
   const storedToken = window.localStorage.getItem('jwtToken');
 
 
-  function handleLinkClick(){
-    if(subscription_status==="grace_period" )
-    Swal.fire({
-  icon:"info",
-  text:"Sorry this service is currently unavailable due to end of subscription"})
+  function handleLinkClick() {
+    if (subscription_status === "grace_period")
+      Swal.fire({
+        icon: "info",
+        text: "Sorry this service is currently unavailable due to end of subscription"
+      })
   }
 
   useEffect(() => {
@@ -97,12 +99,13 @@ const DashBoard = () => {
 
       const response = await fetch(`${url_}/sumOFPaymentClientByUserid/${user_id}/${fyyear}`, requestOptions);
       const result = await response.json();
-      // console.log(result);
+      console.log(result);
       // console.log(result.totalPayment);
 
       setTotalclientPayment(result.totalPayment.toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }))
       setTotalClientsreceivedPayment(result.receivedPayment.toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }))
       setTotalclientpendingPayment(result.pendingPayment.toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }))
+      setTotalClientsdiscountPayment(result.discountPayment.toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }))
     } catch (error) {
       console.log('error', error);
     }
@@ -274,7 +277,7 @@ const DashBoard = () => {
                     <h6 className={`${styles.black} font-weight-bold`}>{TotalGSTClients}</h6>
                   </Link>
                 </div>
-                <Link to='clientreg' className={subscription_status === "on" ? `` : `${styles.btndisable}`}   onClick={handleLinkClick}><input type="submit" value="ADD CLIENT" className={` h6 ${styles.abtn}`} /></Link>
+                <Link to='clientreg' className={subscription_status === "on" ? `` : `${styles.btndisable}`} onClick={handleLinkClick}><input type="submit" value="ADD CLIENT" className={` h6 ${styles.abtn}`} /></Link>
               </div>
 
             </div>
@@ -289,6 +292,8 @@ const DashBoard = () => {
                   <div className={`h6 card-link ${styles.black}`}>Received<h6 className={`${styles.green} font-weight-bold`}>{TotalClientsreceivedPayment}
                   </h6></div>
                   <div className={`h6 card-link ${styles.black}`} style={{ cursor: "pointer" }} onClick={() => GOTO("Pending", fyyear)}>Pending<h6 className={`text-danger font-weight-bold`}>{TotalclientpendingPayment}
+                  </h6></div>
+                  <div className={`h6 card-link ${styles.black}`} style={{ cursor: "pointer" }} onClick={() => GOTO("Pending", fyyear)}>Discount<h6 className={`text-success font-weight-bold`}>{TotalClientsdiscountPayment}
                   </h6></div>
                 </div>
                 <h6 className={`${styles.green} text-primary`}>As on date</h6>
