@@ -1,91 +1,152 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import style from './SubscriptionPlan.module.css'
-import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import { useLocation, useNavigate } from 'react-router-dom';
+import swal from 'sweetalert2';
+import { url_ } from '../../../Config';
 
 const SubscriptionPlan = () => {
-  const Navigate = useNavigate()
-  const Plans = [
-    {
-      ttota_clients: "1-250",
-      subscription: "4,000",
-      subsplan: "subsName"
-    },
-    {
-      ttota_clients: "251-500",
-      subscription: "6,000",
-      subsplan: "subsName"
-    },
-    {
-      ttota_clients: "501-1000",
-      subscription: "9,000",
-      subsplan: "subsName"
-    },
-    {
-      ttota_clients: "1001-1500",
-      subscription: "12,000",
-      subsplan: "subsName"
-    },
-    {
-      ttota_clients: "1501-2000",
-      subscription: "15,000",
-      subsplan: "subsName"
-    },
-    {
-      ttota_clients: "2001-3000",
-      subscription: "20,000",
-      subsplan: "subsName"
-    },
-    {
-      ttota_clients: "3001-4000",
-      subscription: "25,000",
-      subsplan: "subsName"
-    },
-    {
-      ttota_clients: "4001-5000",
-      subscription: "30,000",
-      subsplan: "subsName"
-    },
+
+  const Navigate = useNavigate();
+  const location=useLocation();
+  const userPAN=localStorage.getItem("pan");
+
+  //console.log(location.pathname)
+  const [isVisiting,setIsVisiting]=useState(false);
+  const [clientCount,setClientCount]=useState(0);
+  const [isPaid,setIsPaid]=useState(false);
+  const [plans, setPlans] = useState([]);
+
+  const storedToken=localStorage.getItem("jwtToken")
+  useEffect(()=>{
+    if(
+      location.pathname==="/subscriptionplan" || location.pathname==="/"
+    ){
+      setIsVisiting(true)
+      // getSubscriptionPlan(true);
+    }
+    else{
+      checkNoOfClients();
+    // getSubscriptionPlan(false);
+    }    
+    getSubscriptionPlan();
+    
+  },[isVisiting,isPaid,clientCount])
 
 
-  ]
+  async function getSubscriptionPlan() {
+    var requestOptions = {
+      method: "GET",
+      redirect: "follow",
+    };
+
+    try {
+      const response = await fetch(`${url_}/subscriptionPacks`, requestOptions);
+      const result = await response.json();
+      if (response.status === 200) {
+        
+       if(isPaid||isVisiting)
+        {
+          setPlans(result)
+        }
+        else if(!isVisiting && !isPaid){
+          const finalPlanArray=result.filter((item)=>{
+            return !item.subtype.includes("Extra")
+          })
+          //console.log(finalPlanArray)
+          setPlans(finalPlanArray);
+        }        
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
+  async function checkNoOfClients() {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+    var requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    try {
+      const response = await fetch(
+        `${url_}/checkstatus/sufficient/${userPAN}`,
+        requestOptions
+      );
+      const result = await response.json();
+      if (response.status === 200) {
+        
+        setClientCount(parseInt(result.count));
+        // setClientCount(800);
+        setIsPaid(result.isPaid);
+        // setIsPaid(true);
+      }
+      return result;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
   const [selectedCheckbox, setSelectedCheckbox] = useState(null);
 
   const handleCheckboxChange = (event, index) => {
-    if (selectedCheckbox === index) {
+    
+
+    const planHigherClient=plans[index].subtype.split("-")[1];
+    // console.log(clientCount,planHigherClient)
+    if(clientCount>planHigherClient){
+      swal.fire(
+        {
+          icon:"info",
+          text:`Your existing client count ${clientCount} is which is higher than selected plan. Please select higher plan.`
+        }
+      )
+    }
+    else{if (selectedCheckbox === index) {
       setSelectedCheckbox(null);
     } else {
       setSelectedCheckbox(index);
-    }
+    }}
   };
 
-  const GOTO = (selectedPlan) => {
-    if (selectedPlan) {
-      // console.log("Selected Plan Total Clients:", selectedPlan.ttota_clients);
-      // console.log("Selected Plan Subscription:", selectedPlan.subscription);
-
-
-      Navigate('subcription', {
-        state: {
-          totalClients: selectedPlan.ttota_clients,
-          subscription: selectedPlan.subscription,
-        },
-      })
-
-
-    } else {
-      // Handle case where no plan is selected
-      Swal.fire("Please select the plan!!")
+  const GOTO = (title) => {
+    
+    if(selectedCheckbox===null){
+      swal.fire("Please select a plan.")
+      
     }
-
+    else{
+      console.log(plans[selectedCheckbox])
+      Navigate('subcription',
+      {state:{subs_pack:plans[selectedCheckbox].subtype,
+        subs_amount:plans[selectedCheckbox].subscriptionprice,
+        no_of_client:plans[selectedCheckbox].accesscliet
+      }})
+    }
+    
+    //   , {
+    //   state: {
+    //     clientId: clientid,
+    //     Year: year,
+    //     Title: title
+    //   },
+    // })
 
   }
-
   return (
-    <div style={{ margin: "0 70px" }}>
+    <div style={{ margin: "10px 70px" }} className={(location.pathname==="/subscriptionplan" || location.pathname==="/")&&style.box_shadow}>
       <div className={`${style.Subplan_title} text-center mt-4 mb-2`}>
-        <h2><b>SUBSCRIPTION PLAN</b></h2>
+        <h5><b>SUBSCRIPTION PLAN</b></h5>
+        {(
+      location.pathname==="/subscriptionplan" || location.pathname==="/"
+    )&&<span className={`${style.seperator}`}></span>}
       </div>
+
       <div className={`${style.Subplan_para} text-center display-6 mt-1`}>
         <p>
           In this digital world, subscribe TAXKO at less than your printing paper cost. Serve your clients with more efficient manner. Access anytime & anywhere.
@@ -95,19 +156,20 @@ const SubscriptionPlan = () => {
         <table class="table table-striped ">
           <thead>
             <tr>
-              <th scope="col" class="text-center"></th>
+              {!isVisiting&&<th scope="col" class="text-center"></th>}
               <th scope="col" class="text-center">TOTAL CLIENTS</th>
               <th scope="col" class="text-center">SUBSCRIPTIONS</th>
 
             </tr>
           </thead>
           <tbody>
-            {Plans.map((item, index) => (
+            {plans.map((item, index) => (
               <tr key={index}>
-                <td scope="row" className="text-center "><input type="checkbox" name={item.subsplan} id="" checked={selectedCheckbox === index}
-                  onChange={(e) => handleCheckboxChange(e, index)} /></td>
-                <td className='text-center'>{item.ttota_clients}</td>
-                <td className='text-center'>&#8377;{item.subscription}/-</td>
+                {!isVisiting&&<td scope="row" class="text-center">
+                  <input type="checkbox" name={item.subsplan} id="" checked={selectedCheckbox === index}
+                  onChange={(e) => handleCheckboxChange(e, index)}  value={item.value} /></td>}
+                <td className='text-center'>{item.subtype}</td>
+                <td className='text-center'>&#8377;{item.subscriptionprice}/-</td>
               </tr>
             ))}
           </tbody>
@@ -120,9 +182,9 @@ const SubscriptionPlan = () => {
             Above prices are exclusive of GST
           </p>
         </div>
-        <div className={`d-flex justify-content-center ${style.sub_paybtn}`}>
-          <button onClick={() => GOTO(Plans[selectedCheckbox])}>PAY NOW</button>
-        </div>
+        {!isVisiting&&<div className={`d-flex justify-content-center ${style.sub_paybtn}`}>
+          <button onClick={GOTO}>PAY NOW</button>
+        </div>}
       </div>
     </div>
   );

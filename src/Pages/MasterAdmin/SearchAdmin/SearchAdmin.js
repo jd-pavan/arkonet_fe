@@ -10,7 +10,7 @@ const SearchAdmin = () => {
     const Navigate = useNavigate()
     const userProf = useLocation().state.userProfession;
     const storedToken = window.localStorage.getItem('jwtToken');
-    console.log(userProf)
+    // console.log(userProf)
     useEffect(() => {
         GetUserDATA();
     }, []);
@@ -53,9 +53,11 @@ const SearchAdmin = () => {
             .then((response) => response.json())
             .then((result) => {
                 console.log(result)
-                console.log(result[0].count)
-                console.log(result[0].registration)
+                // console.log(result[0].count)
+                // console.log(result[0].registration)
                 setuserdata(result)
+
+
             })
             .catch((error) => {
                 console.log(error);
@@ -152,7 +154,7 @@ const SearchAdmin = () => {
                                     <div className={`${style.name} `} onClick={() => GOTOClients(item.registration.pan)}><p className={`${style.reference} text-primary`} style={{ cursor: "pointer" }}>{item.count}</p></div>
 
 
-                                    <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={{ color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
+                                    <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={item.substartdatebyuser === null ? { color: "#d2cccc" } : { color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
                                 </div>
 
                             ))

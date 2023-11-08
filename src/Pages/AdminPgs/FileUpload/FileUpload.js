@@ -8,6 +8,7 @@ import { useLocation } from 'react-router-dom';
 
 const FileUpload = () => {
 
+  const subscription_status=localStorage.getItem('subscription_status');
 
 
   const user_id = window.localStorage.getItem('user_id');
@@ -136,7 +137,27 @@ const FileUpload = () => {
   };
 
   const handleToggle = async () => {
-    if (fileResponse === true) {
+
+
+    if(subscription_status==="grace_period")
+    {
+      Swal.fire({
+        icon:"info",
+        text:"Sorry this service is currently not available due to end of subscription. Renew subscription to resume services."})
+        
+    }
+
+    else if(subscription_status==="not_subscribed")
+    {
+      Swal.fire({
+        icon:"info",
+        text:"Subscribe to avail this service."})
+        
+    }
+
+
+
+    else{if (fileResponse === true) {
       console.log("It's TRUE");
     } else {
       try {
@@ -178,11 +199,30 @@ const FileUpload = () => {
         }
       }
     }
+
+  }
   };
   /////////////////////////////////////////////////////////////////////////////////////////////
 
   // File Upload Code
-
+  const checkSubsriptionStatus=(e)=>{
+    if(subscription_status==="grace_period")
+      {
+        Swal.fire({
+          icon:"info",
+          text:"Sorry this service is currently not available due to end of subscription. Renew subscription to resume services."})
+          e.preventDefault();
+      }
+  
+      else if(subscription_status==="not_subscribed")
+      {
+        Swal.fire({
+          icon:"info",
+          text:"Subscribe to avail this service."})
+          e.preventDefault();
+      }
+  
+  }
 
   const handleFileUpload = async (event, filename) => {
     const file = event.target.files[0];
@@ -308,7 +348,24 @@ const FileUpload = () => {
   // Delete file Code
 
   const DeleteFile = async () => {
+   
+    if(subscription_status==="grace_period")
+    {
+      Swal.fire({
+        icon:"info",
+        text:"Sorry this service is currently not available due to end of subscription. Renew subscription to resume services."})
+        
+    }
 
+    else if(subscription_status==="not_subscribed")
+    {
+      Swal.fire({
+        icon:"info",
+        text:"Subscribe to avail this service."})
+        
+    }
+
+    else{
 
     try {
       const result = await Swal.fire({
@@ -373,6 +430,8 @@ const FileUpload = () => {
         console.log('Response Data:', error.response.text());
       }
     }
+
+  }
   }
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -381,6 +440,23 @@ const FileUpload = () => {
   const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
 
   const openFileAndDownload = async (contentType, fileName, file_ID) => {
+
+    if(subscription_status==="grace_period")
+    {
+      Swal.fire({
+        icon:"info",
+        text:"Sorry this service is currently not available due to end of subscription. Renew subscription to resume services."})
+        
+    }
+
+    else if(subscription_status==="not_subscribed")
+    {
+      Swal.fire({
+        icon:"info",
+        text:"Subscribe to avail this service."})
+        
+    }
+else{
     try {
       const response = await fetch(`${url_}/openfile/${file_ID}`, {
         method: 'GET',
@@ -413,6 +489,9 @@ const FileUpload = () => {
     } catch (error) {
       console.error(`Error fetching or downloading ${contentType.toUpperCase()} file:`, error);
     }
+
+
+  }
   };
   // console.log(clientid)
   // console.log(year)
@@ -507,9 +586,9 @@ const FileUpload = () => {
                           )}
 
                           {item.filename.toLowerCase().includes('excel') ? (
-                            <i className="bi bi-file-earmark-excel-fill text-success" onDoubleClick={() => openFileAndDownload('xlsx', 'spreadsheet.xlsx', item.fileId)}></i>
+                            <i className="bi bi-file-earmark-excel-fill text-success" onDoubleClick={(e) =>{e.preventDefault(); openFileAndDownload('xlsx', 'spreadsheet.xlsx', item.fileId)}}></i>
                           ) : (
-                            <i className="bi bi-file-earmark-pdf-fill text-danger" onDoubleClick={() => openFileAndDownload('pdf', 'document.pdf', item.fileId)}></i>
+                            <i className="bi bi-file-earmark-pdf-fill text-danger" onDoubleClick={(e) => {e.preventDefault(); openFileAndDownload('pdf', 'document.pdf', item.fileId)}}></i>
                           )}
 
                           <h6 className={style.filename_text} >
@@ -522,7 +601,7 @@ const FileUpload = () => {
                     ) : (
                       <div className={style.file_upload}>
                         <div className={style.image_upload_wrap}>
-                          <input className={style.file_upload_input} type='file' onChange={(event) => handleFileUpload(event, item.filename)} />
+                          <input className={style.file_upload_input} type='file' onChange={(event) => handleFileUpload(event, item.filename)} onClick={checkSubsriptionStatus}/>
                           <div className={style.drag_text}>
                             <img src={upload} alt="" />
                             <h4>Upload File</h4>

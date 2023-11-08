@@ -3,17 +3,44 @@ import style from "./UserSubscriptionPlan.module.css";
 import { useEffect, useState } from "react";
 import { url_ } from "../../../Config";
 import swal from "sweetalert2";
+import { useLocation } from 'react-router-dom';
+
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Swal from "sweetalert2";
 // import taxko from "../../Images/Taxko.jpg";
 // import arkonet from "../../Images/Arkonet.jpg";
 
-const UserSubscriptionPlan = () => {
-  const Navigate = useNavigate();
+const UserSubscriptionPage = () => {
+  const UserId = useLocation().state.USERSUBID;
+  const UserPan = useLocation().state.USERSUBPAN;
   const [isRefferFriend, setIsRefferFriend] = useState(true);
   const [isSuggession, setIsSuggession] = useState(false);
   const [isValidMobile, setIsValidMobile] = useState(true);
+  const [USERSUBSCRIPTIONDATA, setUSERSUBSCRIPTIONDATA] = useState({
+    PAIDSTATUS: "",
+    FORCESTOPSTATUS: "",
+    USER_REFERED_BY: "",
+    USERNAME: "",
+    USERMOBILE: "",
+    USERREG_DATE: "",
+    USERSUBSTARTDATE: "",
+    USERSUBSTARTDATEBYUSER: "",
+    USERSUBSTARTDATEBYADMIN: null,
+    USERSUBENDDATE: null,
+    USERSUBSCRIPTIONTYPE: "",
+    USERACESSCLIENT: "",
+    USERIMAGENAME: "",
+    USERIMAGEPATH: "",
+    USERSUBSCRIPTIONPRICE: "",
+    USERREFRENCEID: "",
+    USERREMAININGDAYS: "",
+    USERID: useLocation().state.USERSUBID,
+    USERPAN: useLocation().state.USERSUBPAN
+
+  });
+  // console.log(USERSUBSCRIPTIONDATA.USERID, USERSUBSCRIPTIONDATA.USERPAN)
 
   const storedToken = localStorage.getItem("jwtToken");
 
@@ -27,8 +54,7 @@ const UserSubscriptionPlan = () => {
     suggession: "",
   })
 
-  const Substatus = false
-  const subplanstatus = true
+
   function handleChange(e) {
     const { name, value } = e.target;
     if (isRefferFriend) {
@@ -51,33 +77,24 @@ const UserSubscriptionPlan = () => {
       setSuggession({ ...suggession, [name]: value })
     }
   }
-  const GOTO = () => {
-    Navigate('subscriptionplan')
-    // , {
-    //   state: {
-    //     clientId: cid,
-    //     clientname: cname,
-    //     clientpan: cpan,
-    //     clientCategory: ccategory,
-    //     clientProfession: cprofession,
-    //   },
-    // });
 
-  }
 
-  const [userInfo, setUserInfo] = useState({
-    userid: localStorage.getItem("user_id"),
-    userPAN: localStorage.getItem("pan"),
-    days_left: "0",
-    referredBy: "",//"Sonali Shyamkumar Goel",
-    refferedPan: "",
-    registration_date: "14 April 2024",
-    end_date: "5 November 2023"
-  });
+
+
+  // const [userInfo, setUserInfo] = useState({
+  //   userid: useLocation().state.USERSUBID,
+  //   userPAN: useLocation().state.USERSUBPAN,
+  //   days_left: null,
+  //   referredBy: "No Refrence",
+  //   refferedPan: "",
+  //   registration_date: "",
+  //   end_date: "",
+  //   paid: ""
+  // });
 
 
   function copyReferralLink() {
-    const refferalLink = `http://localhost:3000/admin/refferal/user/${parseInt(new Date().getTime() / 1000)}_${userInfo.userPAN}`;
+    const refferalLink = `http://localhost:3000/admin/refferal/user/${parseInt(new Date().getTime() / 1000)}_${USERSUBSCRIPTIONDATA.USERPAN}`;
     navigator.clipboard.writeText(refferalLink);
     swal.fire('Refferal link has been copied to clipboard');
   }
@@ -96,9 +113,114 @@ const UserSubscriptionPlan = () => {
 
 
 
-  function fetchData() {
-    const daysDiff = (Math.floor((new Date(userInfo.end_date) - new Date()) / (1000 * 60 * 60 * 24))) + 1;
-    setUserInfo({ ...userInfo, days_left: `${daysDiff}` });
+  async function fetchData() {
+
+
+    function DateConvert(ConvertingDate) {
+
+      if (ConvertingDate === null) {
+        return null;
+      } else {
+
+
+
+        const date = new Date(ConvertingDate);
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        const formattedDate = date.toLocaleDateString('en-GB', options);
+        return formattedDate;
+
+      }
+
+
+
+    }
+
+    function CalculateRemainingDays(endingdate) {
+
+      if (endingdate === null) {
+        return null;
+      } else {
+
+
+
+        const endDate = new Date(endingdate);
+        const today = new Date();
+        const millisecondsPerDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+
+        // Calculate the difference in milliseconds
+        const differenceInTime = endDate.getTime() - today.getTime();
+
+        // Convert the difference back to days and round down
+        const daysRemaining = Math.floor(differenceInTime / millisecondsPerDay);
+        // console.log("Days remaining:", daysRemaining);
+        return daysRemaining;
+
+      }
+    }
+
+
+
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+
+    try {
+      const response = await fetch(`${url_}/subscriptionpackuserdata/${USERSUBSCRIPTIONDATA.USERPAN}`, requestOptions);
+      const result = await response.json();
+      console.log(result)
+
+
+      setUSERSUBSCRIPTIONDATA({
+        PAIDSTATUS: result.subscriptionData.paid,
+        FORCESTOPSTATUS: result.subscriptionData.forcestop,
+        USER_REFERED_BY: result.Refered_by_name,
+        USERNAME: result.subscriptionData.name,
+        USERMOBILE: result.subscriptionData.mobile,
+        USERREG_DATE: DateConvert(result.subscriptionData.registrationdate),
+        USERSUBSTARTDATE: result.subscriptionData.substartdate,
+        USERSUBSTARTDATEBYUSER: result.subscriptionData.substartdatebyuser,
+        USERSUBSTARTDATEBYADMIN: result.subscriptionData.substartdatebyadmin,
+        USERSUBENDDATE: DateConvert(result.subscriptionData.subendtdate),
+        USERSUBSCRIPTIONTYPE: result.subscriptionData.subscriptiontype,
+        USERACESSCLIENT: result.subscriptionData.acessclient,
+        USERIMAGENAME: result.subscriptionData.imageName,
+        USERIMAGEPATH: result.subscriptionData.imagePath,
+        USERSUBSCRIPTIONPRICE: result.subscriptionData.subscriptionprice,
+        USERREFRENCEID: result.subscriptionData.refrenceId,
+        USERREMAININGDAYS: CalculateRemainingDays(result.subscriptionData.subendtdate),
+        USERID: result.subscriptionData.userid,
+        USERPAN: result.subscriptionData.pan,
+
+
+      })
+
+
+      if (result.subscriptionData.substartdatebyadmin === null) {
+
+        setStartDate(new Date())
+        setEndDate(new Date())
+      } else {
+
+        setStartDate(new Date(`${result.subscriptionData.substartdatebyadmin}`))
+        setEndDate(new Date(`${result.subscriptionData.subendtdate}`))
+      }
+
+
+
+
+
+
+    } catch (error) {
+      console.log(error)
+    }
+
+
+
   }
 
   function handleSubmit() {
@@ -149,8 +271,8 @@ const UserSubscriptionPlan = () => {
     myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
     var raw = JSON.stringify({
-      userid: userInfo.userid,
-      pan: userInfo.userPAN,
+      userid: USERSUBSCRIPTIONDATA.USERID,
+      pan: USERSUBSCRIPTIONDATA.USERPAN,
       name: refferFriend.name,
       contactno: refferFriend.contactNo,
       profession: refferFriend.profession,
@@ -188,8 +310,8 @@ const UserSubscriptionPlan = () => {
     myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
     var raw = JSON.stringify({
-      userid: userInfo.userid,
-      pan: userInfo.userPAN,
+      userid: USERSUBSCRIPTIONDATA.USERID,
+      pan: USERSUBSCRIPTIONDATA.USERPAN,
       seggesion: suggession.suggession,
     });
 
@@ -219,48 +341,195 @@ const UserSubscriptionPlan = () => {
   }
 
 
+
+
   useEffect(() => {
     fetchData();
-    fetchUserSubscriptionData();
+    GetCurrentDate();
   }, [])
 
+  const ApproveUserSubscription = async () => {
+    try {
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+      var requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        redirect: 'follow'
+      };
+
+      const response = await fetch(`${url_}/Approve/Subscription/${USERSUBSCRIPTIONDATA.USERPAN}`, requestOptions);
+
+      const result = await response.text();
+      console.log(result);
+      if (response.status === 200) {
+        await swal.fire("Success.", `${result}`, "success")
+        console.log(result);
+
+
+      } else {
+        swal.fire("Failed.", "Failed to approved user. Please try again!!", "error")
+        console.log(result);
+
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+
+  };
+
+  const ForceStopUpdate = async (forceStopStartStatus) => {
+
+
+    try {
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+      var requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        redirect: 'follow'
+      };
+
+      const response = await fetch(`${url_}/changestatus/Subscription/${USERSUBSCRIPTIONDATA.USERPAN}/${forceStopStartStatus}`, requestOptions);
+      const result = await response.text();
+      if (response.status === 200) {
+        await swal.fire("Success.", `${result}`, "success");
+        window.location.reload();
+
+
+      }
+      else {
+        await swal.fire("Failed.", `Failed to update status!!!`, "error")
+        window.location.reload();
+      }
+      console.log(result);
+    } catch (error) {
+      console.log('error', error);
+    }
+  };
 
 
 
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const onChange = (dates) => {
+
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [addedDays, setAddedDays] = useState(0);
+  const [finalenddate, setfinalenddate] = useState();
+  const [CurreantDATE, setCurreantDATE] = useState();
+
+  const handleDateChange = (dates) => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
-    console.log('Start Date:', start);
-    console.log('End Date:', end);
   };
-  const fetchUserSubscriptionData = async () => {
-    try {
-      setStartDate(new Date(2023, 10, 12))
-      setEndDate(new Date(2023, 10, 20))
-    } catch (error) {
-      console.log(error)
+
+  const handleDaysChange = (e) => {
+    // const days = e.target.value;
+
+
+
+
+    if (e.target.value === NaN || "") {
+
+      swal.fire("Error", "Value should be greater than 0", "error");
+      setAddedDays(0);
+
+    } else if (e.target.value > 30) {
+      swal.fire("Error", "Value should be less than or equal to 30", "error");
+    } else {
+      const days = parseInt(e.target.value);
+      setAddedDays(days);
+      if (addedDays !== '') {
+        if (endDate instanceof Date) {
+          const newEndDate = new Date(endDate);
+          newEndDate.setDate(endDate.getDate() + days - addedDays);
+          setEndDate(newEndDate);
+
+          const date = new Date(newEndDate);
+          const year = date.getFullYear();
+          const month = ('0' + (date.getMonth() + 1)).slice(-2);
+          const day = ('0' + date.getDate()).slice(-2);
+          const formattedDate = `${year}-${month}-${day}`;
+          console.log(formattedDate); // Output: 2023-11-27
+
+          setfinalenddate(formattedDate)
+          // Output the result
+          console.log(formattedDate);
+
+        }
+      } else {
+        const newEndDate = new Date(startDate);
+        newEndDate.setDate(startDate.getDate() + days);
+        setEndDate(newEndDate);
+
+        const date = new Date(newEndDate);
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2);
+        const day = ('0' + date.getDate()).slice(-2);
+        const formattedDate = `${year}-${month}-${day}`;
+        console.log(formattedDate); // Output: 2023-11-27
+
+        setfinalenddate(formattedDate)
+      }
     }
+
+  };
+  const submitdateandclient = async () => {
+    try {
+      var myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+      var requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        redirect: 'follow'
+      };
+
+      const response = await fetch(`${url_}/adddays/Subscription/${USERSUBSCRIPTIONDATA.USERPAN}/${finalenddate}T11:59:00.000Z`, requestOptions);
+      const result = await response.text();
+      console.log(result)
+      if (response.status === 200) {
+        await swal.fire("Success.", "Days added successfully.", "success");
+        window.location.reload();
+      } else {
+        await swal.fire("Failed.", ` Failed to add days!!!`, "error")
+        window.location.reload();
+      }
+
+
+      console.log(result);
+    } catch (error) {
+      console.log('error', error);
+    }
+    // console.log(`${finalenddate}T11:59:00.000Z`)
+
+  };
+
+
+  const GetCurrentDate = () => {
+    // Get current date
+    var today = new Date();
+
+    // Extract date, month, and year
+    var day = String(today.getDate()).padStart(2, '0');
+    var month = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+    var year = today.getFullYear();
+
+    // Format the date as "dd / mm / yyyy"
+    var formattedDate = day + ' / ' + month + ' / ' + year;
+
+    // Print the formatted date
+    console.log(formattedDate);
+    setCurreantDATE(formattedDate)
   }
 
-
-  useEffect(() => {
-
-  }, []);
-
-  const formatDate = (date) => {
-    if (date) {
-      return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`;
-    }
-    return '';
-  };
 
   return (
     <div className={`${style.workport}`}>
 
-      <div className={`${style.maincont}`}>
+      <div className={`${style.maincont} `}>
         <div className={`${style.mainhair}`}>
           <h4 className={`${style.h31}`}>SUBSCRIPTION</h4>
         </div>
@@ -269,143 +538,205 @@ const UserSubscriptionPlan = () => {
           <div className={`${style.circular}`}>
             <div className={`${style.card1}`}>
 
-              <h3 className={userInfo.days_left >= 15 ? `${style.h31}` :
-                userInfo.days_left <= 0 ? `${style.h31} ${style.subs_end}` :
-                  `${style.h31} ${style.subs_about_end}`}>
-                {Math.abs(userInfo.days_left)}</h3>
+              <h3 className={USERSUBSCRIPTIONDATA.USERREMAININGDAYS >= 15 ? `${style.h31}` :
+                USERSUBSCRIPTIONDATA.USERREMAININGDAYS <= 0 ? `${style.h31} ${style.subs_end}` :
+                  `${style.h31} ${style.subs_about_end}`}
+              >
+                {USERSUBSCRIPTIONDATA.USERREMAININGDAYS}</h3>
 
-              <p className={`${style.p1}`}>{userInfo.days_left < 0 ? `Days ago` : `Days Left`}</p>
+              <p className={`${style.p1}`}>{
+                USERSUBSCRIPTIONDATA.USERSUBENDDATE === null ? `` : USERSUBSCRIPTIONDATA.USERREMAININGDAYS < 0 ? `Days ago` : `Days Left`}</p>
             </div>
           </div>
-          <div className={`${style.mainheadtextual}`}>
-            <p className={`${style.p1}`}>Subscription Ends on</p>
-            <p className={`${style.p2}`}>{userInfo.end_date}</p>
-          </div>
-          <div className={`${style.mainadbominal} w-75 mb-3 `}>
-            <button className={`${style.card3}`} type="button" data-toggle="modal" data-target="#myModal"
-              style={{
-                border: "none",
-              }}>
-              <p className={`${style.cardp}`} id="referfriendbtn" onClick={openPanel}>ADD DAYS</p>
-            </button>
-
-            {/* ////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
-
-            <div class="modal fade" id="myModal">
-              <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-
-                  {/* <!-- Modal Header --> */}
-                  {/* <div class="modal-header">
-                <small type="button" class="close" data-dismiss="modal">&times;</small>
-              </div> */}
-
-                  {/* <!-- Moda body --> */}
-                  <div class="modal-body">
 
 
 
 
-                    <div >
-                      <div className='d-flex flex-column align-items-center'>
-                        <div>
-                          <div className='d-flex flex-column align-items-center '>
-                            <h2> <b>ADD DAYS</b></h2>
-                            <h6 className='mt-2'>Today</h6>
-                            <h6><b>24/05/2023</b></h6>
-                          </div>
-                        </div>
-                        <div className='d-flex justify-content-around w-75'>
-                          <div className={`${style.inputs}`}>
-                            <h6>How many days to add?</h6>
-                            <input type="text" name="" id="" />
-                          </div>
-                          <div className={`${style.inputs}`}>
-                            <h6>How many clients to add?</h6>
-                            <input type="text" name="" id="" />
-                          </div>
-                        </div>
-                        <div>
-                          <h6>
-                            OR
-                          </h6>
-                        </div>
-                        <div className='d-flex'>
-                          <div className={`${style.inputs} mr-5 d-flex flex-column align-items-center mt-3 `}>
-                            <h6 className='mb-3 mt-4'>Select Date Range</h6>
-                            <input type="date" />
-                            <h5 className='mt-4 mb-4 '>to</h5>
-                            <input type="date" name="" id="" />
-                          </div>
-                          <div>
+          {USERSUBSCRIPTIONDATA.USERSUBSTARTDATEBYUSER === null ?
+            (
+              <div className={`w-100 mt-3 d-flex justify-content-center`}>
+                <h5><b>User not subscribed...</b></h5>
+              </div>
+            ) : (
+              <div className={`w-100 `}>
+                <div className={`${style.mainheadtextual}`}>
+                  {USERSUBSCRIPTIONDATA.USERSUBSTARTDATEBYADMIN === null ?
+                    (
+                      <h5><b>User not approved!</b></h5>
+                    ) : (
+                      <>
+                        <p className={`${style.p1}`}>Subscription Ends on</p>
+                        <p className={`${style.p2}`}>{USERSUBSCRIPTIONDATA.USERSUBENDDATE}</p>
+                      </>
+                    )}
+                </div>
+                {USERSUBSCRIPTIONDATA.USERSUBENDDATE === null ?
+                  (
+                    // <div className={`${style.mainadbominal} w-75 mb-3 `}>
+                    <div className="d-flex justify-content-center ">
+                      <button
+                        className={`${style.card3}`}
+                        style={{
+                          border: "none",
+                          backgroundColor: "##ffd401",
+                        }}
 
-                            <div style={{ border: "2rem solid #bfbfbfe6", borderRadius: "10px" }} className='mt-4'>
+                      >
+                        <p className={`${style.cardp}`} onClick={() => ApproveUserSubscription()}>
+                          ACTIVATE
+                        </p>
+                      </button>
+                    </div>
+                    // </div>
+                  ) : (
+                    <div className="d-flex justify-content-center w-100">
+                      <div className={`${style.mainadbominal} w-75 mb-3 `}>
+                        {/* <> */}
+                        <button className={`${style.card3}`} type="button" data-toggle="modal" data-target="#myModal"
+                          style={{
+                            border: "none",
+                          }}>
+                          <p className={`${style.cardp}`} id="referfriendbtn" onClick={openPanel}>ADD DAYS</p>
+                        </button>
 
-                              <DatePicker
-                                selected={startDate}
-                                onChange={onChange}
-                                startDate={startDate}
-                                endDate={endDate}
-                                selectsRange
-                                inline
-                                monthsShown={2}
-                                className={`${style}`} // Apply your custom class here
-                              />
+                        {/* ////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+
+                        <div class="modal fade" id="myModal">
+                          <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+
+                              {/* <!-- Modal Header --> */}
+                              {/* <div class="modal-header">
+                                  <small type="button" class="close" data-dismiss="modal">&times;</small>
+                                </div> */}
+
+                              {/* <!-- Moda body --> */}
+                              <div class="modal-body">
+
+
+
+
+                                <div >
+                                  <div className='d-flex flex-column align-items-center'>
+                                    <div>
+                                      <div className='d-flex flex-column align-items-center '>
+                                        <h2> <b>ADD DAYS</b></h2>
+                                        <h6 className='mt-2'>Today</h6>
+                                        <h6><b>{CurreantDATE}</b></h6>
+                                      </div>
+                                    </div>
+                                    <div className='d-flex justify-content-center w-75'>
+                                      <div className={`${style.inputs} d-flex flex-column align-items-center`}>
+                                        <h6>How many days to add?</h6>
+                                        <input
+                                          type="number"
+                                          value={addedDays}
+                                          onChange={handleDaysChange}
+                                          placeholder="Add days"
+                                          min={0}
+                                          max={30}
+                                        />
+                                      </div>
+                                      {/* <div className={`${style.inputs}`}>
+                                        <h6>How many clients to add?</h6>
+                                        <input type="text" name="" id="" />
+                                      </div> */}
+                                    </div>
+                                    <div className="mt-2">
+                                      <h6>
+                                        OR
+                                      </h6>
+                                    </div>
+                                    <div className='d-flex'>
+                                      <div className={`${style.inputs} mr-5 d-flex flex-column align-items-center mt-3 `}>
+                                        <h6 className='mb-3 mt-4'>Select Date Range</h6>
+                                        <input type="date" disabled value={startDate.toISOString().split('T')[0]} />
+                                        <h5 className='mt-4 mb-4 '>to</h5>
+                                        <input type="date" disabled value={endDate.toISOString().split('T')[0]} />
+                                      </div>
+                                      <div>
+
+                                        <div style={{ border: "2rem solid #bfbfbfe6", borderRadius: "10px" }} className='mt-4'>
+
+
+
+                                          <DatePicker
+                                            selected={startDate}
+                                            onChange={handleDateChange}
+                                            startDate={startDate}
+                                            endDate={endDate}
+                                            selectsRange
+                                            inline
+                                            monthsShown={2}
+                                            className={style.datePicker} // Apply your custom class here
+                                          />
+
+                                        </div>
+                                      </div>
+
+
+                                    </div>
+                                    <div className={`${style.Sub_btn} d-flex justify-content-center  mt-4 w-100`} >
+                                      <button onClick={() => submitdateandclient()}>SUBMIT</button>
+                                    </div>
+                                  </div>
+                                </div>
+
+
+
+                              </div>
+
+
+
                             </div>
                           </div>
-
-
                         </div>
-                        <div className={`${style.Sub_btn} d-flex justify-content-center  mt-4 w-100`} >
-                          <button>SUBMIT</button>
+                        {/* </>
+                      <> */}
+                        <span
+                          className={`${style.card3}`}
+                          style={{
+                            border: "none",
+                            backgroundColor: "#c8c8c8",
+                          }}
+
+                        >
+                          <p className={`${style.cardp}`} onClick={() => { Swal.fire("User is already approved.") }}>
+                            ACTIVATED
+                          </p>
+                        </span>
+                        {/* </> */}
+                        <div className={`${style.card3} bg-danger`} >
+                          {
+                            USERSUBSCRIPTIONDATA.FORCESTOPSTATUS ? (
+                              <p className={`${style.cardp}`} id="suggessionbtn" onClick={() => ForceStopUpdate(false)}> RESUME</p>
+                            ) : (
+                              <p className={`${style.cardp}`} id="suggessionbtn" onClick={() => ForceStopUpdate(true)}> STOP</p>
+                            )
+                          }
                         </div>
                       </div>
                     </div>
-
-
-
-                  </div>
-
-
-
-                </div>
+                  )}
               </div>
-            </div>
-            <button
-              className={`${style.card3}`}
-              style={{
-                border: "none",
-                backgroundColor: subplanstatus ? "#c8c8c8" : "",
-              }}
-              disabled={subplanstatus}
-            >
-              <p className={`${style.cardp}`} onClick={copyReferralLink}>
-                ACTIVATE
-              </p>
-            </button>
 
-            <div className={`${style.card3} bg-danger`} >
-              {
-                Substatus === true ? (
-                  <p className={`${style.cardp}`} id="suggessionbtn" onClick={openPanel}> STOP</p>
-                ) : (
-                  <p className={`${style.cardp}`} id="suggessionbtn" onClick={openPanel}> START</p>
-                )
-              }
-            </div>
-          </div>
+
+
+
+            )}
+
+
         </div>
 
-        <div className={`${style.mainneck} mb-3`}>
 
-          <div className={`${style.neckgraycard} mb-4`} >
+        <div className={`${style.mainneck}`}>
+          <div className={`${style.neckgraycard}`} >
             <div className={`${style.title}`}><p className={`${style.titlep}`}>Referred By</p></div>
-            <div className={`${style.value}`}><p className={`${style.titlev}`}>{userInfo.referredBy}</p></div>
+            <div className={`${style.value}`}><p className={`${style.titlev}`}>{USERSUBSCRIPTIONDATA.USER_REFERED_BY}</p></div>
           </div>
-
           <div className={`${style.neckgraycard}`} >
             <div className={`${style.title}`}><p className={`${style.titlep}`}>Registration Date</p></div>
-            <div className={`${style.value}`}><p className={`${style.titlev}`}>{userInfo.registration_date}</p></div>
+            <div className={`${style.value}`}><p className={`${style.titlev}`}>{USERSUBSCRIPTIONDATA.USERREG_DATE}</p></div>
           </div>
         </div>
 
@@ -428,18 +759,21 @@ const UserSubscriptionPlan = () => {
 
             {isRefferFriend && <><div className={`${style.singleinput}`}>
               <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Name</p></div>
-              <div className={`${style.formvalue}`}><input name="name" className={`${style.formvalueinput}`} type="text"
-                onChange={handleChange} value={refferFriend.name} autoComplete="off" /></div>
+              <div className={`${style.formvalue}`}>
+                <input name="name" className={`${style.formvalueinput}`} type="text"
+                  onChange={handleChange} value={refferFriend.name} autocomplete="off" /></div>
             </div>
               <div className={`${style.singleinput}`}>
                 <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Contact Number</p></div>
-                <div className={`${style.formvalue}`}><input name="contactNo" className={`${style.formvalueinput}`} type="text"
-                  onChange={handleChange} value={refferFriend.contactNo} maxLength={10} /></div>
+                <div className={`${style.formvalue}`}>
+                  <input name="contactNo" className={`${style.formvalueinput}`} type="text"
+                    onChange={handleChange} value={refferFriend.contactNo} maxLength={10} autocomplete="off" /></div>
               </div>
               <div className={`${style.singleinput}`}>
                 <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Profession</p></div>
-                <div className={`${style.formvalue}`}><input name="profession" className={`${style.formvalueinput}`} type="text"
-                  onChange={handleChange} value={refferFriend.profession} /></div>
+                <div className={`${style.formvalue}`}>
+                  <input name="profession" className={`${style.formvalueinput}`} type="text"
+                    onChange={handleChange} value={refferFriend.profession} autocomplete="off" /></div>
               </div></>}
 
 
@@ -462,8 +796,8 @@ const UserSubscriptionPlan = () => {
         </div>
 
       </div>
-    </div>
+    </div >
   );
 }
 
-export default UserSubscriptionPlan;
+export default UserSubscriptionPage;

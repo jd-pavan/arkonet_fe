@@ -1,12 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState,useRef } from 'react';
 import style from './Subscription.module.css'; // Import the CSS module for styling
-import planqrcode from '../../../Images/ARKONET QRCODE.jpg'
-import { useLocation } from 'react-router-dom';
+import ImageModal from '../../../components/ImageModal/ImageModal'; // Import the ImageModal component
+import taxko from "../../../Images/Taxko.jpg";
+import arkonet from "../../../Images/Arkonet.jpg";
+import swal from 'sweetalert2';
+import { useLocation,useNavigate } from 'react-router-dom';
+import { url_ } from '../../../Config';
 
 const Subscription = () => {
-  const usubscription = useLocation().state.subscription;
-  const utotalClients = useLocation().state.totalClients;
+  const subscription_status=localStorage.getItem('subscription_status');
+
+const Navigate=useNavigate()
+  const {subs_pack,subs_amount,no_of_client}=useLocation().state;
+  console.log(subs_pack,subs_amount,no_of_client);
+
+  const userInfo={
+    userid:localStorage.getItem("user_id"),
+    userPAN:localStorage.getItem("pan"),
+    jwtToken:localStorage.getItem("jwtToken")
+  }
+
+
   const [modalVisible, setModalVisible] = useState(false);
+  const fileInputRef = useRef(null);
+  const [selectedFile,setSelectedFile]=useState(null);
+  const maxSize=10;
 
   const handleClick = () => {
     setModalVisible(true);
@@ -16,9 +34,167 @@ const Subscription = () => {
     setModalVisible(false);
   };
 
-  function GoBack() {
-    window.history.back(); // This will navigate to the previous page in the browser's history
+  function handleFileChange(e){
+    const file = e.target.files[0];
+    if(file){
+      const fileSizeInBytes = file.size;
+    const fileSizeInKb = fileSizeInBytes / 1024;
+    const fileSizeInMb = fileSizeInKb / 1024;
+      //console.log(fileSizeInBytes,":",fileSizeInKb+":",fileSizeInMb);
+      if (fileSizeInMb > maxSize){
+        swal.fire({
+          title: `Select file with a size less than ${maxSize} MB.`,
+          text: 'Click OK to open a file reducer website in a new tab',
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'OK',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            if(file.type === "image/jpeg" ||
+            file.type === "image/jpg" ||
+            file.type === "image/png" )
+            {
+              window.open("https://www.reduceimages.com/", '_blank');
+            }
+           
+            else{
+              window.open("https://www.ilovepdf.com/compress_pdf", '_blank');
+            }
+            fileInputRef.current.value = '';
+          }
+          else{
+            fileInputRef.current.value = '';
+          }
+        });
+      }
+      else{
+        const renamedFile = new File([file], `Payment_Acknowledgement.${file.type.split("/")[1]}`, {
+          type: file.type,
+        });
+        if (
+          file.type === "image/jpeg" ||
+          file.type === "image/jpg" ||
+          file.type === "image/png" ||
+          file.name.endsWith(".pdf")
+        ) {
+          const reader = new FileReader();
+    
+          reader.onload = (e) => {            
+            const binaryData = e.target.result;           
+            setSelectedFile(renamedFile);
+            
+          };
+          reader.readAsDataURL(file);
+        }
+        else {
+          swal
+            .fire({
+              title: `Select (JPEG or PNG or PDF) `,
+              icon: "info",
+              confirmButtonText: "OK",
+            })
+            .then((result) => {
+              if (result.isConfirmed) {
+                fileInputRef.current.value = "";
+              } else {
+                fileInputRef.current.value = "";
+              }
+            });
+        }
+      }
+    }
   }
+
+
+  async function submitAcknowledgement(e) {
+    e.preventDefault()
+
+
+    const message = `Dear Accounts Team,
+  Greeting from TAXKO!
+
+  I hope this message finds you well. 
+  
+  Our client ${localStorage.getItem("user_name")}, has made payment for ${subs_pack} subcription pack worth Rs${subs_amount}. 
+  Following is the attachment of payment acknowledgement.Kindly activate the subscription as soon as possible.
+                    
+  Best regards,
+
+  ${localStorage.getItem("user_name")},
+  Contact no : ${localStorage.getItem("mobile")}`;
+
+
+  const formattedMsg=message.replace(/\n/g, '<br>')
+// console.log(message)
+
+    swal.fire({
+      title: 'Sending Acknowledgement',
+      text: 'Please wait...',
+      showConfirmButton: false,
+      onBeforeOpen: () => {
+        swal.showLoading();
+      },
+    });
+
+
+    var myHeaders = new Headers();
+    myHeaders['Content-Type'] = 'multipart/form-data';
+
+    myHeaders.append("Authorization", `Bearer ${userInfo.jwtToken}`);
+
+    var formdata = new FormData();
+    formdata.append("aceesclient", no_of_client);
+    formdata.append("userid", userInfo.userid);
+    formdata.append("attachmentContent", selectedFile);
+    formdata.append("subscriptionprice", subs_amount);
+    formdata.append("subscriptiontype", subs_pack);
+    formdata.append("subject", "Payment Acknowledgement");
+    formdata.append("text", formattedMsg);
+
+    var requestOptions = {
+      method: "PUT",
+      headers: myHeaders,
+      body: formdata,
+      redirect: "follow",
+    };
+
+    try{
+      const response= await fetch(`${url_}/Subscription/${userInfo.userPAN}`, requestOptions);
+      const result=await response.text();
+
+
+      if (response.status === 200) {
+        swal.close();
+        swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Acknowledgement Submitted.!',
+          text:"Thank you for payment.Your subscription will be activated soon.",
+          showConfirmButton: false,
+          timer: 7000
+        }); 
+        if(subscription_status==="not_subscribed" || subscription_status==="off")
+        {
+
+        }
+        else{
+          Navigate('/admin/dashboard');
+        }
+       
+        
+      } else {  
+        swal.close();
+        swal.fire("Failed!", `${result}`, "error");
+      }}catch(error){
+        swal.close();
+        swal.fire("Failed!", `${error}`, "error");
+      }
+  }
+
+
+
+
+
   return (
     <div className={`${style.workport}`}>
 
@@ -26,9 +202,6 @@ const Subscription = () => {
       <div className={`${style.maincont}`}>
 
         <div className={`${style.mainhair}`}>
-          <div style={{ fontSize: "xxx-large", cursor: "pointer" }} onClick={GoBack}>
-            &#8617;&nbsp;
-          </div>
           <h3 className={`${style.h31}`}>RENEW SUBSCRIPTION</h3>
         </div>
 
@@ -42,44 +215,17 @@ const Subscription = () => {
               <p className={`${style.titlepara}`}>QR CODE</p>
             </div>
             <div className={`${style.value} d-flex align-items-center`}>
-              <h1 className={`${style.h11}`}><i class="fa-solid fa-qrcode " data-toggle="modal" data-target="#exampleModalLong" onClick={handleClick}></i></h1>
-              <h6>
-                <b className='d-flex justify-content-center'>
-                  <span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="currentColor" class="bi bi-arrow-bar-left" viewBox="0 0 16 16">
-                      <path fill-rule="evenodd" d="M12.5 15a.5.5 0 0 1-.5-.5v-13a.5.5 0 0 1 1 0v13a.5.5 0 0 1-.5.5ZM10 8a.5.5 0 0 1-.5.5H3.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L3.707 7.5H9.5a.5.5 0 0 1 .5.5Z" />
-                    </svg>
-                  </span>
-                  <span className='ml-2'>
-                    CLICK HERE TO SCAN AND PAY.
-                  </span>
-                </b>
-              </h6>
+              <h1 className={`${style.h11}`}><i class="fa-solid fa-qrcode" onClick={handleClick}></i></h1>
+              <h6>(Click me to Scan/Pay)</h6>
             </div>
-
-
           </div>
-          <div>
-
-            {modalVisible && (
-              <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header">
-
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class={` modal-body w-25`}>
-                      <img src={planqrcode} alt="" style={{ width: "29rem", height: "37rem" }} />
-                    </div>
-
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          {modalVisible && (
+            <ImageModal
+              imageSrc={arkonet} // Replace 'arkonet' with the appropriate image source
+              imageAlt="Arkonet"
+              closeModal={closeModal}
+            />
+          )}
           <p className={`${style.pline}`} ></p>
 
           <div className={`${style.mainneck}`}>
@@ -138,32 +284,28 @@ const Subscription = () => {
             <p className={`${style.para2}`}>Make payment using ARKONET QR code or using UPI ID or NEFT/RTGS/IMPS payment to Bank Account, upload payment acknowledgement receipt upon successful transaction. once you submit payment  acknowledgement receipt , it may take 48 hours to reflect payment details in TAXKO system.</p>
           </div>
 
+          <div className={`${style.message}`} >
+            <h6 className={`${style.h62}`}>Selected Pack</h6>
+            <p className={`${style.para2}`}>{`${subs_pack} Clients`}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{`Amount :`}&nbsp;&#8377;{`${subs_amount}`}/-</p>
+          </div>
+
           <div className={`${style.attatchment} mb-4`}>
             <di className={`${style.leftitle}`}>
               <h6 className={`${style.h62}`}>ATTATCHMENT</h6>
             </di>
             <div className={`${style.rightcont}`}>
               <div className={`${style.rightconttop} mt-4`}>
-                <div className='mb-4'>
-                  <h6>
-
-                    You have selected subscription plan for <b>{utotalClients}</b> clients and total cost is <b>{usubscription}</b>.
-
-                  </h6>
-                </div>
                 <label htmlFor="file">
-                  <input className={`${style.input1}`} type="file" id='file' />
+                  <input className={`${style.input1}`} ref={fileInputRef} type="file" id='file' onChange={handleFileChange}/>
                   <div className={`${style.card1}`}><p className={`${style.cardtext}`}>Upload here</p></div>
-                  <h6 className={`${style.h}`}>jpeg, pdf fromat accepted</h6>
-                </label>
-
+                  <h6 className={`${style.h}`}>{selectedFile?selectedFile.name:"jpeg, pdf fromat accepted"}</h6></label>
               </div>
 
             </div>
           </div>
 
           <div className={`${style.btn} `}>
-            <button className={`${style.button1} `} type="submit">SUMBIT</button>
+            <button className={`${style.button1} `} type="submit" onClick={submitAcknowledgement}>SUMBIT</button>
           </div>
         </div>
 

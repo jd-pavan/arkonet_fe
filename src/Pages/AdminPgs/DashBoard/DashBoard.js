@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
 import { url_ } from '../../../Config';
+import Swal from 'sweetalert2';
 
 const DashBoard = () => {
+  const subscription_status=localStorage.getItem(`subscription_status`)
 
   const Navigate = useNavigate();
   const [Totalclient, setTotalclient] = useState();
@@ -27,6 +29,14 @@ const DashBoard = () => {
 
   const user_id = window.localStorage.getItem('user_id');
   const storedToken = window.localStorage.getItem('jwtToken');
+
+
+  function handleLinkClick(){
+    if(subscription_status==="grace_period" )
+    Swal.fire({
+  icon:"info",
+  text:"Sorry this service is currently unavailable due to end of subscription"})
+  }
 
   useEffect(() => {
 
@@ -264,7 +274,7 @@ const DashBoard = () => {
                     <h6 className={`${styles.black} font-weight-bold`}>{TotalGSTClients}</h6>
                   </Link>
                 </div>
-                <Link to='clientreg' ><input type="submit" value="ADD CLIENT" className={` h6 ${styles.abtn}`} /></Link>
+                <Link to='clientreg' className={subscription_status === "on" ? `` : `${styles.btndisable}`}   onClick={handleLinkClick}><input type="submit" value="ADD CLIENT" className={` h6 ${styles.abtn}`} /></Link>
               </div>
 
             </div>

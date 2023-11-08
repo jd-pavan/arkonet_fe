@@ -12,7 +12,7 @@ const DropDown = (props) => {
 
     <div className={` form-group ${styles.selecttag} mb-4`}>
       <label htmlFor={props.id}>{props.lblname}<span className={styles.manadatory}>{props.manadatory}</span></label>
-      <select id={props.id} value={props.value} onChange={props.onChange} name={props.name} disabled={props.disabled}>
+      <select id={props.id} value={props.value} onChange={props.onChange} name={props.name}>
         <option value="">-- Select --</option>
         {
           props.value_array.map((data) => {

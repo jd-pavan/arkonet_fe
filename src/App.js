@@ -7,8 +7,9 @@ import {
 
 import Adminhome from './Pages/AdminPgs/Adminhome';
 import ClientPages from './Pages/ClientMobilePgs/ClientPages';
-import HomePage from './Pages/HomePgs/HomeRoute';
 import MasterAdmin from './Pages/MasterAdmin/MasterAdmin';
+import HomeRoute from './Pages/HomePgs/HomeRoute';
+import ChatBot from "./components/ChatBot/ChatBot"
 
 function App() {
 
@@ -18,16 +19,12 @@ function App() {
     <div>
       <Router>
         <Routes>
-          <Route path='/' element={<HomePage />} />
-          <Route path='/masteradmin/*' element={< MasterAdmin />} />
+          <Route path='/*' element={<HomeRoute />} />
+          <Route path='/masteradmin/*' element={<MasterAdmin />} />
           <Route path='/admin/*' element={<Adminhome />} />
           <Route path='/client/*' element={<ClientPages />} />
         </Routes>
       </Router>
-
-      {/* <div>
-        <img src={whatsapp} alt="" />
-      </div> */}
 
     </div>
 

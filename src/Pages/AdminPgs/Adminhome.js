@@ -37,6 +37,7 @@ import HelpClientMailView from './HelpClientMailView/HelpClientMailView';
 import KYCFile from './KYCFile/KYCFile';
 import DOCsFile from './DOCsFile/DOCsFile';
 import ClientList from './ClientList/ClientList'
+import  ChatBot from "../../components/ChatBot/ChatBot"
 
 const Adminhome = () => {
 
@@ -132,8 +133,12 @@ const Adminhome = () => {
               <Route exact path="UserSubscriptionPage" element={<Protected Cmp={UserSubscriptionPage} />} />
               <Route exact path="UserSubscriptionPage/subscriptionplan" element={<Protected Cmp={SubscriptionPlan} />} />
               <Route exact path="UserSubscriptionPage/subscriptionplan/subcription" element={<Protected Cmp={Subscription} />} />
+
+              <Route path="/refferal/user/:referralParam" element={<Registration />} />
+
             </Routes>
 
+            <ChatBot />
 
 
           </div>

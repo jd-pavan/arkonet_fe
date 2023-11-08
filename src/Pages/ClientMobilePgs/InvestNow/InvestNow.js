@@ -17,6 +17,11 @@ import { url_ } from "../../../Config";
 
 
 function InvestNow() {
+
+  const it_subs_status=localStorage.getItem("it_subs_status");
+
+  const repeatRequestDuration=15;
+
   const Invest_Now=[{
     img_src:FD,
     img_alt:"fixed_deposit_img",
@@ -114,26 +119,92 @@ function InvestNow() {
 
   useEffect(() => {
     getITCAInfo();
+    
   }, []);
 
-  function handleCardClick(e)
+
+
+
+async function checkCanRequest(category){
+
+  const todayDate = new Date();
+  const currentDate = new Date(todayDate.getFullYear(),todayDate.getMonth(),todayDate.getDate()); 
+
+  let cansend=true;
+  let futureDate=""
+
+  var myHeaders = new Headers();
+  myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+  var requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+  
+    const response=await fetch(`${url_}/investnow/findDate?clientId=${client_id_it}&category=${category}`,requestOptions);
+    const result = await response.text();
+
+    if (response.status === 200){
+      const targetDate = new Date(result.split("T")[0]); //Set Date to March 31
+      futureDate = new Date(targetDate);
+      futureDate.setDate(targetDate.getDate() + repeatRequestDuration);
+      //console.log(targetDate,futureDate)
+      const dayDifference =
+      Math.floor(currentDate.getTime()-targetDate.getTime() ) / (1000 * 3600 * 24);
+        
+      if (dayDifference <= repeatRequestDuration && dayDifference >= 0){
+        cansend=false;
+      }
+    }
+    return {cansend,futureDate};
+    
+
+}
+
+  
+
+function numberToMonth(number) {
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  if (number >= 1 && number <= 12) {
+    return months[number - 1];
+  } else {
+    return "Invalid month number";
+  }
+}
+
+  async function handleCardClick(e)
   {
-    if(!user_id_it){
-      swal.fire("Sorry!", `You are not registereg under Income Tax`, "error");
+
+    if(it_subs_status==="grace_period" || it_subs_status==="off")
+    {
+      swal.fire({
+        icon:"info",
+        text:"This service is currently not available, to access this service kindly contact your Tax Professional to resume your services."
+      })
     }
     else{
+    const category = `${e.currentTarget.id}`;
+    if (!user_id_it) {
+      swal.fire("Sorry!", `You are not registereg under Income Tax`, "error");
+    } else {
 
-    const category=`${e.currentTarget.id}`;
-    //console.log(e.currentTarget.id)
-    const subject=`Client Interest in ${e.currentTarget.id}`;
+      const {cansend,futureDate}=await checkCanRequest(category);
 
 
-    const message=`Dear ${investmentMail.username},
+      if (cansend) {
+        const subject = `Client Interest in ${category}`;
+
+        const message = `Dear ${investmentMail.username},
   Greeting from TAXKO!
 
   I hope this message finds you well. 
   
-  Our client ${localStorage.getItem("name")}, is eager to explore ${e.currentTarget.id} investment. 
+  Our client ${localStorage.getItem("name")}, is eager to explore ${category} investment. 
   We trust your expertise and kindly request your assistance in guiding them through this process.
                     
   Best regards,
@@ -141,16 +212,32 @@ function InvestNow() {
   ${localStorage.getItem("name")},
   Contact no : ${localStorage.getItem("mobile")}`;
 
-  //setInvestmentMail({...investmentMail,subject:subject,msg:message});
-    //console.log(subject);
-    //console.log(message,investmentMail.userid);
-    sendEmail(client_id_it,user_id_it,subject,message,category);
+
+        sendEmail(client_id_it,user_id_it,subject,message,category);
+      } else {
+        swal.fire({
+          icon: "info",
+         
+          text: `You have already registered a request under ${category} in last ${repeatRequestDuration} days.
+                  Kindly wait till your Tax Consultant contacts you or try again after ${futureDate.getDate()} ${numberToMonth(futureDate.getMonth()+1)}`,
+        });
+        
+      }
     }
+  }
   }
 
   async function sendEmail(clientid,userid,subject,body,category)
   {
-    
+   
+    swal.fire({
+      title: 'Sending Email',
+      text: 'Please wait...',
+      showConfirmButton: false,
+      onBeforeOpen: () => {
+        swal.showLoading();
+      },
+    });
 
 var myHeaders = new Headers();
 myHeaders.append("Content-Type", "text/plain");
@@ -166,7 +253,7 @@ var requestOptions = {
 try{const response=await fetch(`${url_}/sendemailclient?clientid=${clientid}&userid=${userid}&subject=${subject}&category=${category}`, requestOptions)
 const result = await response.text(); 
 if (response.status === 200) {
-  
+  swal.close();
   swal.fire({
     position: 'center',
     icon: 'success',
@@ -174,14 +261,18 @@ if (response.status === 200) {
     text:"Your Financial Advisor will contact you soon",
     showConfirmButton: false,
     timer: 5000
-  })
+  }); 
+  
 } else {  
+  swal.close();
   swal.fire("Failed!", `${result}`, "error");
 }}catch(error){
+  swal.close();
   swal.fire("Failed!", `${error}`, "error");
 }
 
   }
+
   
   return (
     <div className={`${style.row}`}>

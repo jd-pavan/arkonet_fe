@@ -8,7 +8,8 @@ function ClientHelp() {
 
   const storedToken = window.localStorage.getItem("jwtToken");
 
-  
+  const gst_subs_status=localStorage.getItem("gst_subs_status");
+  const it_subs_status=localStorage.getItem("it_subs_status");
 
   const [formdata, setFormdata] = useState({
     query_nature:"",
@@ -189,11 +190,18 @@ switch(formdata.query_nature)
 {
   
   case "GST":
+   
     if(helpMail.gstusername!==""&&helpMail.gstuserid!==""){
-      // console.log(helpMail.gstuserid)
-      //console.log(subject);
-      // console.log(message);
+      if(gst_subs_status==="grace_period" || gst_subs_status==="off")
+      {
+        swal.fire({
+          icon:"info",
+          text:"This service is currently not available, to access this service kindly contact your Tax Professional to resume your services."
+        })
+      }
+      else{
       sendEmail("1",helpMail.gstuserid,subject,message,formdata.query_nature);
+      }
     }
     else{
       swal.fire("Sorry!", "You are not registered under GST", "error");
@@ -202,10 +210,16 @@ switch(formdata.query_nature)
   default:
     // console.log(helpMail.itusername)
     if(helpMail.itusername!==""&&helpMail.ituserid!==""){
-      // console.log(helpMail.ituserid)
-      // console.log(subject);
-      // console.log(message);
+      if(it_subs_status==="grace_period" || it_subs_status==="off")
+      {
+        swal.fire({
+          icon:"info",
+          text:"This service is currently not available, to access this service kindly contact your Tax Professional to resume your services."
+        })
+      }
+      else{
       sendEmail("1",helpMail.ituserid,subject,message,formdata.query_nature);
+      }
     }
     else{
       swal.fire("Sorry!", "You are not registered under IT", "error");
@@ -224,6 +238,15 @@ switch(formdata.query_nature)
 
   async function sendEmail(clientid,userid,subject,body,category)
   {
+
+    swal.fire({
+      title: 'Sending Email',
+      text: 'Please wait...',
+      showConfirmButton: false,
+      onBeforeOpen: () => {
+        swal.showLoading();
+      },
+    });
     //console.log(`${url_}/sendemailclient?clientid=${clientid}&userid=${userid}&subject=${subject}&body=${body}`)
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "text/plain");
@@ -241,7 +264,7 @@ var requestOptions = {
 try{const response=await fetch(`${url_}/sendemailclient/help?clientid=${clientid}&userid=${userid}&subject=${subject}&category=${category}`, requestOptions)
 const result = await response.text(); 
 if (response.status === 200) {
-  
+  swal.close();
   swal.fire({
     position: 'center',
     icon: 'success',
@@ -251,8 +274,10 @@ if (response.status === 200) {
     timer: 5000
   })
 } else {  
+  swal.close();
   swal.fire("Failed!", `${result}`, "error");
 }}catch(error){
+  swal.close();
   swal.fire("Failed!", `${error}`, "error");
 }
 

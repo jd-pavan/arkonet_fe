@@ -3,7 +3,9 @@ import { useRef, useState } from "react";
 
 import HomePage from "./HomePage/HomePage"
 import SubscriptionPlan from "../AdminPgs/SubscriptionPlan/SubscriptionPlan";
+import AboutUs from "./AboutUs/AboutUs";
 import ContactUs from "./ContactUs/ContactUs";
+import OurTeam from "./OurTeam/OurTeam";
 import Konwledge from "./Knowledge/Knowledge";
 
 import style from "./HomeRoute.module.css";
@@ -15,6 +17,8 @@ import Registration from "../AdminPgs/Registration/Registration";
 import InfoCard from "./InfoCard/InfoCard";
 import DemoVideo from "./DemoVideo/DemoVideo";
 import Presentation from "./Presentation/Presentation";
+import  ChatBot from "../../components/ChatBot/ChatBot"
+
 
 
 function HomeRoute() {
@@ -27,6 +31,8 @@ function HomeRoute() {
   const sliderRef = useRef(null);
   const videoRef = useRef(null);
   const presentationRef = useRef(null);
+  const aboutusRef = useRef(null);
+  const ourTeamRef = useRef(null);
 
   const [isPanelActive, setIsPanelActive] = useState(false);
 
@@ -53,6 +59,12 @@ function HomeRoute() {
       case "abouttaxco":
         presentationRef.current?.scrollIntoView({ behavior: "smooth" });
         break;
+      case "aboutus":
+        aboutusRef.current?.scrollIntoView({ behavior: "smooth" });
+        break;
+      case "ourteam":
+        ourTeamRef.current?.scrollIntoView({ behavior: "smooth" });
+        break;
       case "slider":
         console.log(slideInfo);
         sliderRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -65,13 +77,23 @@ function HomeRoute() {
 
     // ref.current?.scrollIntoView({behavior: 'smooth'});
   };
-
+function openBookDemoForm(){
+  window.open("https://share.hsforms.com/1Q_HmHyIsQWeBF1G1KQ3kNQqcgs4", '_blank');
+}
   function handlePanel() {
     setIsPanelActive(!isPanelActive);
   }
+
+  
   return (
     <>
       <div className={` ${style.mainrow}`}>
+        <div>
+          <p className={style.book_now} onClick={openBookDemoForm}>
+            Book Demo
+          </p>
+        </div>
+
         <div className={`${style.header}`}>
           <div className={`${style.leftyear}`}>
             <img src={taxko} alt="" />
@@ -142,21 +164,35 @@ function HomeRoute() {
         </div>
 
         <div className={`${style.neckbar}`}>
-          <div className={`${style.neckancher}`}>
+          <div className={`${style.dropdown}`}>
             <Link
-              onClick={(e) => {
-                handleClick("home");
-              }}
+            className={`${style.dropbtn} ${style.neckancher}`}
+             onClick={(e) => {
+              e.preventDefault();
+              navigate("");
+            }}
               id="home"
             >
               HOME
             </Link>
+            <div className={`${style.dropdowncontent} ${style.dropdown1}`}>
+            <Link
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("aboutus");
+              }}
+              id="aboutus"
+            >
+              ABOUT US
+            </Link>
+            </div>
           </div>
           <div>|</div>
           <div className={`${style.neckancher}`}>
             <Link
               onClick={(e) => {
-                handleClick("feature");
+                e.preventDefault();
+                navigate("feature");
               }}
               id="feature"
             >
@@ -167,67 +203,75 @@ function HomeRoute() {
           <div className={`${style.neckancher}`}>
             <Link
               onClick={(e) => {
-                handleClick("subscribe");
+                e.preventDefault();
+                navigate("subscriptionplan");
               }}
-              id="subscribe"
+              id="subscriptionplan"
             >
               SUBSCRIPTION PLAN
             </Link>
           </div>
           <div>|</div>
           <div className={`${style.dropdown}`}>
-            <a href="##" className={`${style.dropbtn} ${style.neckancher}`}>
+            <Link className={`${style.dropbtn} ${style.neckancher}`}>
               PRODUCTS
-            </a>
+            </Link>
             <div className={`${style.dropdowncontent} ${style.dropdown1}`}>
-              <Link onClick={(e) => {
-                    handleClick("abouttaxco");
-                  }}
-                  id="abouttaxco"
-                
+              <Link
+                onClick={(e) => {
+                e.preventDefault();
+                navigate("abouttaxko");
+                }}
+                id="abouttaxko"
                 className={`${style.dropbtn1} ${style.neckancher} ${style.acherline}`}
               >
                 TAXKO
               </Link>
-              <a
-                href="##"
-                className={`${style.dropbtn1} ${style.neckancher} ${style.acherline}`}
+              <Link
+                id="taxkoenterprise"
+                className={`${style.dropbtn1} ${style.neckancher} ${style.acherline} ${style.tooltip}`}
               >
                 TAXKO ENTERPRISE
-              </a>
-              <Link className={`${style.ddancher}`}>REVIEWS</Link>
+                <div className={`${style.tooltiptext}`}>Comming Soon..</div>
+              </Link>
               
-              
-              {/* <div className={`${style.dropdowncontent2}`}></div> */}
+              <Link className={`${style.ddancher} ${style.tooltip}`}>REVIEWS
+              <div className={`${style.tooltiptext}`}>Comming Soon..</div>
+              </Link>
             </div>
           </div>
           <div>|</div>
-          <div className={`${style.neckancher}`}>
+          {/* <div className={`${style.neckancher}`}>
             <Link
               onClick={(e) => {
-                handleClick("demovideo");
+                e.preventDefault();
+                navigate("aboutus");
               }}
-              id="demovideo"
+              id="aboutus"
             >
-              DEMO
+              ABOUT US
             </Link>
           </div>
-          <div>|</div>
+          <div>|</div> */}
           <div className={`${style.neckancher}`}>
             <Link
               onClick={(e) => {
-                handleClick("contact");
+                e.preventDefault();
+                navigate("contactus");
               }}
-              id="contact"
+              id="contactus"
             >
               CONTACT US
             </Link>
           </div>
         </div>
+        {/* </div> */}
 
-        {!isPanelActive && (
+        {/* {!isPanelActive && (
           <>
-            <HomePage />
+            <div ref={homeRef}>
+              <HomePage />
+            </div>
             <br />
             <div ref={featureRef}>
               <Konwledge handleScroll={handleClick} />
@@ -245,10 +289,17 @@ function HomeRoute() {
               <Presentation />
             </div>
             <br />
+            <div ref={aboutusRef}>
+              <AboutUs handleScroll={handleClick} />
+            </div>
+            <br />
             <div ref={contactRef}>
               <ContactUs />
             </div>
             <br />
+            {<div ref={ourTeamRef} className={style.ourteam}>
+            <OurTeam />
+            </div> }
           </>
         )}
         {isPanelActive && slideInformation && (
@@ -259,11 +310,24 @@ function HomeRoute() {
               info={slideInformation}
             />
           </div>
-        )}
+        )} */}
+
+       
 
         <Routes>
           <Route path="admin/User_registration" element={<Registration />} />
+          <Route path="" element={<HomePage />} />
+          <Route path="/feature" element={<Konwledge />} />
+          <Route path="/subscriptionplan" element={<SubscriptionPlan />} />
+          {/* <Route path="feature/subscriptionplan" element={<SubscriptionPlan />} /> */}
+          <Route path="/abouttaxko" element={<DemoVideo />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/contactus" element={<ContactUs />} />
         </Routes>
+
+        <ChatBot />
+
+       
 
         <div className={`${style.copyright}`}>
           <div className={`${style.dev}`}>

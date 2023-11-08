@@ -27,7 +27,10 @@
   font-weight: bold;
   font-size: 14px;
 }
-
+.btndisable{
+  pointer-events: none;
+  cursor: not-allowed; 
+}
 
 .green {
 

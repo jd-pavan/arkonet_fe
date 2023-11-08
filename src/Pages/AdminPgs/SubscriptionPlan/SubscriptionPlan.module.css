@@ -2,6 +2,19 @@
   color: #ffd401;
 }
 
+.seperator {
+	border-bottom:1px solid #a2a2a2;
+	width: 45px;
+	display: inline-block;
+	margin: 20px;
+}
+
+.box_shadow{
+  margin: 2rem 0rem 2rem 0rem !important;
+  border-radius: 6px;
+  padding: 20px 60px 30px 40px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
 
 .sub_paybtn button {
   height: 2rem;

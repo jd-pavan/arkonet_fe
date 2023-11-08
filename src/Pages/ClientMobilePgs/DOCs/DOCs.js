@@ -9,6 +9,10 @@ function DOCs() {
   const Navigate=useNavigate()
 
   const storedToken = window.localStorage.getItem("jwtToken");
+
+  const gst_subs_status=localStorage.getItem("gst_subs_status");
+  const it_subs_status=localStorage.getItem("it_subs_status");
+
   const client_pan=localStorage.getItem("pan");
 
   const maxSize=10;
@@ -24,37 +28,68 @@ function DOCs() {
   }]);
 
   async function deleteFile(e){
+
+
+    if((it_subs_status==="grace_period" || it_subs_status==="off")
+    && (gst_subs_status==="grace_period" || gst_subs_status==="off")
+    ){
+      swal.fire({
+        icon:"info",
+        text:"This is view only, to access this service kindly contact your Tax Professional to resume your services."
+      })
+    }
+    else{
+    
     const updatedItems = [...DOCFile];
     const index = updatedItems.findIndex((item) => item.id === e.target.id);
     
-    if (index !== -1) {
-    var myHeaders = new Headers();
-myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
-var requestOptions = {
-  method: 'PUT',
-  headers: myHeaders,
-  redirect: 'follow'
-};
 
-fetch(`${url_}/client/deletedocumnet?pan=${client_pan}`, requestOptions)
-  .then(response => {if(response.status===200){
+
     swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: `${DOCFile[index].name} Deleted sucessfully`,
-      showConfirmButton: false,
-      timer: 2000
+      title: 'Are you sure?',
+      text: `${DOCFile[index].name} will be Deleted .!!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        
+        if (index !== -1) {
+          var myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
+      
+      var requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        redirect: 'follow'
+      };
+      
+      fetch(`${url_}/client/deletedocumnet?pan=${client_pan}`, requestOptions)
+        .then(response => {if(response.status===200){
+          swal.fire({
+            position: 'center',
+            icon: 'success',
+            title: `${DOCFile[index].name} Deleted sucessfully`,
+            showConfirmButton: false,
+            timer: 2000
+          })
+        }
+          response.text()})
+        .then(result => {console.log(result)
+        const updatedItems = [...DOCFile];    
+              updatedItems[index].isExist=false;
+              setDOCFile(updatedItems)  }
+        )
+        .catch(error => console.log('error', error));}
+      
+
+      }
     })
   }
-    response.text()})
-  .then(result => {console.log(result)
-  const updatedItems = [...DOCFile];    
-        updatedItems[index].isExist=false;
-        setDOCFile(updatedItems)  }
-  )
-  .catch(error => console.log('error', error));}
-
+    
   }
   
   async function uploadFile(e){ 
@@ -116,6 +151,20 @@ const fetchUrl=`${url_}/client/uploaddocument`;
   
   const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
   const openFileAndDownload = async () => {
+
+
+    if((it_subs_status==="grace_period" || it_subs_status==="off")
+    && (gst_subs_status==="grace_period" || gst_subs_status==="off")
+    ){
+      swal.fire({
+        icon:"info",
+        text:"This is view only, to access this service kindly contact your Tax Professional to resume your services."
+      })
+    }
+
+    else{
+
+    
     try {
       var myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${storedToken}`);
@@ -154,6 +203,8 @@ const fetchUrl=`${url_}/client/uploaddocument`;
         error
       );
     }
+
+  }
   };
 
 
@@ -339,11 +390,23 @@ if(file){
   };
 
   function handleSelectFile(e){
+
+    if((it_subs_status==="grace_period" || it_subs_status==="off")
+    && (gst_subs_status==="grace_period" || gst_subs_status==="off")
+    ){
+      swal.fire({
+        icon:"info",
+        text:"This is view only, to access this service kindly contact your Tax Professional to resume your services."
+      })
+    }
+    else{
+
     const fileid=e.currentTarget.id;    
     const index = DOCFile.findIndex((item) => item.id === fileid);
     if (index !== -1) {
       DOCFile[index].fileRef.current.click();
-    }    
+    }  
+  }  
       
   }
 

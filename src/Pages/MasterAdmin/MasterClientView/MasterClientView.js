@@ -52,7 +52,7 @@ const MasterClientView = () => {
     await fetch(`
     ${ccategory === "Income Tax" ? `${url_}/clients-by-categories/Income_tax,Both` :
         ccategory === "GST" ? `${url_}/clients-by-categories/GST,Both` :
-          ccategory === "AllClients" ? `${url_}/clients-by-categories/GST,Both` :
+          ccategory === "All" ? `${url_}/clients-by-categories/GST,Both` :
             null}
         
         `, requestOptions)

@@ -15,6 +15,8 @@ import RefUserview from './RefUserview/RefUserview';
 import UserSubscriptionPlan from './UserSubscriptionPlan/UserSubscriptionPlan'
 import UserData from './UserData/UserData';
 import UserList from './UsersList/UserList';
+import ManageSubscription from './ManageSubscriptionPack/ManageSubscriptionPack';
+import ChatBot from '../../components/ChatBot/ChatBot';
 
 const MasterAdmin = () => {
   // const [showIntoro, setShowIntoro] = useState(true);
@@ -61,10 +63,13 @@ const MasterAdmin = () => {
               <Route exact path='admindashboard/userlist' element={<UserList />} />
 
               <Route exact path='admindashboard/clientview' element={<MasterClientView />} />
+
+              <Route exact path='subPackDetails' element={<ManageSubscription />} />
               {/* <Route exact path='sidebar' element={<SideBar />} /> */}
 
 
             </Routes>
+
 
 
           </div>

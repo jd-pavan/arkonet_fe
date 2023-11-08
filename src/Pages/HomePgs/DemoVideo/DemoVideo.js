@@ -1,10 +1,36 @@
 import style from "./DemoVideo.module.css";
+import { useRef,useState } from "react";
+import Presentation from "../Presentation/Presentation";
 function DemoVideo() {
+
+
+  
+
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const togglePlay = () => {
+    if (videoRef.current.paused || videoRef.current.ended) {
+      videoRef.current.play();
+    } else {
+      videoRef.current.pause();
+    }
+  };
+
+  const handleVideoPlay = () => {
+    setIsPlaying(true);
+  };
+
+  const handleVideoPause = () => {
+    setIsPlaying(false);
+  };
+
+
   return (
-    <>
-      <h2 className={`${style.heading}`}>TAXKO Demo</h2>
-      <span className={`${style.seperator}`}></span>
-      <div className={style.outer}>
+    <div className={style.container}>
+      {/* <h2 className={`${style.heading}`}>TAXKO Demo</h2>
+      <span className={`${style.seperator}`}></span> */}
+      {/* <div className={style.outer}>
       <div className={style.video_wrapper}>
         <div className={style.video_container} id={style.video_container}>
           <video
@@ -12,6 +38,9 @@ function DemoVideo() {
             id="video"
             preload="metadata"
             poster="//cdn.jsdelivr.net/npm/big-buck-bunny-1080p@0.0.6/poster.jpg"
+            ref={videoRef}
+            onPlay={handleVideoPlay}
+            onPause={handleVideoPause}
           >
             <source
               src="//cdn.jsdelivr.net/npm/big-buck-bunny-1080p@0.0.6/video.mp4"
@@ -19,21 +48,15 @@ function DemoVideo() {
             />
           </video>
 
-          <div className={style.play_button_wrapper}>
-            <div
-              title="Play video"
-              className={style.play_gif}
-              id={style.circle_play_b}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-                <path d="M40 0a40 40 0 1040 40A40 40 0 0040 0zM26 61.56V18.44L64 40z" />
-              </svg>
-            </div>
-          </div>
+          
         </div>
       </div>
-      </div>
-    </>
+      </div> */}
+
+    {/* <div style={{"width":"100%","height":"fit-content"}}> */}
+      <Presentation />
+      {/* </div> */}
+    </div>
   );
 }
 export default DemoVideo;

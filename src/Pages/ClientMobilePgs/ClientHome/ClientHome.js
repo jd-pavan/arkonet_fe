@@ -8,19 +8,28 @@ import { url_ } from "../../../Config";
 import NotificationBell from "../../../components/NotificationBell/NotificationBell";
 import AdDisplay from "../../../components/AdDisplay/AdDisplay";
 import {AdDetails} from "../../../ObjData/AdDetails";
+import swal from "sweetalert2";
 
 function ClientHome() {
   const { toggleSidebar,no_of_notifications,handleNotification } = useSidebar();
-  
+  const [deletePopup,setDeletePopup]=useState(true);
   const storedToken = window.localStorage.getItem("jwtToken");
-  // const client_id=localStorage.getItem("clientId");
+  
+  const grace_period_days=30;
 
   const client_id_it=localStorage.getItem("client_id_it");//Client ID For IT 
   const client_id_gst=localStorage.getItem("client_id_gst");////Client ID For GST
   const user_id_gst=localStorage.getItem("user_id_gst");
+  const user_id_it=localStorage.getItem("user_id_it");
+
 
   const [lastFewYearsArray, setLastFewYearsArray] = useState([]);
   const [gstMonthsArray, setGstMonthsArray] = useState([]);
+
+
+
+  const [itSubStatus,setITSubStatus]=useState();
+  const [gstSubStatus,setGSTSubStatus]=useState();
  
   const Navigate=useNavigate();
 
@@ -30,6 +39,83 @@ function ClientHome() {
     handleNotification();
   }
 
+
+
+
+  
+async function checkSubscriptionStatus() {
+
+
+  var myHeaders = new Headers();
+  myHeaders.append(
+    "Authorization",
+    `Bearer ${localStorage.getItem("jwtToken")}`
+  );
+
+  var requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+
+  
+    if (user_id_it) {
+      const response = await fetch(
+        `${url_}/subscriptionpackuserdata/userid/${user_id_it}`,
+        requestOptions
+      );
+      const result = await response.json();
+      const daysDiff = (Math.floor((new Date(result.subendtdate)-new Date())/ (1000 * 60 * 60 * 24)))+1;
+      if(!result.paid && daysDiff<0 && daysDiff>(-grace_period_days)){ 
+        setITSubStatus("grace_period")  
+        localStorage.setItem("it_subs_status",'grace_period');
+      }
+      else if(result.paid && daysDiff>=0 ){
+        setITSubStatus("on")  
+        localStorage.setItem("it_subs_status",'on');
+      }  
+      else{
+        setITSubStatus("off")  
+        localStorage.setItem("it_subs_status",'off');
+      }
+    }
+
+
+    if (user_id_gst) {
+      const response = await fetch(
+        `${url_}/subscriptionpackuserdata/userid/${user_id_gst}`,
+        requestOptions
+      );
+      const result = await response.json();
+      const daysDiff = (Math.floor((new Date(result.subendtdate)-new Date())/ (1000 * 60 * 60 * 24)))+1;
+      if(!result.paid && (daysDiff<0 && daysDiff>(-grace_period_days))){
+        setGSTSubStatus("grace_period")   
+        localStorage.setItem("gst_subs_status",'grace_period');
+      }
+      else if(result.paid && daysDiff>=0){
+        setGSTSubStatus("on")   
+        localStorage.setItem("gst_subs_status",'on');
+      }  
+      else{
+        setGSTSubStatus("off")   
+        localStorage.setItem("gst_subs_status",'off');
+    }
+  }
+  
+  
+  
+
+  if(itSubStatus==="off" && gstSubStatus==="off"){
+    swal.fire({
+      icon:"info",
+      title:"Service Stopped.!",
+      text:`Kindly Contact your Tax Professional to resume your services.`
+    })
+    localStorage.clear();
+    sessionStorage.clear();
+    navigate("/client/", { replace: true });
+  }
+}
 
 
   async function getGstFilestatus() {
@@ -51,7 +137,7 @@ await fetch(`${url_}/GST_Statusfilednotfiled/${user_id_gst}/${client_id_gst}/${y
 .then(response => response.text())
 .then(result => {//console.log(result)
   GSTR1_months = JSON.parse(result);
-  console.log(GSTR1_months)  
+  //console.log(GSTR1_months)  
 }
 ).catch(error => console.log('error', error));
 
@@ -60,7 +146,7 @@ if(month<3){await fetch(`${url_}/GST_Statusfilednotfiled/${user_id_gst}/${client
 .then(response => response.text())
 .then(result => {//console.log(result)
   GSTR1_months = [...GSTR1_months,...JSON.parse(result)];  
-  console.log(GSTR1_months)
+  //console.log(GSTR1_months)
 }
 )
 .catch(error => console.log('error', error));}
@@ -69,17 +155,17 @@ if(month<3){await fetch(`${url_}/GST_Statusfilednotfiled/${user_id_gst}/${client
 
 
 let GSTR3B_months=[];
-await fetch(`${url_}/GST_Statusfilednotfiled/${user_id_gst}/${client_id_gst}/${year}/GSTR3B`, requestOptions)
+await fetch(`${url_}/GST_Statusfilednotfiled/${user_id_gst}/${client_id_gst}/${year}/GSTR-3B`, requestOptions)
 .then(response => response.text())
 .then(result => {//console.log(result)
   GSTR3B_months = JSON.parse(result);  
-  console.log(GSTR1_months)
+  //console.log(GSTR1_months)
 }
 ).catch(error => console.log('error', error));
 
 
 
-if(month<3){await fetch(`${url_}/GST_Statusfilednotfiled/${user_id_gst}/${client_id_gst}/${year-1}/GSTR3B`, requestOptions)
+if(month<3){await fetch(`${url_}/GST_Statusfilednotfiled/${user_id_gst}/${client_id_gst}/${year-1}/GSTR-3B`, requestOptions)
 .then(response => response.text())
 .then(result => {//console.log(result)
   GSTR3B_months = [...GSTR3B_months,...JSON.parse(result)];  
@@ -167,28 +253,39 @@ if(month<3){await fetch(`${url_}/GST_Statusfilednotfiled/${user_id_gst}/${client
 
   
 function deletFilePop(){// Get the current date
-  const currentDate = new Date();
-  
-  // Set the target date to March 16th
-  const targetDate = new Date(currentDate.getFullYear(), 2, 16);
-  
-  // Calculate the time difference in milliseconds
-  const timeDifference = targetDate - currentDate;
+
+  const todayDate = new Date();
+  const currentDate = new Date(todayDate.getFullYear(),todayDate.getMonth(),todayDate.getDate()); 
+  const targetDate = new Date(todayDate.getFullYear(), 2, 31);//Set Date to March 31
+
+  const dayDifference =(targetDate.getTime() - currentDate.getTime())/ (1000 * 3600 * 24);
   
   // Check if it's 15 days or more before March 31st
-  if (timeDifference >= 0) {
-      console.log("It is 15 days or more before March 31st.");
-  } else {
-      console.log("It is less than 15 days before March 31st.");
+  if (dayDifference < 15 && dayDifference >0) {
+    console.log(dayDifference)
+      if(deletePopup){         
+      swal.fire( {icon: "warning",
+      title: "Warning.!!",
+        text:`Your all data for F.Y ${todayDate.getFullYear()-5}-${((todayDate.getFullYear()-4)).toString().slice(2)} 
+        will be deleted ${dayDifference===0?"Today":dayDifference===1?"Tommorow":"on 31st March"}. Take backup if required.`});
+      setDeletePopup(false);
+      }
+    }  
   }
-  }
-  useEffect(() => {
-    getITandGstData();
-  }, [toggleSidebar]);
 
   useEffect(()=>{
-    // deletFilePop();
+    deletFilePop();
   },[])
+  useEffect(()=>{
+    checkSubscriptionStatus();    
+  },[itSubStatus,gstSubStatus])
+
+  useEffect(() => {
+    getITandGstData();
+   
+  }, [toggleSidebar]);
+
+  
 
   return (
     <div className={`${style.row}`}>
@@ -236,6 +333,25 @@ function deletFilePop(){// Get the current date
               <p>&bull;</p>
               <h5 className={`${style.h51}`}> Income Tax</h5>
             </div>
+
+            {itSubStatus==="off"?
+            (
+              <div className={`${style.taxlist}`} >                
+
+            <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title">Sorry..!!</h5>
+                      <p className="card-text">
+                      This data is not available. <br/>
+                      Kindly contact your Tax Consultant</p>
+                      
+                    </div>
+                  </div>
+                  </div>)
+                  
+                  :
+
+            <>
             {lastFewYearsArray.map((item, index) => (
               <div className={`${style.taxlist}`} key={index}>                
                 <p className={`col-7 ${style.title}`}>
@@ -253,6 +369,8 @@ function deletFilePop(){// Get the current date
                 </p>              
               </div>
             ))}
+            </>
+            }
           </div>}
           {/* Income tax ends */}
 
@@ -263,11 +381,28 @@ function deletFilePop(){// Get the current date
           {client_id_gst &&<div className={`${style.gstdata}`}>
             <div className={`${style.gsthead}`}>
               <p>&bull;</p>
-              <h5 className={`${style.h51}`}  onClick={(e)=>{e.preventDefault();
+              <h5 className={gstSubStatus==="off"?`${style.disabled_link}`:`${style.h51}`}  onClick={(e)=>{e.preventDefault();
                     Navigate("gstdashboard");
               }}> GST</h5>
             </div>
             {/* <div className={`${style.gstist}`}> */}
+            {gstSubStatus==="off"?
+            (
+              <div className={`${style.taxlist}`} >                
+
+            <div className="card">
+                    <div className="card-body">
+                      <h5 className="card-title">Sorry..!!</h5>
+                      <p className="card-text">
+                      This data is not available. <br/>
+                      Kindly contact your Tax Consultant</p>
+                      
+                    </div>
+                  </div>
+                  </div>)
+          :
+          
+            <>
             {gstMonthsArray.map((item, index) => (
               <div className={`${style.gstist}`} key={index}>
                 <p className={`col-7 ${style.title}`}>
@@ -285,6 +420,8 @@ function deletFilePop(){// Get the current date
                 </p>
               </div>
             ))}
+            </>
+            }
           </div>}
           {/* GST ends */}
         </div>

@@ -177,8 +177,7 @@ ul {
   border-radius: 10px;
   box-shadow: 0 6px 3px 0 rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.19);
 }
-
-.cardp {
+.cardp{
   display: flex;
   justify-content: center;
   cursor: pointer;
@@ -187,8 +186,7 @@ ul {
 
 .card3:hover,
 .card3:active {
-  background-color: rgba(255, 213, 0, 0.814);
-  /* Change background color on hover */
+  background-color:rgba(255, 213, 0, 0.814); /* Change background color on hover */
 }
 
 .title {
@@ -202,30 +200,24 @@ ul {
   font-size: 110%;
 }
 
-.subs_end {
+.subs_end{
   color: red;
   animation: blink 2s linear infinite;
 }
-
-.subs_about_end {
+.subs_about_end{
   color: rgb(232, 129, 50);
   animation: blink 2s linear infinite;
 }
+.btndisabled{
+  pointer-events: none;
+  cursor: none;
+}
 
 
-
-@keyframes blink {
-  0% {
-    opacity: 0;
-  }
-
-  50% {
-    opacity: .5;
-  }
-
-  100% {
-    opacity: 1;
-  }
+@keyframes blink{
+0%{opacity: 0;}
+50%{opacity: .5;}
+100%{opacity: 1;}
 }
 
 .value {
@@ -338,7 +330,6 @@ ul {
 
 
 @media only screen and (max-width: 600px) {
-
   /* Adjust styles for smaller screens */
   .sidebar {
     width: 100%;
@@ -373,35 +364,23 @@ ul {
     font-size: 100%;
   }
 
-
+ 
 }
 
 
 @media only screen and (max-width: 1024px) {
-
-  .cardp,
-  .p1,
-  .title,
-  .formtitle,
-  .bottombtn {
+  .cardp,.p1,.title,.formtitle,.bottombtn{
     font-size: 1rem;
   }
-
+  
 }
-
 @media only screen and (max-width: 768px) {
-
-  .cardp,
-  .p1,
-  .title,
-  .formtitle,
-  .bottombtn {
+  .cardp,.p1,.title,.formtitle,.bottombtn{
     font-size: 0.85rem;
   }
 }
 
 @media only screen and (min-height: 1000px) {
-
   /* Adjust styles for taller screens */
   .card2,
   .card3 {
@@ -418,3 +397,7 @@ ul {
     font-size: 150%;
   }
 }
+
+
+
+

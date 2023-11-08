@@ -6,6 +6,7 @@ import Cmpylogo from '../../../Images/Arkonet - Logo_page-0001.jpg'
 import { Link } from 'react-router-dom';
 
 const LeftSide = ({ loggedIn, setLoggedIn }) => {
+  const subscription_status=localStorage.getItem(`subscription_status`)
 
   useEffect(() => {
     // setIsLoggedIn(loggedIn);
@@ -36,6 +37,8 @@ const LeftSide = ({ loggedIn, setLoggedIn }) => {
           </Link>
           {loggedIn ? (
             <>
+            {subscription_status==="off" || subscription_status==="not_subscribed"?'':
+              <>
               <Link to="dashboard" onClick={() => handleLinkClick('dashboard')}>
                 <h6 className={activeLink === 'dashboard' ? 'font-weight-bold' : ''}>Dashboard</h6>
               </Link>
@@ -65,7 +68,8 @@ const LeftSide = ({ loggedIn, setLoggedIn }) => {
 
               <Link to="changepass" onClick={() => handleLinkClick('changepass')}>
                 <h6 className={activeLink === 'changepass' ? 'font-weight-bold' : ''}>Change Password</h6>
-              </Link>
+              </Link>            </>}
+
 
               <Link to="" className={styles.logout_text} onClick={handleLogout}><h6>Logout</h6></Link>
               <Link to="help" onClick={() => handleLinkClick('help')}>

@@ -72,7 +72,7 @@ const UserData = () => {
             state: res.state,
             whatsApp_Link: res.whatsApp_Link,
             investNow_Email: res.investNow_Email,
-            userid: `${user_id}`,
+            userid: res.regId,
           })
 
         })
@@ -293,12 +293,13 @@ const UserData = () => {
     window.history.back(); // This will navigate to the previous page in the browser's history
   }
 
-  const GOTOUserSubPlan = () => {
+  const GOTOUserSubPlan = (id, pan) => {
     Navigate('userSubPlan', {
-      // state: {
-      //   UserId: userid,
+      state: {
+        USERSUBID: id,
+        USERSUBPAN: pan
 
-      // },
+      },
     });
 
   }
@@ -354,7 +355,7 @@ const UserData = () => {
               </div>
             </div>
           </div>
-          <button className='mt-2' onClick={() => GOTOUserSubPlan()} >SUBSCRIPTION</button>
+          <button className='mt-2' onClick={() => GOTOUserSubPlan(user_id, values.pan)} >SUBSCRIPTION</button>
         </div>
         <div className='ml-5'>
           <div className={`${styles.qrupload} mb-4 `}>
