@@ -46,7 +46,9 @@ const MasterAdmin = () => {
 
               <Route exact path='admindashboard' element={<AdminDetails />} />
               <Route exact path='searchadmin' element={<SearchAdmin />} />
-              <Route exact path='/searchadmin/refUser' element={<RefUserview />} />
+              <Route exact path='searchadmin/Userdata' element={<UserData />} />
+              <Route exact path='searchadmin/refUser' element={<RefUserview />} />
+              <Route exact path='searchadmin/Userdata/userSubPlan' element={<UserSubscriptionPlan />} />
               <Route exact path='clientview' element={<MasterClientView />} />
 
               <Route exact path='admindashboard/searchadmin' element={<SearchAdmin />} />
@@ -55,6 +57,8 @@ const MasterAdmin = () => {
               <Route exact path='admindashboard/searchadmin/refUser' element={<RefUserview />} />
 
               <Route exact path='admindashboard/userlist' element={<UserList />} />
+              <Route exact path='admindashboard/userlist/Userdata' element={<UserData />} />
+              <Route exact path='admindashboard/userlist/Userdata/userSubPlan' element={<UserSubscriptionPlan />} />
 
               <Route exact path='admindashboard/clientview' element={<MasterClientView />} />
 

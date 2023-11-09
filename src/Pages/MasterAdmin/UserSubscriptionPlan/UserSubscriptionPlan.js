@@ -94,8 +94,10 @@ const UserSubscriptionPage = () => {
 
 
   function copyReferralLink() {
-    const refferalLink = `http://localhost:3000/admin/refferal/user/${parseInt(new Date().getTime() / 1000)}_${USERSUBSCRIPTIONDATA.USERPAN}`;
-    navigator.clipboard.writeText(refferalLink);
+    const refferalLink = `http://3.109.212.58:3000/admin/refferal/user/${parseInt(new Date().getTime() / 1000)}_${USERSUBSCRIPTIONDATA.USERPAN}`;
+    const copy = require('clipboard-copy')
+    copy(refferalLink);
+
     swal.fire('Refferal link has been copied to clipboard');
   }
 
@@ -365,13 +367,14 @@ const UserSubscriptionPage = () => {
       console.log(result);
       if (response.status === 200) {
         await swal.fire("Success.", `${result}`, "success")
-        console.log(result);
+        // console.log(result);
+        window.location.reload();
 
 
       } else {
         swal.fire("Failed.", "Failed to approved user. Please try again!!", "error")
-        console.log(result);
-
+        // console.log(result);
+        window.location.reload();
       }
     } catch (error) {
       console.log('error', error);
