@@ -19,16 +19,10 @@ import ManageSubscription from './ManageSubscriptionPack/ManageSubscriptionPack'
 import ChatBot from '../../components/ChatBot/ChatBot';
 
 const MasterAdmin = () => {
-  // const [showIntoro, setShowIntoro] = useState(true);
-  // // const [loggedIn, setLoggedIn] = useState(false);
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setShowIntoro(false);
-  //   }, 3000);
-  //   return () => clearTimeout(timer);
-  // }, []);
+
 
   const [loggedIn, setLoggedIn] = useState(localStorage.getItem('LogedIn'));
+  //  console.log('admin', loggedIn);
 
 
   return (
@@ -47,7 +41,7 @@ const MasterAdmin = () => {
 
             <Routes>
 
-              <Route exact path='' element={<MasterLogIn />} />
+              <Route exact path='' element={<MasterLogIn setLoggedIn={setLoggedIn} />} />
               {/* <Route exact path='intropage' element={<IntroPage />} /> */}
 
               <Route exact path='admindashboard' element={<AdminDetails />} />

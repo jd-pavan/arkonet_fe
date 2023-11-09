@@ -94,6 +94,10 @@ const Registration = () => {
         }
         break;
 
+      case "membership_No":
+        setFormdata({ ...formdata, [e.target.name]: value.replace(/\D/g, "") });
+        e.target.value = value.replace(/\D/g, "");
+        break;
 
       case "email":
         setFormdata({ ...formdata, [e.target.name]: e.target.value });
@@ -231,7 +235,7 @@ const Registration = () => {
           swal.fire("Failed!", `${result.message}`, "error");
         } else if (result.status === "UNAUTHORIZED") {
           swal.fire("Failed!", `${result.message}`, "error");
-        } else {
+        } else if (response.status === 200) {
           setFormdata({
             name: "",
             datebirth: "",
