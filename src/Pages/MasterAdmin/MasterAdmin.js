@@ -16,7 +16,8 @@ import UserSubscriptionPlan from './UserSubscriptionPlan/UserSubscriptionPlan'
 import UserData from './UserData/UserData';
 import UserList from './UsersList/UserList';
 import ManageSubscription from './ManageSubscriptionPack/ManageSubscriptionPack';
-import ChatBot from '../../components/ChatBot/ChatBot';
+// import ChatBot from '../../components/ChatBot/ChatBot';
+// import WhatsappChat from '../../components/WhatsappChat';
 
 const MasterAdmin = () => {
 
@@ -67,7 +68,7 @@ const MasterAdmin = () => {
 
 
             </Routes>
-
+            {/* <WhatsappChat/> */}
 
 
           </div>

@@ -17,7 +17,8 @@ import Registration from "../AdminPgs/Registration/Registration";
 import InfoCard from "./InfoCard/InfoCard";
 import DemoVideo from "./DemoVideo/DemoVideo";
 import Presentation from "./Presentation/Presentation";
-import  ChatBot from "../../components/ChatBot/ChatBot"
+import ChatBot from "../../components/ChatBot/ChatBot"
+import WhatsappChat from "../../components/WhatsappChat/WhatsappChat";
 
 
 
@@ -77,14 +78,14 @@ function HomeRoute() {
 
     // ref.current?.scrollIntoView({behavior: 'smooth'});
   };
-function openBookDemoForm(){
-  window.open("https://share.hsforms.com/1Q_HmHyIsQWeBF1G1KQ3kNQqcgs4", '_blank');
-}
+  function openBookDemoForm() {
+    window.open("https://share.hsforms.com/1Q_HmHyIsQWeBF1G1KQ3kNQqcgs4", '_blank');
+  }
   function handlePanel() {
     setIsPanelActive(!isPanelActive);
   }
 
-  
+
   return (
     <>
       <div className={` ${style.mainrow}`}>
@@ -166,25 +167,25 @@ function openBookDemoForm(){
         <div className={`${style.neckbar}`}>
           <div className={`${style.dropdown}`}>
             <Link
-            className={`${style.dropbtn} ${style.neckancher}`}
-             onClick={(e) => {
-              e.preventDefault();
-              navigate("");
-            }}
+              className={`${style.dropbtn} ${style.neckancher}`}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate("");
+              }}
               id="home"
             >
               HOME
             </Link>
             <div className={`${style.dropdowncontent} ${style.dropdown1}`}>
-            <Link
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("aboutus");
-              }}
-              id="aboutus"
-            >
-              ABOUT US
-            </Link>
+              <Link
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate("aboutus");
+                }}
+                id="aboutus"
+              >
+                ABOUT US
+              </Link>
             </div>
           </div>
           <div>|</div>
@@ -219,8 +220,8 @@ function openBookDemoForm(){
             <div className={`${style.dropdowncontent} ${style.dropdown1}`}>
               <Link
                 onClick={(e) => {
-                e.preventDefault();
-                navigate("abouttaxko");
+                  e.preventDefault();
+                  navigate("abouttaxko");
                 }}
                 id="abouttaxko"
                 className={`${style.dropbtn1} ${style.neckancher} ${style.acherline}`}
@@ -234,9 +235,9 @@ function openBookDemoForm(){
                 TAXKO ENTERPRISE
                 <div className={`${style.tooltiptext}`}>Comming Soon..</div>
               </Link>
-              
+
               <Link className={`${style.ddancher} ${style.tooltip}`}>REVIEWS
-              <div className={`${style.tooltiptext}`}>Comming Soon..</div>
+                <div className={`${style.tooltiptext}`}>Comming Soon..</div>
               </Link>
             </div>
           </div>
@@ -312,7 +313,7 @@ function openBookDemoForm(){
           </div>
         )} */}
 
-       
+
 
         <Routes>
           <Route path="admin/User_registration" element={<Registration />} />
@@ -326,8 +327,9 @@ function openBookDemoForm(){
         </Routes>
 
         <ChatBot />
+        <WhatsappChat />
 
-       
+
 
         <div className={`${style.copyright}`}>
           <div className={`${style.dev}`}>
