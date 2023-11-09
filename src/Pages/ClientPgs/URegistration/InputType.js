@@ -26,6 +26,7 @@ export default class InputType extends React.Component {
       value: this.props.value,
       manadatory: this.props.mandatory ? "*" : "",
       onChange: this.props.onChange,
+      disabled: this.props.disabled,
       validationmsg: this.props.validationmsg,
     }
     if (this.props.name === "name") {
@@ -51,6 +52,7 @@ export default class InputType extends React.Component {
     if (this.props.name === "pan") {
       properties.maxLength = 10;
       properties.isValidPAN = this.props.isValidPAN;
+
     }
     if (this.props.name === "residential_status") {
       properties.value_array = residential_status;
