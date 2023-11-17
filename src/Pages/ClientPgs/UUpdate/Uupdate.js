@@ -8,7 +8,7 @@ import States_obj from '../../../ObjData/States.json';
 import swal from 'sweetalert2';
 
 import { url_ } from '../../../Config';
-import { useParams } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 
 const Uupdate = () => {
   const user_id = window.localStorage.getItem('user_id');
@@ -143,7 +143,7 @@ const Uupdate = () => {
       })
         .then(res => {
           swal.fire("Success", "Data updated successfully.", "success");
-          window.history.back();
+          window.location.reload();
           console.log(values)
         })
         .catch(error => {
@@ -252,7 +252,7 @@ const Uupdate = () => {
 
   return (
     <div>
-      <form action="/" onSubmit={handleSubmit}>
+      <form >
         <div className={styles.right}>
           <div className={`${styles.regtitle} `}>
 

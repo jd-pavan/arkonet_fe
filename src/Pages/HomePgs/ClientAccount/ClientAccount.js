@@ -34,7 +34,7 @@ function ClientAccount() {
 }
 
   async function handleSubmit(e) {
-    console.log(isValidMobile);
+    
     e.preventDefault();
 
     if (
@@ -58,23 +58,55 @@ function ClientAccount() {
             // :!(formData.clientmobileno.test(e.target.value))&&`Please check mobile no entered`,
       });
     } else {
-      var myHeaders = new Headers();
-      myHeaders.append("Content-Type", "application/json");
-      myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
-      var raw = JSON.stringify({
-        yourname: formData.clientname,
-        yourmobileno: formData.clientmobileno,
-        taxprofessionalname: formData.taxprofname,
-        taxprofessionalmobile: formData.taxprofmobile,
+
+
+      swal.fire({
+        title: 'Saving details',
+        text: 'Please wait...',
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          swal.showLoading();
+        },
       });
 
+
+      const subject = `Client Registration : `;
+
+        const message = `Dear Support Team,
+  Greeting from TAXKO!
+
+  I hope this message finds you well. 
+  
+  ${formData.clientname}(Contact No :${formData.clientmobileno}) has expressed interest in TAXKO. ${formData.clientname} has also shared the details of their tax consultant, as follows:
+- Name:${formData.taxprofname}
+- Contact Number:${formData.taxprofmobile}
+
+  We place our confidence in your expertise and kindly request your assistance in reaching out to the aforementioned references to gather more information.
+
+                    
+  Best regards,
+
+  ${formData.clientname},
+  Contact no : ${formData.clientmobileno}`;
+     
+
+     
+
+      var formdata = new FormData();
+formdata.append("subject", subject);
+formdata.append("text",message);
+formdata.append("yourname", formData.clientname);
+formdata.append("yourmobileno", formData.clientmobileno);
+formdata.append("taxprofessionalname", formData.taxprofname);
+formdata.append("taxprofessionalmobile",formData.taxprofmobile);
+
       var requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        body: raw,
-        redirect: "follow",
+        method: 'POST',
+        body: formdata,
+        redirect: 'follow'
       };
+     
 
       try {
         const response = await fetch(
@@ -84,12 +116,14 @@ function ClientAccount() {
         const result = await response.text();
         if (response.status === 200) {
           swal.close();
+          
           swal.fire({
             icon: "success",
             text: "Thank you for registering with us. We will contact you soon.",
           });
         }
       } catch (error) {
+        swal.close();
         console.log(error);
       }
 clearForm()

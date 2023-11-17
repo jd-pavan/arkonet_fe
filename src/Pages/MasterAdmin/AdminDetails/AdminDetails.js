@@ -51,7 +51,7 @@ function AdminDetails() {
         await fetch(`${url_}/user/countbyprofession`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
-                // console.log(result)
+                console.log(result)
                 setadmincountscategory(result)
             })
             .catch((error) => {

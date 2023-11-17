@@ -239,10 +239,10 @@ const URegistration = () => {
       console.log(formdata);
       return;
     } else {
-      const url = `${url_}/createclient`;
-      console.log(url);
+      // const url = `${url_}/createclient`;
+      // console.log(url);
       console.log(formdata);
-      console.log(user_id)
+      // console.log(user_id)
 
 
 
@@ -299,6 +299,7 @@ const URegistration = () => {
             userid: "",
           });
           setFieldDisable(false)
+          Navigate(-1)
         } else {
           swal.fire("Failed!", `${result}`, "error");
         }
@@ -323,7 +324,7 @@ const URegistration = () => {
           <span>CLIENT REGISTRATION FORM</span>
         </div>
         <div className={styles.regform}>
-          <form action="/" onSubmit={handleSubmit}>
+          <form >
 
             <div className={styles.radio}>
               <RadioInput name='category' label='Income Tax' value='Income_Tax' checked={formdata.category === 'Income_Tax'} onChange={handleChange} manadatory='*' disabled={Income_Tax_Radio} />

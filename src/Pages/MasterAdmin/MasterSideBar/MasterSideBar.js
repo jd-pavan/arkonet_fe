@@ -30,7 +30,7 @@ const MasterSideBar = ({ loggedIn, setLoggedIn }) => {
         if (pglink === "searchadmin") {
             Navigate("searchadmin", {
                 state: {
-                    userProfession: "AllUser"
+                    userProfession: "All"
                 },
             })
             console.log(pglink)

@@ -17,7 +17,7 @@ const SearchAdmin = () => {
 
     const [searchQuery, setSearchQuery] = useState("");
     const [userdata, setuserdata] = useState([]);
-    const [fetch_url, setfetch_url] = useState();
+    const [subendDate, setsubendDate] = useState();
     const GetUserDATA = async () => {
 
 
@@ -46,8 +46,8 @@ const SearchAdmin = () => {
                 userProf === "Certified Consultant" ||
                 userProf === "Advocate" ||
                 userProf === "Other" ? `${url_}/by-profession/${userProf}` :
-                userProf === "AllUser" ? `${url_}/by-profession/all` :
-                    null}
+                `${url_}/by-profession/all`
+            }
 
     `, requestOptions)
             .then((response) => response.json())
@@ -58,6 +58,54 @@ const SearchAdmin = () => {
                 setuserdata(result)
 
 
+
+                if (result[0].substartdatebyuser === null) {
+                    setsubendDate(null)
+                } else {
+                    if (result[0].status === true) {
+                        const subEndDateObject = new Date(result[0].subendtdate);
+                        const currentDate = new Date();
+                        const CurrentDATENEWFORMATE = currentDate.toISOString().replace('Z', '+00:00');
+                        const EndingDATENEWFORMATE = subEndDateObject.toISOString().replace('Z', '+00:00');
+                        if (CurrentDATENEWFORMATE < EndingDATENEWFORMATE) {
+
+                            setsubendDate(true)
+                        } else {
+                            setsubendDate(false)
+
+                        }
+                    } else {
+                        setsubendDate(false)
+                    }
+                }
+                //     if (result[0].subendtdate === 22) {
+                //         setsubendDate(false)
+                //         console.log("USER subendtdate", false)
+                //     } else {
+
+
+                //         if (result[0].status === true) {
+
+                //             const subEndDateObject = new Date(result[0].subendtdate);
+                //             const currentDate = new Date();
+                //             const CurrentDATENEWFORMATE = currentDate.toISOString().replace('Z', '+00:00');
+                //             const EndingDATENEWFORMATE = subEndDateObject.toISOString().replace('Z', '+00:00');
+                //             if (CurrentDATENEWFORMATE < EndingDATENEWFORMATE) {
+
+                //                 setsubendDate(true)
+                //             }
+                //             console.log(CurrentDATENEWFORMATE)
+                //             console.log(EndingDATENEWFORMATE)
+
+
+                //         } else {
+                //             setsubendDate(false)
+
+                //         }
+
+                //     }
+                //     setsubendDate(true)
+                //     console.log("USER subendtdate", true)
             })
             .catch((error) => {
                 console.log(error);
@@ -154,7 +202,17 @@ const SearchAdmin = () => {
                                     <div className={`${style.name} `} onClick={() => GOTOClients(item.registration.pan)}><p className={`${style.reference} text-primary`} style={{ cursor: "pointer" }}>{item.count}</p></div>
 
 
-                                    <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={item.substartdatebyuser === null ? { color: "#d2cccc" } : { color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
+                                    <div className={`${style.name} `} >
+                                        <p className={`${style.status} `}>
+                                            <i class="fa-solid fa-circle"
+                                                style={
+                                                    subendDate === null ? { color: "#d2cccc" } :
+                                                        subendDate ? { color: "#32e132" } : { color: "#ff0000" }
+                                                }>
+
+                                            </i>
+                                        </p>
+                                    </div>
                                 </div>
 
                             ))

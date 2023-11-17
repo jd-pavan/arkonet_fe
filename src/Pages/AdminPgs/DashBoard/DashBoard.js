@@ -6,7 +6,10 @@ import { url_ } from '../../../Config';
 import Swal from 'sweetalert2';
 
 const DashBoard = () => {
-  const subscription_status = localStorage.getItem(`subscription_status`)
+
+  const [subscription_status, setSubscriptionStatus] = useState();
+
+  // const subscription_status = localStorage.getItem(`subscription_status`)
 
   const Navigate = useNavigate();
   const [Totalclient, setTotalclient] = useState();
@@ -32,13 +35,58 @@ const DashBoard = () => {
   const storedToken = window.localStorage.getItem('jwtToken');
 
 
-  function handleLinkClick() {
-    if (subscription_status === "grace_period")
+  function handleLinkClick(e) {
+    const isactive = checkSubscriptionStatus(e);
+    // console.log(subscription_status);
+
+    if (subscription_status === "grace_period" || !isactive)
       Swal.fire({
-        icon: "info",
-        text: "Sorry this service is currently unavailable due to end of subscription"
-      })
+        icon: "error",
+        text: `Sorry your subscription has expired today on ${TimeConvert(localStorage.getItem("end_time"))}`,
+      });
   }
+
+
+  function TimeConvert(ConvertingDate) {
+
+    if (ConvertingDate === null) {
+      return null;
+    } else {
+      const date = new Date(ConvertingDate);
+      const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+      const formattedTime = date.toLocaleTimeString('en-US', options);
+      return formattedTime;
+
+    }
+
+  }
+
+  function checkSubscriptionStatus(e) {
+    if (localStorage.getItem("end_time")) {
+      const startDateTime = new Date();
+      const endDateTime = new Date(localStorage.getItem("end_time"));
+      const timeDiff =
+        endDateTime.getHours() * 60 +
+        endDateTime.getMinutes() -
+        (startDateTime.getHours() * 60 + startDateTime.getMinutes());
+
+      const hours = parseInt(timeDiff / 60);
+      const minutes = timeDiff % 60;
+      // console.log(hours, minutes);
+
+      if (hours <= 0 && minutes <= 0) {
+        e.preventDefault();
+        localStorage.setItem("subscription_status", "grace_period");
+        setSubscriptionStatus("grace_period");
+        return false;
+      } else return true;
+    } else {
+      return true;
+    }
+  }
+  useEffect(() => {
+    setSubscriptionStatus(localStorage.getItem(`subscription_status`));
+  }, [subscription_status]);
 
   useEffect(() => {
 
@@ -99,8 +147,7 @@ const DashBoard = () => {
 
       const response = await fetch(`${url_}/sumOFPaymentClientByUserid/${user_id}/${fyyear}`, requestOptions);
       const result = await response.json();
-      console.log(result);
-      // console.log(result.totalPayment);
+      // console.log(result);
 
       setTotalclientPayment(result.totalPayment.toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }))
       setTotalClientsreceivedPayment(result.receivedPayment.toLocaleString('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0, maximumFractionDigits: 0 }))
@@ -165,7 +212,7 @@ const DashBoard = () => {
           const date = new Date(data.lastUpdateDate);
           const options = { day: 'numeric', month: 'long', year: 'numeric' };
           const formattedDate = date.toLocaleDateString('en-GB', options);
-          setincomelatestupdatedata(formattedDate)
+          setincomelatestupdatedata(formattedDate);
           // console.log(data)
         })
         .catch(error => console.log(error));
@@ -205,7 +252,27 @@ const DashBoard = () => {
       });
 
       // console.log(data);
-      setgstdata(data)
+      // setgstdata(data)
+
+
+
+
+
+      const currentMonth = new Date().getMonth();
+
+      // Filter the data for months up to and including the current month
+      const filteredData = data.filter(entry => {
+        const entryMonth = new Date(entry.month + ' 1, 2023').getMonth();
+        return entryMonth <= currentMonth;
+      });
+
+      // Reverse the order of the filtered data
+      const reversedData = filteredData.reverse();
+
+      // console.log(reversedData);
+      setgstdata(reversedData)
+
+
 
     } catch (error) {
       console.log('error', error);
@@ -276,9 +343,23 @@ const DashBoard = () => {
                   <Link to="gstclients" className={`h6 card-link text-primary  `}>GST
                     <h6 className={`${styles.black} font-weight-bold`}>{TotalGSTClients}</h6>
                   </Link>
+                  {/* <Link to="gstclients" className={`h6 card-link text-primary  `}>Both
+                    <h6 className={`${styles.black} font-weight-bold`}>{TotalGSTClients}</h6>
+                  </Link> */}
                 </div>
-                <Link to='clientreg' className={subscription_status === "on" ? `` : `${styles.btndisable}`} onClick={handleLinkClick}><input type="submit" value="ADD CLIENT" className={` h6 ${styles.abtn}`} /></Link>
-              </div>
+                <Link
+                  to="clientreg"
+                  className={
+                    subscription_status === "on" ? `` : `${styles.btndisable}`
+                  }
+                  onClick={handleLinkClick}
+                >
+                  <input
+                    type="submit"
+                    value="ADD CLIENT"
+                    className={` h6 ${styles.abtn}`}
+                  />
+                </Link>              </div>
 
             </div>
           </div>
@@ -359,7 +440,7 @@ const DashBoard = () => {
                   <h3><i className={`fa-solid fa-ellipsis-vertical  text-primary`}  ></i></h3>
                 </div>
                 <div >
-                  <table className={`${styles.table} table text-center font-weight-bold`}>
+                  <table className={`${styles.table} table font-weight-bold`}>
                     <thead>
                       <tr>
 
@@ -380,11 +461,11 @@ const DashBoard = () => {
                       {displayData.map((items, index) => {
                         return (
                           <tr key={index}>
-                            <td className='text-black' >{items.month}</td>
-                            <td className=' text-success' onClick={() => GOTO("GSTR1FD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR1FD}</td>
-                            <td className=' text-danger' onClick={() => GOTO("GSTR1NFD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR1NFD}</td>
-                            <td className=' text-success' onClick={() => GOTO("GSTR3BFD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR3BFD}</td>
-                            <td className=' text-danger' onClick={() => GOTO("GSTR3BNFD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR3BNFD}</td>
+                            <td className='text-black ' >{items.month}</td>
+                            <td className=' text-success  text-center' onClick={() => GOTO("GSTR1FD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR1FD}</td>
+                            <td className=' text-danger text-center' onClick={() => GOTO("GSTR1NFD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR1NFD}</td>
+                            <td className=' text-success text-center' onClick={() => GOTO("GSTR3BFD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR3BFD}</td>
+                            <td className=' text-danger text-center' onClick={() => GOTO("GSTR3BNFD", items.month)} style={{ cursor: "pointer" }}>{items.GSTR3BNFD}</td>
                           </tr>
                         );
                       })}

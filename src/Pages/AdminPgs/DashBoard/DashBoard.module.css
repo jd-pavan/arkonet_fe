@@ -28,9 +28,15 @@
   font-size: 14px;
 }
 
+
+
 .btndisable {
-  pointer-events: none;
   cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btndisable .abtn {
+  background-color: #9897a9;
 }
 
 .green {

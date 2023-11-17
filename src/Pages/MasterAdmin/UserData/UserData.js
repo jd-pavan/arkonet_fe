@@ -11,6 +11,7 @@ import InputField from '../../../components/InputField/InputField';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 
 
@@ -145,16 +146,56 @@ const UserData = () => {
 
   const bankhandleChange = (e) => {
 
-    if (e.target.type === "file") {
-      setBankdetails({ ...bankdetails, [e.target.name]: e.target.files[0] });
 
 
-    } else {
-      setBankdetails({ ...bankdetails, [e.target.name]: e.target.value });
+
+
+    const { name, value } = e.target;
+
+
+    if (name === "upinumber") {
+      if (value.length === 10) {
+
+        const mobilePattern = /^[789]\d{9}$/;
+        if (mobilePattern.test(e.target.value)) {
+          setBankdetails({ ...bankdetails, [e.target.name]: value.replace(/\D/g, "") });
+          e.target.value = value.replace(/\D/g, "");
+        } else {
+
+          Swal.fire("Enter valid UPI Number!")
+
+        }
+      }
+
     }
+    //=============================================================================
+    switch (name) {
+
+
+      case "accountnumber":
+        setBankdetails({ ...bankdetails, [e.target.name]: value.replace(/\D/g, "") });
+        e.target.value = value.replace(/\D/g, "");
+        break;
+
+      case "upinumber":
+        setBankdetails({ ...bankdetails, [e.target.name]: value.replace(/\D/g, "") });
+        e.target.value = value.replace(/\D/g, "");
+        break;
+
+      case "file":
+        setBankdetails({ ...bankdetails, [e.target.name]: e.target.files[0] });
+        break;
+
+
+
+      default:
+        setBankdetails({ ...bankdetails, [e.target.name]: e.target.value });
+    }
+
 
     // console.log(bankdetails)
   };
+
 
   function Getbankdetails() {
     try {
@@ -364,7 +405,7 @@ const UserData = () => {
           </div>
           <div className={`${styles.upiid} `}>
             <InputField lblname='UPI ID' color='red' placeholder='Enter your UPI ID' name='upiid' value={bankdetails.upiid} onChange={bankhandleChange} />
-            <InputField lblname='UPI Number' color='red' placeholder='Enter your UPI Number' name='upinumber' value={bankdetails.upinumber} onChange={bankhandleChange} />
+            <InputField lblname='UPI Number' color='red' placeholder='Enter your UPI Number' name='upinumber' value={bankdetails.upinumber} onChange={bankhandleChange} maxLength={10} />
 
           </div>
           <div className={`${styles.detailtitle}`}>BANK DETAILS</div>

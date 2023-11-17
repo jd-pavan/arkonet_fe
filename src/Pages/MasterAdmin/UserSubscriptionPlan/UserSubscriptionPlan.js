@@ -13,8 +13,7 @@ import Swal from "sweetalert2";
 // import arkonet from "../../Images/Arkonet.jpg";
 
 const UserSubscriptionPage = () => {
-  const UserId = useLocation().state.USERSUBID;
-  const UserPan = useLocation().state.USERSUBPAN;
+
   const [isRefferFriend, setIsRefferFriend] = useState(true);
   const [isSuggession, setIsSuggession] = useState(false);
   const [isValidMobile, setIsValidMobile] = useState(true);
@@ -36,6 +35,8 @@ const UserSubscriptionPage = () => {
     USERSUBSCRIPTIONPRICE: "",
     USERREFRENCEID: "",
     USERREMAININGDAYS: "",
+    USERSUBENDIME: "",
+    USERSUBTIMELEFT: "",
     USERID: useLocation().state.USERSUBID,
     USERPAN: useLocation().state.USERSUBPAN
 
@@ -146,19 +147,50 @@ const UserSubscriptionPage = () => {
 
 
         const endDate = new Date(endingdate);
-        const today = new Date();
-        const millisecondsPerDay = 24 * 60 * 60 * 1000; // Number of milliseconds in a day
+        const currentDate = new Date();
 
         // Calculate the difference in milliseconds
-        const differenceInTime = endDate.getTime() - today.getTime();
+        const timeDifference = endDate.getTime() - currentDate.getTime();
 
-        // Convert the difference back to days and round down
-        const daysRemaining = Math.floor(differenceInTime / millisecondsPerDay);
-        // console.log("Days remaining:", daysRemaining);
+        // Convert milliseconds to days
+        const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
         return daysRemaining;
 
       }
     }
+
+
+
+
+    function TimeConvert(ConvertingDate) {
+      if (ConvertingDate === null) {
+        return null;
+      } else {
+        const date = new Date(ConvertingDate);
+        const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+        const formattedTime = date.toLocaleTimeString('en-US', options);
+        return formattedTime;
+      }
+    }
+
+    function getTimeDifference(startDate, endDate) {
+      const startDateTime = new Date();
+      const endDateTime = new Date(endDate);
+      const timeDiff = ((endDateTime.getHours() * 60) + endDateTime.getMinutes()) -
+        ((startDateTime.getHours() * 60) + startDateTime.getMinutes())
+
+      const hours = parseInt(timeDiff / 60);
+      const minutes = timeDiff % 60;
+
+
+
+      return { hours, minutes };
+    }
+
+
+
+
+
 
 
 
@@ -195,6 +227,8 @@ const UserSubscriptionPage = () => {
         USERSUBSCRIPTIONPRICE: result.subscriptionData.subscriptionprice,
         USERREFRENCEID: result.subscriptionData.refrenceId,
         USERREMAININGDAYS: CalculateRemainingDays(result.subscriptionData.subendtdate),
+        USERSUBENDIME: TimeConvert(result.getSubendtdate),
+        USERSUBTIMELEFT: getTimeDifference(result.getSubendtdate, result.getSubendtdate),
         USERID: result.subscriptionData.userid,
         USERPAN: result.subscriptionData.pan,
 
@@ -224,7 +258,7 @@ const UserSubscriptionPage = () => {
 
 
   }
-
+  // console.log(USERSUBSCRIPTIONDATA)
   function handleSubmit() {
     if (isRefferFriend) {
 
@@ -418,7 +452,7 @@ const UserSubscriptionPage = () => {
 
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
-  const [addedDays, setAddedDays] = useState(0);
+  const [addedDays, setAddedDays] = useState(null);
   const [finalenddate, setfinalenddate] = useState();
   const [CurreantDATE, setCurreantDATE] = useState();
 
@@ -429,20 +463,20 @@ const UserSubscriptionPage = () => {
   };
 
   const handleDaysChange = (e) => {
-    // const days = e.target.value;
+
+
+    // console.log(dayss)
+
+    const dayss = e.target.value;
+    const days = parseInt(dayss);
 
 
 
-
-    if (e.target.value === NaN || "") {
-
+    if (dayss < 0 && dayss === null) {
       swal.fire("Error", "Value should be greater than 0", "error");
-      setAddedDays(0);
-
-    } else if (e.target.value > 30) {
+    } else if (dayss > 30) {
       swal.fire("Error", "Value should be less than or equal to 30", "error");
     } else {
-      const days = parseInt(e.target.value);
       setAddedDays(days);
       if (addedDays !== '') {
         if (endDate instanceof Date) {
@@ -524,9 +558,12 @@ const UserSubscriptionPage = () => {
     var formattedDate = day + ' / ' + month + ' / ' + year;
 
     // Print the formatted date
-    console.log(formattedDate);
+    // console.log(formattedDate);
     setCurreantDATE(formattedDate)
   }
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 
   return (
@@ -545,10 +582,21 @@ const UserSubscriptionPage = () => {
                 USERSUBSCRIPTIONDATA.USERREMAININGDAYS <= 0 ? `${style.h31} ${style.subs_end}` :
                   `${style.h31} ${style.subs_about_end}`}
               >
-                {USERSUBSCRIPTIONDATA.USERREMAININGDAYS}</h3>
-
+                {/* {USERSUBSCRIPTIONDATA.USERREMAININGDAYS}</h3> */}
+                {USERSUBSCRIPTIONDATA.USERSUBENDDATE === null ? `` :
+                  USERSUBSCRIPTIONDATA.USERREMAININGDAYS === 0 ? `${Math.abs(USERSUBSCRIPTIONDATA.USERSUBTIMELEFT.hours)}h : ${Math.abs(USERSUBSCRIPTIONDATA.USERSUBTIMELEFT.minutes)}m` :
+                    Math.abs(USERSUBSCRIPTIONDATA.USERREMAININGDAYS)}</h3>
               <p className={`${style.p1}`}>{
-                USERSUBSCRIPTIONDATA.USERSUBENDDATE === null ? `` : USERSUBSCRIPTIONDATA.USERREMAININGDAYS < 0 ? `Days ago` : `Days Left`}</p>
+                USERSUBSCRIPTIONDATA.USERSUBENDDATE === null ? `Not Subscribed` :
+                  USERSUBSCRIPTIONDATA.USERREMAININGDAYS < 0 ? `Days ago` :
+                    USERSUBSCRIPTIONDATA.USERREMAININGDAYS === 0 ?
+                      (USERSUBSCRIPTIONDATA.USERSUBTIMELEFT.hours <= 0 && USERSUBSCRIPTIONDATA.USERSUBTIMELEFT.minutes <= 0) ? `Time Ago` :
+                        `Time Left` : `Days Left`}
+
+
+
+                {/* USERSUBSCRIPTIONDATA.USERSUBENDDATE === null ? `` : USERSUBSCRIPTIONDATA.USERREMAININGDAYS < 0 ? `Days ago` : `Days Left`} */}
+              </p>
             </div>
           </div>
 
@@ -568,8 +616,16 @@ const UserSubscriptionPage = () => {
                       <h5><b>User not approved!</b></h5>
                     ) : (
                       <>
+                        {/* <p className={`${style.p2}`}>{userInfo.end_date}&nbsp;&nbsp; {userInfo.end_time}</p>
+                        <p className={`${style.sub_details}`}>Selected Pack:&nbsp;&nbsp;{userInfo.pack_type}
+                          &nbsp;&nbsp;&nbsp;&nbsp; Amount : &#8377;&nbsp;{userInfo.pack_amount}&nbsp;/- </p> */}
                         <p className={`${style.p1}`}>Subscription Ends on</p>
-                        <p className={`${style.p2}`}>{USERSUBSCRIPTIONDATA.USERSUBENDDATE}</p>
+                        <p className={`${style.p2}`}>{USERSUBSCRIPTIONDATA.USERSUBENDDATE} &nbsp;&nbsp;{USERSUBSCRIPTIONDATA.USERSUBENDIME}</p>
+                        <p className={`${style.sub_details} font-weight-bold`}><h6>Selected Pack:&nbsp;&nbsp; {USERSUBSCRIPTIONDATA.USERSUBSCRIPTIONTYPE}
+                          &nbsp;&nbsp;&nbsp;&nbsp; Amount : &#8377;&nbsp;{USERSUBSCRIPTIONDATA.USERSUBSCRIPTIONPRICE}&nbsp;/- </h6></p>
+
+                        {/* <p className={`${style.p1}`}>Subscription Ends on</p>
+                        <p className={`${style.p2}`}>{USERSUBSCRIPTIONDATA.USERSUBENDDATE}</p> */}
                       </>
                     )}
                 </div>
@@ -594,13 +650,24 @@ const UserSubscriptionPage = () => {
                   ) : (
                     <div className="d-flex justify-content-center w-100">
                       <div className={`${style.mainadbominal} w-75 mb-3 `}>
-                        {/* <> */}
-                        <button className={`${style.card3}`} type="button" data-toggle="modal" data-target="#myModal"
-                          style={{
-                            border: "none",
-                          }}>
-                          <p className={`${style.cardp}`} id="referfriendbtn" onClick={openPanel}>ADD DAYS</p>
-                        </button>
+                        {
+                          USERSUBSCRIPTIONDATA.USERSUBTIMELEFT.hours <= 0 && USERSUBSCRIPTIONDATA.USERSUBTIMELEFT.minutes <= 0 ? (
+                            <button className={`${style.card3}`}
+                              style={{
+                                border: "none",
+                              }}>
+                              <p className={`${style.cardp}`} id="referfriendbtn" onClick={() => { swal.fire("User's plan has expired!!") }}>ADD DAYS</p>
+                            </button>
+                          ) : (
+                            <button className={`${style.card3}`} type="button" data-toggle="modal" data-target="#myModal"
+                              style={{
+                                border: "none",
+                              }}>
+                              <p className={`${style.cardp}`} id="referfriendbtn" onClick={openPanel}>ADD DAYS</p>
+                            </button>
+                          )
+                        }
+
 
                         {/* ////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
@@ -614,6 +681,7 @@ const UserSubscriptionPage = () => {
                                 </div> */}
 
                               {/* <!-- Moda body --> */}
+
                               <div class="modal-body">
 
 
@@ -632,7 +700,7 @@ const UserSubscriptionPage = () => {
                                       <div className={`${style.inputs} d-flex flex-column align-items-center`}>
                                         <h6>How many days to add?</h6>
                                         <input
-                                          type="number"
+                                          type="text"
                                           value={addedDays}
                                           onChange={handleDaysChange}
                                           placeholder="Add days"
@@ -641,9 +709,9 @@ const UserSubscriptionPage = () => {
                                         />
                                       </div>
                                       {/* <div className={`${style.inputs}`}>
-                                        <h6>How many clients to add?</h6>
-                                        <input type="text" name="" id="" />
-                                      </div> */}
+      <h6>How many clients to add?</h6>
+      <input type="text" name="" id="" />
+    </div> */}
                                     </div>
                                     <div className="mt-2">
                                       <h6>
@@ -653,9 +721,9 @@ const UserSubscriptionPage = () => {
                                     <div className='d-flex'>
                                       <div className={`${style.inputs} mr-5 d-flex flex-column align-items-center mt-3 `}>
                                         <h6 className='mb-3 mt-4'>Select Date Range</h6>
-                                        <input type="date" disabled value={startDate.toISOString().split('T')[0]} />
+                                        <input type="date" disabled value={startDate === null ? 0 : startDate.toISOString().split('T')[0]} />
                                         <h5 className='mt-4 mb-4 '>to</h5>
-                                        <input type="date" disabled value={endDate.toISOString().split('T')[0]} />
+                                        <input type="date" disabled value={endDate === null ? 0 : endDate.toISOString().split('T')[0]} />
                                       </div>
                                       <div>
 
@@ -671,6 +739,7 @@ const UserSubscriptionPage = () => {
                                             selectsRange
                                             inline
                                             monthsShown={2}
+                                            disabled={true}
                                             className={style.datePicker} // Apply your custom class here
                                           />
 
