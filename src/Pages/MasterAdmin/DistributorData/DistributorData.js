@@ -198,14 +198,9 @@ const DistributorData = () => {
       })
         .then(response => response.json())
         .then(res => {
-          // console.lsog(res);
-          // const objectPropertyCount = Object.keys(res).length;
-          // setBankDataLength(objectPropertyCount);
-          // setImgContent(res.content)
+          console.log(res)
           setBankdetails({
-            // profilepic: res.paymentDetails.imageName,
-            // upiid: res.paymentDetails.upiId,
-            // upinumber: res.upiNumber,
+            profilepic: res.imageNameprofile,
             bankname: res.bank_name,
             accountname: res.accountName,
             accountnumber: res.accountNumber,
@@ -315,23 +310,15 @@ const DistributorData = () => {
       redirect: 'follow'
     };
     await fetch(`${url_}/getdistributorprofile/${Distri_PAN}`, requestOptions)
-      .then((response) => response.text())
+      .then((response) => response.blob())
       .then((result) => {
-        const decodedImage = atob(result);
 
-        // Convert the decoded string to a Uint8Array
-        const arrayBuffer = new Uint8Array(decodedImage.length);
-        for (let i = 0; i < decodedImage.length; i++) {
-          arrayBuffer[i] = decodedImage.charCodeAt(i);
-        }
-
-        // Create a Blob from the arrayBuffer
-        const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
-
-        // Create a data URL from the Blob
-        const dataUrl = URL.createObjectURL(blob);
-        console.log(dataUrl)
-        // setImgContent(dataUrl)
+        const reader = new FileReader();
+        reader.onload = () => {
+          const dataURL = reader.result;
+          setImgContent(dataURL)
+        };
+        reader.readAsDataURL(result);
 
 
       })
@@ -365,9 +352,11 @@ const DistributorData = () => {
     //   })
 
 
-
   }
-  const imageSrc = imgcontent ? `data:image/jpeg;base64,${imgcontent}` : profileimg;
+
+
+  const imageSrc = imgcontent ? imgcontent : profileimg;
+
 
   return (
     <div>

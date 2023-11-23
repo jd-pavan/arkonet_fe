@@ -7,3 +7,9 @@
   bottom: 1rem;
   left: 1rem;
 }
+
+@media (max-width: 480px) { 
+  .whatsappimg img {
+    width: 4rem;
+  }
+}

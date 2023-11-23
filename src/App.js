@@ -9,8 +9,8 @@ import Adminhome from './Pages/AdminPgs/Adminhome';
 import ClientPages from './Pages/ClientMobilePgs/ClientPages';
 import MasterAdmin from './Pages/MasterAdmin/MasterAdmin';
 import HomeRoute from './Pages/HomePgs/HomeRoute';
-import ChatBot from "./components/ChatBot/ChatBot"
-import WhatsappChat from './components/WhatsappChat/WhatsappChat';
+import DistributorHome from './Pages/DistributorPgs/DistributorHome';
+
 
 function App() {
 
@@ -23,11 +23,12 @@ function App() {
           <Route path='/*' element={<HomeRoute />} />
           <Route path='/masteradmin/*' element={<MasterAdmin />} />
           <Route path='/admin/*' element={<Adminhome />} />
-          <Route path='/client/*' element={<ClientPages />} />
-        </Routes>
-        {/* <WhatsappChat /> */}
-      </Router>
+          <Route path='/client/*' element={<ClientPages />} />   
+          <Route path='/distributor/*' element={<DistributorHome />} />          
 
+        </Routes>
+      </Router>
+      
     </div>
 
   );
