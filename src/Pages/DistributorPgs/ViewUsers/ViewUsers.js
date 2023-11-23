@@ -1,4 +1,4 @@
-import style from '../SearchAdmin/SearchAdmin.module.css';
+import style from './ViewUsers.module.css';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { url_ } from '../../../Config';
@@ -6,11 +6,13 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 
-const UserList = () => {
+const ViewUsers = () => {
   const Navigate = useNavigate()
   const userProf = useLocation().state.userProfession;
   const storedToken = window.localStorage.getItem('jwtToken');
-  console.log(userProf)
+  const distributor_pan=localStorage.getItem("pan")
+
+  
   useEffect(() => {
     GetUserDATA();
   }, []);
@@ -18,6 +20,8 @@ const UserList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [userdata, setuserdata] = useState([]);
   const [fetch_url, setfetch_url] = useState();
+  const [subendDate, setsubendDate] = useState();
+
   const GetUserDATA = async () => {
 
 
@@ -34,36 +38,42 @@ const UserList = () => {
       redirect: 'follow'
 
     };
+    
     await fetch(`
         
         
         
         
-        ${userProf === "Today's Subscription" ? `${url_}/subscriptions/today` :
-        userProf === "Yesterday's Subscription" ? `${url_}/subscriptions/yestarday` :
-          userProf === "Week's Subscription" ? `${url_}/subscriptionslist/week` :
-            userProf === "Present Year's Subscription" ? `${url_}/subscriptionslist/year` :
-              userProf === "Last Year's Subscription" ? `${url_}/subscriptionslist/previousyear` :
-                userProf === "Today's Renewal" ? `${url_}/Renewal/today` :
-                  userProf === "Tomorrow's Renewal" ? `${url_}/Renewal/tommarow` :
-                    userProf === "Week's Renewal" ? `${url_}/Renewal/week` :
-                      userProf === "Month's Renewal" ? `${url_}/Renewal/month` :
-                        userProf === "3 Months's Renewal" ? `${url_}/Renewal/threemonth` :
-                          userProf === "6 Months's Renewal" ? `${url_}/Renewal/sixmonth` :
-                            userProf === "Distributor List" ? `${url_}/all/distributor` :
-
-                              null}
+        ${userProf === "Today's Subscription" ? `${url_}/distrubutor/subscriptions/today/${distributor_pan}` :
+        userProf === "Yesterday's Subscription" ? `${url_}/distrubutor/subscriptionslist/yestarday/${distributor_pan}` :
+          userProf === "Week's Subscription" ? `${url_}/distrubutor/subscriptionslist/week/${distributor_pan}` :
+            userProf === "Present Year's Subscription" ? `${url_}/distrubutor/subscriptionslist/year/${distributor_pan}` :
+              userProf === "Last Year's Subscription" ? `${url_}/distrubutor/subscriptionslist/previousyear/${distributor_pan}` :
+                userProf === "Today's Renewal" ? `${url_}/Renewal/today/distrubutor/${distributor_pan}` :
+                  userProf === "Tomorrow's Renewal" ? `${url_}/Renewal/tommarow/distrubutor/${distributor_pan}` :
+                    userProf === "Week's Renewal" ? `${url_}/Renewal/week/distrubutor/${distributor_pan}` :
+                      userProf === "Month's Renewal" ? `${url_}/Renewal/month/distrubutor/${distributor_pan}` :
+                        userProf === "3 Months's Renewal" ? `${url_}/Renewal/threemonth/distrubutor/${distributor_pan}` :
+                          userProf === "6 Months's Renewal" ? `${url_}/Renewal/sixmonth/distrubutor/${distributor_pan}` :
+                
+                            null}
 
     `, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        // console.log(result)
-        if (userProf === "Distributor List") {
-          const filteredData = result.filter(item => item.status === true);
-          setuserdata(filteredData)
-        } else {
-          setuserdata(result)
-        }
+        console.log(result)
+        const filteredData=result.filter((item)=>{
+          if(new Date(item.subendtdate)<(new Date().getDate())){
+            return false
+          }
+          else{
+            return true
+          }
+        })
+        // console.log(filteredData)
+        setuserdata(filteredData)
+
+        
       })
       .catch((error) => {
         console.log(error);
@@ -74,25 +84,7 @@ const UserList = () => {
     window.history.back(); // This will navigate to the previous page in the browser's history
   }
 
-  const GOTOUserdata = (userid) => {
-    Navigate('Userdata', {
-      state: {
-        UserId: userid,
-
-      },
-    });
-
-  }
-  const GotoDistributorData = (distributorid, distributorpan) => {
-    Navigate('distributordata', {
-      state: {
-        DistributorID: distributorid,
-        DistributorPAN: distributorpan,
-
-      },
-    });
-
-  }
+  
   return (
 
 
@@ -129,7 +121,7 @@ const UserList = () => {
 
           <div className={`${style.drow} `}>
             <div className={`${style.name} `} ><p className={`${style.gdtxt1} `}>Sr. No</p></div>
-            <div className={`${style.name} `} ><p className={`${style.gdtxt2} `}>{userProf === "Distributor List" ? "Distributor" : "Admin Name"}</p></div>
+            <div className={`${style.name} `} ><p className={`${style.gdtxt2} `}>Admin Name</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt3} `}>PAN</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt4} `}>Mobile</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt6} `}>Status</p></div>
@@ -137,6 +129,8 @@ const UserList = () => {
 
 
           {
+            
+            
             userdata
               .filter(item =>
                 item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -152,23 +146,9 @@ const UserList = () => {
                 <div className={`${style.ddata} `}>
                   <div className={`${style.name} `} ><p className={`${style.srno} `}>{index + 1}</p></div>
                   <div className={`${style.name} `} ><p className={`${style.an} `}>{item.name}</p></div>
-                  <div className={`${style.name} `}
-                    onClick={
-                      userProf === "Distributor List" ?
-                        () => GotoDistributorData(item.id, item.pan) :
-                        () => GOTOUserdata(item.regId)
-                    } style={{ cursor: "pointer" }}>
-                    <p className={`${style.pan} text-primary`}>{item.pan}</p></div>
+                  <div className={`${style.name} `}  ><p className={`${style.pan} text-primary`}>{item.pan}</p></div>
                   <div className={`${style.name} `} ><p className={`${style.mobile} `}>{item.mobile}</p></div>
-
-                  {
-                    userProf === "Distributor List" ?
-                      (
-                        <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={{ color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
-                      ) : (
-                        <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i></p></div>
-                      )
-                  }
+                  <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i></p></div>
                 </div>
 
               ))
@@ -178,7 +158,7 @@ const UserList = () => {
 
 
         </div>
-        {/* Bottom Port Ends */}
+      
 
 
       </div>
@@ -189,4 +169,4 @@ const UserList = () => {
   );
 }
 
-export default UserList;
+export default ViewUsers;

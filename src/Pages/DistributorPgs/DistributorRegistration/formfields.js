@@ -19,6 +19,7 @@ const formfields = [
     mandatory: false,
     validationmsg: ""
   },
+  
   {
     labelname: "Profession",
     id: "profession",
@@ -65,22 +66,22 @@ const formfields = [
     validationmsg: "Enter Valid Email"
   },
   {
-    labelname: " Addresss",
-    id: "Address",
-    name: "Address",
+    labelname: "Addresss",
+    id: "address",
+    name: "address",
     type: "text",
     placeholder: "Enter your address",
-    mandatory: false,
-    validationmsg: ""
+    mandatory: true,
+    validationmsg: "Enter your address"
   },
   {
     labelname: "Pin Code",
-    id: "pin_Code",
-    name: "pin_Code",
+    id: "pin_code",
+    name: "pin_code",
     type: "text",
     placeholder: "Enter your pin",
-    mandatory: false,
-    validationmsg: ""
+    mandatory: true,
+    validationmsg: "Enter valid pin"
   },
   {
     labelname: "State",
@@ -88,20 +89,36 @@ const formfields = [
     name: "state",
     type: "dropdown",
     placeholder: "",
-    mandatory: false,
-    validationmsg: ""
-  }
-  ,
+    mandatory: true,
+    validationmsg: "Select state"
+  },
   {
-    labelname: "Residential Status",
-    id: "residential_status",
-    name: "residential_status",
-    type: "dropdown",
-    placeholder: "",
+    labelname: "WhatsApp Link",
+    id: "whatsApp_Link",
+    name: "whatsApp_Link",
+    type: "text",
+    placeholder: "Enter your whatsapp link",
     mandatory: false,
     validationmsg: ""
+  },
+  
+  {
+    labelname: "Password",
+    id: "password",
+    name: "password",
+    type: "password",
+    placeholder: "Enter your password",
+    mandatory: true,
+    validationmsg: ""
+  },
+  {
+    labelname: "Confirm Password",
+    id: "confirmpassword",
+    name: "confirmpassword",
+    type: "password",
+    placeholder: "Re-enter password",
+    mandatory: true,
+    validationmsg: "Password Mismatch"
   }
-
-
 ];
 export default formfields;

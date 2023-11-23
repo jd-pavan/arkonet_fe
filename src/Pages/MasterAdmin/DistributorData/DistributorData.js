@@ -5,16 +5,22 @@ import States_obj from '../../../ObjData/States.json'
 
 import swal from 'sweetalert';
 import { url_ } from '../../../Config';
-import styles from './UserUpdate.module.css';
+import styles from './DistributorData.module.css';
 import profileimg from '../../../Images/profile.png'
 import InputField from '../../../components/InputField/InputField';
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-const UserUpdate = () => {
 
 
-  const user_id = window.localStorage.getItem('user_id');
+const DistributorData = () => {
+
+  const Navigate = useNavigate()
+  const user_id = useLocation().state.DistributorID;
+  const Distri_PAN = useLocation().state.DistributorPAN;
+  // console.log(user_id)
   const storedToken = window.localStorage.getItem('jwtToken');
 
   const [values, setValues] = useState({
@@ -37,7 +43,7 @@ const UserUpdate = () => {
   useEffect(() => {
     GetClient();
     Getbankdetails();
-
+    GetDistriKYCdata();
   }, [])
 
 
@@ -45,7 +51,7 @@ const UserUpdate = () => {
   function GetClient() {
     try {
 
-      fetch(`${url_}/getuserByid/${user_id}`, {
+      fetch(`${url_}/all/distributorbyid/${user_id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -68,7 +74,7 @@ const UserUpdate = () => {
             state: res.state,
             whatsApp_Link: res.whatsApp_Link,
             investNow_Email: res.investNow_Email,
-            userid: `${user_id}`,
+            userid: res.regId,
           })
 
         })
@@ -89,7 +95,7 @@ const UserUpdate = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const url = `${url_}/updateuser/${user_id}`;
+    const url = `${url_}/updateDistribution/${user_id}`;
     console.log(url);
     console.log(values)
     try {
@@ -128,14 +134,18 @@ const UserUpdate = () => {
   const [image_name, setImage_name] = useState(null);
   const [bankdetails, setBankdetails] = useState({
 
-    profilepic: null,
-    qrcode: null,
-    upiid: "",
-    upinumber: "",
+    // qrcode: null,
+    // upiid: "",
+    // upinumber: "",
     bankname: "",
     accountname: "",
     accountnumber: "",
-    ifsc: ""
+    ifsc: "",
+
+    profilepic: null,
+    DistriPAN: null,
+    DistriAddhar: null,
+    DistriCanceledCheuqe: null
   });
 
 
@@ -148,21 +158,7 @@ const UserUpdate = () => {
     const { name, value } = e.target;
 
 
-    if (name === "upinumber") {
-      if (value.length === 10) {
 
-        const mobilePattern = /^[789]\d{9}$/;
-        if (mobilePattern.test(e.target.value)) {
-          setBankdetails({ ...bankdetails, [e.target.name]: value.replace(/\D/g, "") });
-          e.target.value = value.replace(/\D/g, "");
-        } else {
-
-          Swal.fire("Enter valid UPI Number!")
-
-        }
-      }
-
-    }
 
     //=============================================================================
     switch (name) {
@@ -175,18 +171,6 @@ const UserUpdate = () => {
 
 
 
-      case "upinumber":
-
-        setBankdetails({ ...bankdetails, [e.target.name]: value.replace(/\D/g, "") });
-        e.target.value = value.replace(/\D/g, "");
-
-
-
-        break;
-
-      case "qrcode":
-        setBankdetails({ ...bankdetails, [e.target.name]: e.target.files[0] });
-        break;
       case "profilepic":
         setBankdetails({ ...bankdetails, [e.target.name]: e.target.files[0] });
         break;
@@ -201,10 +185,11 @@ const UserUpdate = () => {
     // console.log(bankdetails)
   };
 
+
   function Getbankdetails() {
     try {
 
-      fetch(`${url_}/getpaymentDetails/${user_id}`, {
+      fetch(`${url_}/getdistributordetail/${Distri_PAN}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -213,19 +198,19 @@ const UserUpdate = () => {
       })
         .then(response => response.json())
         .then(res => {
-          console.log(res);
-          const objectPropertyCount = Object.keys(res).length;
-          setBankDataLength(objectPropertyCount);
-          setImgContent(res.content)
+          // console.lsog(res);
+          // const objectPropertyCount = Object.keys(res).length;
+          // setBankDataLength(objectPropertyCount);
+          // setImgContent(res.content)
           setBankdetails({
-            profilepic: res.paymentDetails.imageName,
-            upiid: res.paymentDetails.upiId,
-            upinumber: res.paymentDetails.upiNumber,
-            bankname: res.paymentDetails.bank_name,
-            accountname: res.paymentDetails.accountName,
-            accountnumber: res.paymentDetails.accountNumber,
-            ifsc: res.paymentDetails.ifsc,
-            qrcode: res.paymentDetails.qrcode
+            // profilepic: res.paymentDetails.imageName,
+            // upiid: res.paymentDetails.upiId,
+            // upinumber: res.upiNumber,
+            bankname: res.bank_name,
+            accountname: res.accountName,
+            accountnumber: res.accountNumber,
+            ifsc: res.ifsc,
+            // qrcode: res.paymentDetails.qrcode
           })
 
         })
@@ -237,75 +222,26 @@ const UserUpdate = () => {
     }
   }
 
-  const SaveBankData = async (event) => {
-    event.preventDefault();
-
-    var myHeaders = new Headers();
-    myHeaders.append(
-      "Authorization",
-      `Bearer ${storedToken}`
-    );
-
-    var formdata = new FormData();
-    formdata.append("userid", user_id);
-    formdata.append("QR", bankdetails.qrcode);
-    formdata.append("Bank_Name", bankdetails.bankname);
-    formdata.append("AccountName", bankdetails.accountname);
-    formdata.append("AccountNumber", bankdetails.accountnumber);
-    formdata.append("IFSC", bankdetails.ifsc);
-    formdata.append("UPI_ID", bankdetails.upiid);
-    formdata.append("UPI_Number", bankdetails.upinumber);
-    formdata.append("image", bankdetails.profilepic);
-
-
-    console.log(formdata)
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: formdata,
-      redirect: "follow",
-    };
-
-    try {
-      const response = await fetch(`${url_}/paymentDetails`, requestOptions);
-      const result = await response.text();
-      console.log(result);
-      if (response.status === 200) {
-        await swal(
-          'Success.',
-          `${result}`,
-          'success'
-        )
-        window.location.reload();
-
-      } else {
-        swal(
-          'Failed!',
-          `Failed to save data!!!`,
-          'error'
-        )
-      }
-    } catch (error) {
-      console.log("error", error);
-    }
-  };
 
 
   const UpdateBankData = async (e) => {
-    console.log(bankdetails)
     e.preventDefault();
 
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
     var formdata = new FormData();
-    formdata.append("image", bankdetails.profilepic);
-    formdata.append("QR", bankdetails.qrcode);
+    formdata.append("imagePathProfile", bankdetails.profilepic);
     formdata.append("Bank_Name", bankdetails.bankname);
     formdata.append("AccountName", bankdetails.accountname);
     formdata.append("AccountNumber", bankdetails.accountnumber);
     formdata.append("IFSC", bankdetails.ifsc);
-    formdata.append("UPI_Number", bankdetails.upiid);
+
+    console.log(bankdetails.ifsc)
+    console.log(bankdetails.accountname)
+    console.log(bankdetails.accountnumber)
+    console.log(bankdetails.bankname)
+    console.log(bankdetails.profilepic)
 
     var requestOptions = {
       method: 'PUT',
@@ -315,7 +251,7 @@ const UserUpdate = () => {
     };
 
     try {
-      const response = await fetch(`${url_}/UpdatePaymentDetails/${user_id}`, requestOptions);
+      const response = await fetch(`${url_}/UpdatedistributorPaymentDetails/${Distri_PAN}`, requestOptions);
       const result = await response.text();
       console.log(result);
       if (response.status === 200) {
@@ -338,22 +274,133 @@ const UserUpdate = () => {
     }
   };
 
+
+  async function StopServiceDistributor() {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+    var requestOptions = {
+      method: 'PUT',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+
+    try {
+      const response = await fetch(`${url_}/update/distributor/${user_id}/false`, requestOptions);
+
+      if (response.status === 200) {
+        await Swal.fire("Success.", "Distributor stopped successfully.", "success");
+        window.location.reload();
+      } else {
+        await Swal.fire("Failed!", "Failed to approve distributor.", "error");
+        window.location.reload();
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function GoBack() {
+    window.history.back(); // This will navigate to the previous page in the browser's history
+  }
+
+  const GetDistriKYCdata = async () => {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+    await fetch(`${url_}/getdistributorprofile/${Distri_PAN}`, requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        const decodedImage = atob(result);
+
+        // Convert the decoded string to a Uint8Array
+        const arrayBuffer = new Uint8Array(decodedImage.length);
+        for (let i = 0; i < decodedImage.length; i++) {
+          arrayBuffer[i] = decodedImage.charCodeAt(i);
+        }
+
+        // Create a Blob from the arrayBuffer
+        const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+
+        // Create a data URL from the Blob
+        const dataUrl = URL.createObjectURL(blob);
+        console.log(dataUrl)
+        // setImgContent(dataUrl)
+
+
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+    // await fetch(`${url_}/getdistributoradhar/${Distri_PAN}`, requestOptions)
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     // console.log(result)
+
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   })
+    // await fetch(`${url_}/getdistributorpan/${Distri_PAN}`, requestOptions)
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     // console.log(result)
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   })
+    // await fetch(`${url_}/getdistributorcheque/${Distri_PAN}`, requestOptions)
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     // console.log(result.length)
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   })
+
+
+
+  }
   const imageSrc = imgcontent ? `data:image/jpeg;base64,${imgcontent}` : profileimg;
 
   return (
     <div>
       <div className={styles.right}>
-        <div className={`${styles.regtitle} d-flex justify-content-around m-4`}>
-          <span> USER UPDATE FORM</span>
-          <div className={`${styles.btn_submit} `}>
-            <button type="submit" onClick={handleSubmit}>
-              UPDATE
-            </button>
+        <div className={`${styles.regtitle} d-flex justify-content-around align-items-center mt-4`}>
+          <div style={{ fontSize: "xxx-large", cursor: "pointer" }} onClick={GoBack}>
+            &#8617;&nbsp;
           </div>
+          <h3> DISTRIBUTOR PROFILE</h3>
+          <div></div>
+
+        </div>
+        <div className={`${styles.proimg} d-flex flex-column align-items-center`} >
+
+          <div className={styles.file_upload}>
+            <div className={styles.image_upload_wrap}>
+              <input className={styles.file_upload_input} type='file' name='profilepic' onChange={bankhandleChange} />
+              <div className={styles.drag_text}>
+                <img src={imageSrc} alt="Profile Image" />
+                <h4>Upload File</h4>
+              </div>
+            </div>
+          </div>
+          <button className='mt-2 ' onClick={() => StopServiceDistributor()} style={{ backgroundColor: "red" }}>STOP</button>
         </div>
         <div className={styles.regform}>
+          <h4 className='text-danger mb-4'>
+            <hr />
+            <b>Personal Information</b>
+            <hr />
+          </h4>
           <form action="" onSubmit={handleSubmit}>
-            <div className={styles.first}>
+            <div className={`${styles.first} ml-5 w-75`}>
               <InputField placeholder='Enter your Name' onChange={handleChange} lblname='Name' name='name' value={values.name} />
               <InputField placeholder='Enter your DOB in YYYYY-MM-DD' onChange={handleChange} lblname='DOB/DOI' name='datebirth' value={values.datebirth} />
               <DropDown value_array={Uprofesion_obj} lblname='Profession' name='profession' onChange={handleChange} value={values.profession} />
@@ -370,56 +417,57 @@ const UserUpdate = () => {
 
           </form>
         </div>
-      </div>
-
-      <div className="row">
-        <div className={`${styles.paytitle}`}>PAYMENT DETAILS</div>
-      </div>
-      <div className={` row ${styles.paymentres} m-2  `}>
-        <div className={`${styles.proimg}`} >
-
-          <div className={styles.file_upload}>
-            <div className={styles.image_upload_wrap}>
-              <input className={styles.file_upload_input} type='file' name='profilepic' onChange={bankhandleChange} />
-              <div className={styles.drag_text}>
-                <img src={imageSrc} alt="Profile Image" />
-                <h4>Upload File</h4>
-                {/* <h6>{image_name}</h6> */}
-              </div>
-            </div>
-          </div>
-
+        <div className={`${styles.btn_submit} w-100 d-flex justify-content-center`}>
+          <button type="submit" onClick={handleSubmit}>
+            UPDATE
+          </button>
         </div>
+      </div>
+
+      <div className="">
+        <h4 className='text-danger mb-4'>
+          <hr />
+          <b>Bank Details</b>
+          <hr />
+        </h4>
+      </div>
+      <div className={`w-75 `}>
+
         <div className='ml-5'>
-          <div className={`${styles.qrupload} mb-4 `}>
-            <label >QR CODE</label>
-            <input type="file" name="qrcode" id="" className={`${styles.qrinput}`} onChange={bankhandleChange} />
+          <div className={`${styles.qrupload} mb-4 d-flex justify-content-around w-100 `}>
+            <div className='d-flex flex-column align-items-center '>
+              <i class="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }}></i>
+              <h6>PAN Card</h6>
+            </div>
+            <div className='d-flex flex-column align-items-center '>
+              <i class="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }}></i>
+              <h6>Aadhar Card</h6>
+            </div>
+            <div className='d-flex flex-column align-items-center '>
+              <i class="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }}></i>
+              <h6>Canceled Cheque</h6>
+            </div>
+
           </div>
           <div className={`${styles.upiid} `}>
-            <InputField lblname='UPI ID' color='red' placeholder='Enter your UPI ID' name='upiid' value={bankdetails.upiid} onChange={bankhandleChange} />
-            <InputField lblname='UPI Number' color='red' placeholder='Enter your UPI Number' name='upinumber' value={bankdetails.upinumber} onChange={bankhandleChange} maxLength={10} />
+            {/* <InputField lblname='UPI ID' color='red' placeholder='Enter your UPI ID' name='upiid' value={bankdetails.upiid} onChange={bankhandleChange} />
+            <InputField lblname='UPI Number' color='red' placeholder='Enter your UPI Number' name='upinumber' value={bankdetails.upinumber} onChange={bankhandleChange} maxLength={10} /> */}
 
-          </div>
-          <div className={`${styles.detailtitle}`}>BANK DETAILS</div>
-          <div className="accname">
             <InputField lblname='BANK NAME' color='red' placeholder='Enter bank name' name='bankname' value={bankdetails.bankname} onChange={bankhandleChange} />
             <InputField lblname='ACCOUNT NAME' color='red' placeholder='Enter account name' name='accountname' value={bankdetails.accountname} onChange={bankhandleChange} />
             <InputField lblname='ACCOUNT NUMBER' color='red' placeholder='Enter account number' name='accountnumber' value={bankdetails.accountnumber} onChange={bankhandleChange} />
-            <div className={`${styles.ifsc} `}>
-              <InputField lblname='IFSC' color='red' placeholder='Enter IFSC code' name='ifsc' value={bankdetails.ifsc} onChange={bankhandleChange} />
+            <InputField lblname='IFSC' color='red' placeholder='Enter IFSC code' name='ifsc' value={bankdetails.ifsc} onChange={bankhandleChange} />
 
-              {bankdatalength > 0 ?
-                (
-                  <button onClick={UpdateBankData}>UPDATE</button>
-                ) : (
-                  <button onClick={SaveBankData}>SAVE</button>
-                )}
-            </div>
           </div>
         </div>
       </div >
+      <div className={`${styles.ifsc} w-100 d-flex justify-content-center`}>
+
+        <button onClick={UpdateBankData}>UPDATE</button>
+
+      </div>
     </div >
   );
 }
 
-export default UserUpdate;
+export default DistributorData;

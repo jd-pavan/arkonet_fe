@@ -44,7 +44,7 @@
 
 }
 
-.ubtn_submit button:active {
+button:active {
   box-shadow: 4px 2px 5px 0 gray;
   transform: translateY(4px);
 }
@@ -74,11 +74,4 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-direction: column;
-}
-
-.discount_input input {
-  border: 1px solid gray;
-  border-radius: 5px;
-  height: 2rem;
 }

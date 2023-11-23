@@ -46,39 +46,89 @@ const DistributorsPayment = () => {
       })
 
   }
-  const distributorPaymenthandleChange = (e) => {
-    const { name, value } = e.target;
-    setdistributorAmount({ ...distributorAmount, [e.target.name]: value.replace(/\D/g, "") });
-    e.target.value = value.replace(/\D/g, "");
+  // const distributorPaymenthandleChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setdistributorAmount({ ...distributorAmount, [e.target.name]: value.replace(/\D/g, "") });
+  //   e.target.value = value.replace(/\D/g, "");
+  // }
+
+  async function updateResponse(res) {
+    if (res === 200) {
+      await Swal.fire("Success.", "Amount updated successfully.", "success");
+      setdistributorAmount({
+        amount: ""
+      })
+      window.location.reload()
+    } else {
+      await Swal.fire("Failed.", "Failed to update amount!!", "error");
+      window.location.reload();
+    }
   }
 
-  const DistriPayment = async (distriPAN) => {
+  const DistriPayment = async (distriPAN, distriAMOUNT) => {
+
+
+    console.log(distriPAN, distriAMOUNT)
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
     var requestOptions = {
-      method: 'GET',
+      method: 'PUT',
       headers: myHeaders,
       redirect: 'follow'
     };
 
     try {
-      const response = await fetch(`${url_}/update/everydistrubutor/incomecount/${distriPAN}/${distributorAmount.amount}`, requestOptions);
+      const response = await fetch(`${url_}/update/everydistrubutor/incomecount/${distriPAN}/${distriAMOUNT}`, requestOptions);
+      updateResponse(response.status)
 
-      if (response.status === 200) {
-        const result = await response.json();
-        await Swal.fire("Success.", "Amount updated successfully.", "success");
-        setdistributorAmount({
-          amount: ""
-        })
-        window.location.reload();
-      } else {
-        await Swal.fire("Failed.", "Failed to update amount!!", "error");
-        window.location.reload();
-      }
+      // if (response.status === 200) {
+      //   const result = await response.json();
+      //   // console.log(result)
+      //   // await Swal.fire("Success.", "Amount updated successfully.", "success");
+      //   setdistributorAmount({
+      //     amount: ""
+      //   })
+
+      // } else {
+      //   await Swal.fire("Failed.", "Failed to update amount!!", "error");
+      //   // window.location.reload();
+      // }
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const [inputValues, setInputValues] = useState(Array(userdata.length).fill(''));
+
+  const handleInputChange = (index, value) => {
+    const newInputValues = [...inputValues];
+    newInputValues[index] = value;
+    setInputValues(newInputValues);
+  };
+
+  const handleButtonClick = () => {
+    // const filledValuesWithNames = userdata.reduce((result, user, index) => {
+    //   if (inputValues[index] !== '') {
+    //     result.push({ name: user.distibutor.pan, value: inputValues[index] });
+    //   }
+    //   return result;
+    // }, []);
+
+    const filledValuesWithNames = userdata.reduce((result, user, index) => {
+      const inputValue = inputValues[index] || 0; // If input value is falsy, set it to 0
+      result.push({ name: user.distibutor.pan, value: inputValue });
+      return result;
+    }, []);
+    console.log(filledValuesWithNames)
+
+    function Printdata(data) {
+      data.forEach(item => {
+        console.log(`${item.name}: ${item.value}`);
+        DistriPayment(item.name, item.value)
+      });
+    }
+    Printdata(filledValuesWithNames);
   };
 
   return (
@@ -117,11 +167,11 @@ const DistributorsPayment = () => {
           <div className={`${style.drow} `}>
             {/* <div className={`${style.name} `} ><p className={`${style.gdtxt1} `}>Sr. No</p></div> */}
             <div className={`${style.name} `} ><p className={`${style.gdtxt2} `}>Name</p></div>
+            <div className={`${style.name} `} ><p className={`${style.gdtxt2} `}>PAN</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt3} `}>Total Earning</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt4} `}>Paid</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt6} `}>Unpaid</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt6} `}>Amount</p></div>
-            <div className={`${style.name} `} ><p className={`${style.gdtxt6} `}>Action</p></div>
           </div>
 
 
@@ -141,6 +191,7 @@ const DistributorsPayment = () => {
                 <div className={`${style.ddata} `}>
                   {/* <div className={`${style.name} `} ><p className={`${style.srno} `}>{index + 1}</p></div> */}
                   <div className={`${style.name} `} ><p className={`${style.an} `}>{item.distibutor.name}</p></div>
+                  <div className={`${style.name} `} ><p className={`${style.an} `}>{item.distibutor.pan}</p></div>
                   <div className={`${style.name} `}><p className={`${style.pan} `}>{item.totalEarning}</p></div>
                   <div className={`${style.name} `} ><p className={`${style.mobile} `}>{item.paid}</p></div>
 
@@ -148,7 +199,7 @@ const DistributorsPayment = () => {
                   <div className={`${style.name} `} ><p className={`${style.status} `}>{item.unpaid}</p></div>
                   <div className={`${style.name} `} >
                     <p className={`${style.status} `}>
-                      <input type="text" name="amount" id=""
+                      {/* <input type="text" name="amount" id=""
                         onChange={distributorPaymenthandleChange}
                         style={{
                           width: "100%",
@@ -157,10 +208,25 @@ const DistributorsPayment = () => {
                           boxShadow: "inset 0 6px 10px 0 rgba(0, 0, 0, 0.19)",
                           paddingLeft: "5px",
 
-                        }} />
+                        }} /> */}
+                      <input
+                        key={index}
+                        type="text"
+                        value={inputValues[index]}
+                        onChange={(e) => handleInputChange(index, e.target.value)}
+
+                        style={{
+                          width: "100%",
+                          borderRadius: "10px",
+                          border: "none",
+                          boxShadow: "inset 0 6px 10px 0 rgba(0, 0, 0, 0.19)",
+                          paddingLeft: "5px",
+
+                        }}
+                      />
                     </p>
                   </div>
-                  <div className={`${style.name} `} >
+                  {/* <div className={`${style.name} `} >
                     <p className={`${style.status} `}>
                       <div className={`${style.btn_submit} mt-4`}>
                         <button type="submit" onClick={() => DistriPayment(item.distibutor.pan)}>
@@ -168,7 +234,7 @@ const DistributorsPayment = () => {
                         </button>
                       </div>
                     </p>
-                  </div>
+                  </div> */}
 
                 </div>
 
@@ -180,7 +246,9 @@ const DistributorsPayment = () => {
         </div>
 
         {/* Bottom Port Ends */}
-
+        <div className={`${style.btn_submit} mt-4`}>
+          <button onClick={handleButtonClick}>UPDATE PAYMENT</button>
+        </div>
 
       </div>
 
