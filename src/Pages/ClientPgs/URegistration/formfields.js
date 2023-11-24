@@ -2,6 +2,15 @@
 //List of Input Fields
 const formfields = [
   {
+    labelname: "PAN",
+    id: "pan",
+    name: "pan",
+    type: "text",
+    placeholder: "Enter your PAN",
+    mandatory: true,
+    validationmsg: "Enter Valid PAN"
+  },
+  {
     labelname: "Name",
     id: "name",
     name: "name",
@@ -28,15 +37,7 @@ const formfields = [
     mandatory: true,
     validationmsg: "Select Profession"
   },
-  {
-    labelname: "PAN",
-    id: "pan",
-    name: "pan",
-    type: "text",
-    placeholder: "Enter your PAN",
-    mandatory: true,
-    validationmsg: "Enter Valid PAN"
-  },
+
   {
     labelname: "Telephone",
     id: "telephone",

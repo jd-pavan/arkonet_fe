@@ -94,10 +94,10 @@ const Registration = () => {
         }
         break;
 
-      case "membership_No":
-        setFormdata({ ...formdata, [e.target.name]: value.replace(/\D/g, "") });
-        e.target.value = value.replace(/\D/g, "");
-        break;
+      // case "membership_No":
+      //   setFormdata({ ...formdata, [e.target.name]: value.replace(/\D/g, "") });
+      //   e.target.value = value.replace(/\D/g, "");
+      //   break;
 
       case "email":
         setFormdata({ ...formdata, [e.target.name]: e.target.value });
