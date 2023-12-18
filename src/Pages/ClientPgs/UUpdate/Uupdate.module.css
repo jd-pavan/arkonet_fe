@@ -30,6 +30,10 @@
   justify-content: center;
   align-items: center;
 }
+.viewmail{
+  cursor: pointer;
+  width: fit-content;
+}
 
 .ubtn_submit button {
   border-radius: 10px;

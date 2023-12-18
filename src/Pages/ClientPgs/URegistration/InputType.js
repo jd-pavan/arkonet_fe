@@ -39,6 +39,9 @@ export default class InputType extends React.Component {
     if (this.props.name === "state") {
       properties.value_array = States_obj;
     }
+    if (this.props.name === "invest_now_email") {
+      properties.value_array = this.props.mailList;
+    }
     if (this.props.name === "email") {
       properties.isValidEmail = this.props.isValidEmail;
     }
@@ -49,6 +52,10 @@ export default class InputType extends React.Component {
     if (this.props.name === "telephone") {
       properties.maxLength = 11;
     }
+    if(this.props.name === "pin_code")
+    {     properties.maxLength=6;
+         properties.isValidPIN=this.props.isValidPIN;
+     }
     if (this.props.name === "pan") {
       properties.maxLength = 10;
       properties.isValidPAN = this.props.isValidPAN;

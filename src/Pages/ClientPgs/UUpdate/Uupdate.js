@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import InputField from '../../../components/InputField/InputField';
+import InputType from '../URegistration/InputType';
 import styles from './Uupdate.module.css';
 import DropDown from '../../../components/DropDown/DropDown';
 import Uprofesion_obj from '../../../ObjData/CProf.json';
@@ -12,24 +13,34 @@ import { Navigate, useParams } from 'react-router-dom';
 
 const Uupdate = () => {
   const user_id = window.localStorage.getItem('user_id');
+  const user_pan = window.localStorage.getItem('pan');
   const storedToken = window.localStorage.getItem('jwtToken');
   const { id } = useParams();
   const currentYear = new Date().getFullYear();
   const fyyear = `${currentYear}-${(currentYear + 1).toString().slice(-2)}`
+
+  const [mailList,setMailList]=useState(
+    [      
+      {
+        "val":"Other",
+        "option_name":"Other"
+      }    
+    ]
+  )
   const [values, setValues] = useState({
     id: id,
     address: "",
     email: "",
     mobile: "",
     pan: "",
-    pin_Code: "",
+    pin_code: "",
     profession: "",
     state: "",
+    invest_now_email:null,
     telephone: "",
     dob: "",
     name: "",
     userid: `${user_id}`,
-
   })
 
   const [ClientPayment, setClientPayment] = useState({
@@ -45,10 +56,11 @@ const Uupdate = () => {
   const [DiscountPayment, setDiscountPayment] = useState()
   const [paymentlastupdate, setpaymentlastupdate] = useState()
 
+
   useEffect(() => {
+   
     GetClient();
     GetClientPayment();
-
   }, [])
 
   function GetClientPayment() {
@@ -83,7 +95,9 @@ const Uupdate = () => {
   }
 
 
-  function GetClient() {
+  async function GetClient() {
+    const mailList1=await fetchMailList();
+    console.log(mailList1)
     try {
 
       fetch(`${url_}/getClientById/${user_id}/${id}`, {
@@ -95,15 +109,27 @@ const Uupdate = () => {
       })
         .then(response => response.json())
         .then(res => {
-          console.log(res);
+          const mailListvalues=mailList1.map((item)=>item.val)
+          // console.log(res);
+          if(mailListvalues.includes(res.invest_now_email))
+          {
+            // console.log("exist")
+            setInvestNowType("dropdown")
+          }
+          else{
+            // console.log("dont exist")
+            setInvestNowType("text")
+          }
+          setMailList(mailList1)
           setValues({
             address: res.address,
             email: res.email,
             mobile: res.mobile,
             pan: res.pan,
-            pin_Code: res.pin_Code,
+            pin_code: res.pin_code,
             profession: res.profession,
             state: res.state,
+            invest_now_email:res.invest_now_email,
             telephone: res.telephone,
             dob: res.dob,
             name: res.name,
@@ -120,16 +146,38 @@ const Uupdate = () => {
       console.warn("Error on function calling...")
     }
   }
-
+const [investnowtype,setInvestNowType]=useState("dropdown")
 
   const handleChange = (e) => {
+    if(e.target.name=== "invest_now_email"){
+          
+          
+          if(investnowtype==="dropdown"&&e.target.value==="Other")
+          {            
+            setInvestNowType("text");
+              if(e.target.value==="Other"){
+                setValues({ ...values, [e.target.name]: "" });
+                e.target.value = "";
+              }              
+          }
+          else if(investnowtype==="dropdown" && e.target.value!=="Other"){
+            setInvestNowType("dropdown");
+            setValues({ ...values, [e.target.name]: e.target.value });
+          }
+          else{
+            setValues({ ...values, [e.target.name]: e.target.value });
+          }
+        
+      }
+      else{
     setValues({ ...values, [e.target.name]: e.target.value });
+      }
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const url = `${url_}/updateClient/${id}`;
-    console.log(url);
+    console.log(values);
     try {
 
       fetch(url, {
@@ -137,14 +185,21 @@ const Uupdate = () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${storedToken}`
-        },
+        }, 
 
         body: JSON.stringify(values),
       })
         .then(res => {
-          swal.fire("Success", "Data updated successfully.", "success");
+          if(res.status==200)
+         { swal.fire("Success", "Data updated successfully.", "success");
           window.location.reload();
-          console.log(values)
+          
+        }
+          // console.log(values)
+          else{
+          swal.fire("Failed!", " Failed to update.!!!!", "error");
+
+          }
         })
         .catch(error => {
           swal.fire("Failed!", " Failed to update.!!!!", "error");
@@ -249,6 +304,42 @@ const Uupdate = () => {
   };
 
 
+  
+  async function fetchMailList(){
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
+  
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+  
+    try {
+      const response = await fetch(`${url_}/Invest_now/get_all/by-pan/${user_pan}`, requestOptions);
+      const result = await response.json();
+      
+      const updateItems=[...mailList]
+      result.map((item)=>{      
+        updateItems.push({
+          id: item.id,
+          pan: item.pan,
+          val: item.investNow_Email,
+          option_name: item.investNow_Email,
+        });
+      })
+      return updateItems;
+      // console.log(updateItems)
+  // setMailList(updateItems)
+    }catch(error){
+        console.log(error)
+      }
+  }
+
+
+  function viewMailList(){
+    setInvestNowType("dropdown")
+  }
 
   return (
     <div>
@@ -269,17 +360,28 @@ const Uupdate = () => {
           </div>
           <div className={styles.regform}>
             <InputField placeholder='Enter your Name' onChange={handleChange} lblname='Name' name='name' value={values.name} />
-            <InputField placeholder='Enter your DOB in YYYYY-MM-DD' onChange={handleChange} lblname='DOB/DOI' name='dob' value={values.dob} />
+            <InputField placeholder='Enter your DOB in YYYYY-MM-DD' onChange={handleChange} lblname='DOB/DOI' name='dob' value={values.dob} type="date"/>
             <DropDown value_array={Uprofesion_obj} lblname='Profession' name='profession' onChange={handleChange} value={values.profession} />
             <InputField placeholder='Enter your PAN' onChange={handleChange} lblname='PAN' name='pan' value={values.pan} disabled={true} />
             <InputField type='number' placeholder='Enter your Telephone' onChange={handleChange} lblname='Telephone' name='telephone' value={values.telephone} />
             <InputField type='number' placeholder='Enter your Mobile' onChange={handleChange} lblname='Mobile' name='mobile' value={values.mobile} />
             <InputField placeholder='Enter your Email' onChange={handleChange} lblname='Email' name='email' value={values.email} />
             <InputField placeholder='Enter your office address' onChange={handleChange} lblname=' Addresss' name='address' value={values.address} />
-            <InputField placeholder='Enter your pin' onChange={handleChange} lblname='Pin Code' name='pin_Code' value={values.pin_Code} />
+            <InputField placeholder='Enter your pin' onChange={handleChange} lblname='Pin Code' name='pin_code' value={values.pin_code} />
             <DropDown value_array={States_obj} lblname='State' name='state' value={values.state} onChange={handleChange} />
+            <div ><InputType                
+                labelname="InvestNow Email"
+                name="invest_now_email"
+                type={investnowtype}
+                placeholder="Enter your investnow email"
+                value={values.invest_now_email}               
+                onChange={handleChange}
+                mandatory={false}
+                mailList={mailList}
 
-
+              />
+              <p onClick={viewMailList} className={styles.viewmail} >View Mail List</p>
+              </div>
             <div className={`container ${styles.container} m-4`}>
               <div className="row justify-content-md-center">
                 <div className="col-md-auto font-weight-bold m-3 h4">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import styles from './URegistration.module.css';
 
@@ -20,6 +20,7 @@ const URegistration = () => {
   const Navigate = useNavigate();
   // Access JWT token and remove double quotes
   const user_id = window.localStorage.getItem('user_id');
+  const user_pan = window.localStorage.getItem('pan');
   const storedToken = window.localStorage.getItem('jwtToken');
   // const cleanedToken = window.storedToken.replace(/^"(.*)"$/, '$1');
 
@@ -30,6 +31,7 @@ const URegistration = () => {
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isValidMobile, setIsValidMobile] = useState(true);
   const [isValidPAN, setIsValidPAN] = useState(true);
+  const [isValidPIN, setIsValidPIN] = useState(true);
   const [fieldDisable, setFieldDisable] = useState('');
   const [SUbmitbtn, setSUbmitbtn] = useState(false);
 
@@ -37,25 +39,66 @@ const URegistration = () => {
   const [GST_Radio, setGST_Radio] = useState(false);
   const [Both_Radio, setBoth_Radio] = useState(false);
 
+  const [mailList,setMailList]=useState(
+    [      
+      {
+        "val":"Other",
+        "option_name":"Other"
+      }
+    
+    ]
+  )
   const [formdata, setFormdata] = useState({
     address: "",
     email: "",
     mobile: "",
     pan: "",
-    pin_Code: "",
+    pin_code: "",
     profession: "",
     state: "",
+    invest_now_email:"",
     telephone: "",
     category: "",
     dob: "",
     name: "",
     residential_status: "",
     userid: `${user_id}`,
+    
   });
 
+useEffect(()=>{
+  fetchMailList();
+},[])
 
+async function fetchMailList(){
+  var myHeaders = new Headers();
+  myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
+  var requestOptions = {
+    method: 'GET',
+    headers: myHeaders,
+    redirect: 'follow'
+  };
 
+  try {
+    const response = await fetch(`${url_}/Invest_now/get_all/by-pan/${user_pan}`, requestOptions);
+    const result = await response.json();
+    
+    const updateItems=[...mailList]
+    result.map((item)=>{      
+      updateItems.push({
+        id: item.id,
+        pan: item.pan,
+        val: item.investNow_Email,
+        option_name: item.investNow_Email,
+      });
+    })
+    // console.log(updateItems)
+setMailList(updateItems)
+  }catch(error){
+      console.log(error)
+    }
+}
 
 
   const handleChange = (e) => {
@@ -115,13 +158,42 @@ const URegistration = () => {
         setIsValidMobile(mobilePattern.test(e.target.value));
         break;
 
+      case "pin_code":
+          setFormdata({ ...formdata, [e.target.name]: value.replace(/\D/g, "") });
+          e.target.value = value.replace(/\D/g, "");
+          // Basic pin code validation
+          const pinPattern = /^[1-9]{1}[0-9]{5}$/;
+          setIsValidPIN(pinPattern.test(e.target.value));
+          break;
+
       case "telephone":
         setFormdata({ ...formdata, [e.target.name]: value.replace(/\D/g, "") });
         e.target.value = value.replace(/\D/g, "");
         break;
 
 
-
+        case "invest_now_email":
+          const index = formfields.findIndex(item => item.name === "invest_now_email");
+          if(index !==-1){
+          if(formfields[index].type==="dropdown"&&e.target.value==="Other")
+          {            
+              formfields[index].type="text";
+              if(e.target.value==="Other"){
+                setFormdata({ ...formdata, [e.target.name]: "" });
+                e.target.value = "";
+              }              
+          }
+          else if(formfields[index].type==="dropdown" && e.target.value!=="Other"){
+            formfields[index].type="dropdown";
+            setFormdata({ ...formdata, [e.target.name]: e.target.value });
+          }
+          else{
+            setFormdata({ ...formdata, [e.target.name]: e.target.value });
+          }
+        }
+        
+      
+          break;
       default:
         setFormdata({ ...formdata, [e.target.name]: e.target.value });
     }
@@ -199,7 +271,7 @@ const URegistration = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+console.log(formdata.invest_now_email)
 
 
 
@@ -223,6 +295,8 @@ const URegistration = () => {
     const mobilePattern = /^[789]\d{9}$/;
     setIsValidMobile(mobilePattern.test(formdata.mobile));
 
+    const pinPattern = /^[1-9]{1}[0-9]{5}$/;
+    setIsValidPIN(pinPattern.test(formdata.pin_code));
 
 
     // Check Form Fields
@@ -231,6 +305,7 @@ const URegistration = () => {
       !formdata.profession ||
       !isValidPAN ||
       !isValidMobile ||
+      !isValidPIN||
       !isValidEmail ||
       !formdata.category
 
@@ -264,11 +339,12 @@ const URegistration = () => {
           mobile: formdata.mobile,
           email: formdata.email,
           address: formdata.address,
-          pin_code: formdata.pin_Code,
+          pin_code: formdata.pin_code,
           state: formdata.state,
           residential_status: formdata.residential_status,
           category: formdata.category,
           userid: user_id,
+          invest_now_email:formdata.invest_now_email
         });
 
         const requestOptions = {
@@ -288,7 +364,7 @@ const URegistration = () => {
             email: "",
             mobile: "",
             pan: "",
-            pin_Code: "",
+            pin_code: "",
             profession: "",
             state: "",
             telephone: "",
@@ -297,6 +373,7 @@ const URegistration = () => {
             name: "",
             residential_status: "",
             userid: "",
+            invest_now_email:""
           });
           setFieldDisable(false)
           Navigate(-1)
@@ -343,15 +420,16 @@ const URegistration = () => {
                 value={formdata[formfield.name]}
                 mandatory={formfield.mandatory}
                 onChange={handleChange}
-                disabled={fieldDisable}
+                disabled={(formfield.name==="invest_now_email"&&GST_Radio)?false
+                            :fieldDisable}
                 validationmsg={formfield.validationmsg}
-                // strengh/tScore={formfield.name === "password" ? strenghtScore : ""}
                 isNameNull={formfield.name === "name" && isNameNull}
+                isValidPIN={formfield.name === "pin_code" && isValidPIN}
                 isValidEmail={formfield.name === "email" && isValidEmail}
                 isValidMobile={formfield.name === "mobile" && isValidMobile}
                 isValidPAN={formfield.name === "pan" && isValidPAN}
-                // isPasswordMatch={formfield.name === "confirmpassword" && isPasswordMatch}
                 isProfessionNull={formfield.name === "profession" && isProfessionNull}
+                mailList={mailList}
               />
             ))}
 

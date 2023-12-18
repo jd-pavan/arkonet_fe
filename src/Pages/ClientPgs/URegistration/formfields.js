@@ -21,8 +21,8 @@ const formfields = [
   },
   {
     labelname: "DOB/DOI",
-    id: "datebirth",
-    name: "datebirth",
+    id: "dob",
+    name: "dob",
     type: "date",
     placeholder: "",
     mandatory: false,
@@ -67,8 +67,8 @@ const formfields = [
   },
   {
     labelname: " Addresss",
-    id: "Address",
-    name: "Address",
+    id: "address",
+    name: "address",
     type: "text",
     placeholder: "Enter your address",
     mandatory: false,
@@ -76,12 +76,12 @@ const formfields = [
   },
   {
     labelname: "Pin Code",
-    id: "pin_Code",
-    name: "pin_Code",
+    id: "pin_code",
+    name: "pin_code",
     type: "text",
     placeholder: "Enter your pin",
-    mandatory: false,
-    validationmsg: ""
+    mandatory: true,
+    validationmsg: "Enter valid pin"
   },
   {
     labelname: "State",
@@ -89,6 +89,15 @@ const formfields = [
     name: "state",
     type: "dropdown",
     placeholder: "",
+    mandatory: false,
+    validationmsg: ""
+  },
+  {
+    labelname: "InvestNow Email",
+    id: "invest_now_email",
+    name: "invest_now_email",
+    type: "dropdown",
+    placeholder: "Enter your investnow email",
     mandatory: false,
     validationmsg: ""
   }

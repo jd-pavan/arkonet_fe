@@ -84,12 +84,12 @@ const formfields = [
   },
   {
     labelname: "Pin Code",
-    id: "pin_Code",
-    name: "pin_Code",
+    id: "pin_code",
+    name: "pin_code",
     type: "text",
     placeholder: "Enter your pin",
-    mandatory: false,
-    validationmsg: ""
+    mandatory: true,
+    validationmsg: "Enter valid pin"
   },
   {
     labelname: "State",

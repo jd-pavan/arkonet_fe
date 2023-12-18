@@ -44,13 +44,15 @@ const SubscriptionPlan = () => {
       const result = await response.json();
       if (response.status === 200) {
         
-       if(isPaid||isVisiting)
+       if(isPaid)
         {
           setPlans(result)
         }
         else if(!isVisiting && !isPaid){
           const finalPlanArray=result.filter((item)=>{
-            return !item.subtype.includes("Extra")
+            const subtype=item.subtype.toLowerCase();
+            // console.log(subtype)
+            return !subtype.includes("Extra".toLowerCase())
           })
           //console.log(finalPlanArray)
           setPlans(finalPlanArray);
@@ -121,7 +123,7 @@ const SubscriptionPlan = () => {
       
     }
     else{
-      console.log(plans[selectedCheckbox])
+      // console.log(plans[selectedCheckbox])
       Navigate('subcription',
       {state:{subs_pack:plans[selectedCheckbox].subtype,
         subs_amount:plans[selectedCheckbox].subscriptionprice,
@@ -129,13 +131,7 @@ const SubscriptionPlan = () => {
       }})
     }
     
-    //   , {
-    //   state: {
-    //     clientId: clientid,
-    //     Year: year,
-    //     Title: title
-    //   },
-    // })
+    
 
   }
   return (
@@ -169,7 +165,7 @@ const SubscriptionPlan = () => {
                   <input type="checkbox" name={item.subsplan} id="" checked={selectedCheckbox === index}
                   onChange={(e) => handleCheckboxChange(e, index)}  value={item.value} /></td>}
                 <td className='text-center'>{item.subtype}</td>
-                <td className='text-center'>&#8377;{item.subscriptionprice}/-</td>
+                <td className='text-center'>&#8377;{(item.subscriptionprice).toLocaleString('en-IN')}/-</td>
               </tr>
             ))}
           </tbody>
