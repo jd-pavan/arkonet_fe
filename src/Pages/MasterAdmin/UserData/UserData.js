@@ -344,11 +344,13 @@ const UserData = () => {
     window.history.back(); // This will navigate to the previous page in the browser's history
   }
 
-  const GOTOUserSubPlan = (id, pan) => {
+  const GOTOUserSubPlan = (id, pan,name,mobile) => {
     Navigate('userSubPlan', {
       state: {
         USERSUBID: id,
-        USERSUBPAN: pan
+        USERSUBPAN: pan,
+        USERNAME:name,
+        USERMOBILE:mobile,
 
       },
     });

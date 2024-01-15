@@ -1,10 +1,56 @@
-.cardd {
+.profilerow {
+  display: flex;
+  width: 100%;
+}
+
+.profileimg {
+  display: flex;
+  /* flex-direction: column; */
+  align-items: center;
+  padding-left: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.profileimg img {
+  width: 7rem;
+  height: 7rem;
+  border-radius: 10px;
+}
+
+.profileimg h3 {
+  color: #363E5C;
+}
+
+.profileimg .info {
+  text-align: left;
+}
+
+.centrecoloum {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 1rem;
+}
+
+.profilerow .content {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+}
+
+.cardd,
+.cardd1 {
   width: 28rem;
   border-radius: 15px;
   box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.cardd1 {
+  width: 93%;
 }
 
 .gst_cardd {
@@ -75,4 +121,26 @@
   padding: 0.5rem;
   vertical-align: top;
   border-top: 0px solid #dee2e6 !important;
+}
+
+
+
+.cardd a {
+  text-decoration: none;
+}
+
+.cardd p {
+  color: #649e07;
+  cursor: pointer;
+}
+
+.cardd p:hover {
+  text-decoration: underline;
+}
+
+
+@media (max-width:768px) {
+  .cardd1 {
+    width: fit-content
+  }
 }

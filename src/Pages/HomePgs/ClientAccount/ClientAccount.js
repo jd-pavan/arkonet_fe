@@ -4,10 +4,10 @@ import style from "./ClientAccount.module.css";
 import { url_ } from "../../../Config";
 import swal from "sweetalert2";
 import { Link } from "react-router-dom";
-function ClientAccount() {
+const ClientAccount = (props) => {
   const closemodal = useRef();
   const storedToken = localStorage.getItem("jwtToken");
-  const [isValidMobile,setIsValidMobile]=useState(true)
+  const [isValidMobile, setIsValidMobile] = useState(true)
   const [formData, setFormData] = useState({
     clientname: "",
     clientmobileno: "",
@@ -19,7 +19,7 @@ function ClientAccount() {
     const { name, value } = e.target;
 
 
-    switch(name){
+    switch (name) {
       case "clientmobileno":
       case "taxprofmobile":
         setFormData({ ...formData, [name]: value.replace(/\D/g, "") });
@@ -29,20 +29,20 @@ function ClientAccount() {
         break;
       default:
         setFormData({ ...formData, [name]: value });
-        break;    
+        break;
+    }
   }
-}
 
   async function handleSubmit(e) {
-    
+
     e.preventDefault();
 
     if (
       formData.clientname === "" ||
       formData.clientmobileno === "" ||
       formData.taxprofname === "" ||
-      formData.taxprofmobile === ""||
-      !/^[789]\d{9}$/.test(formData.clientmobileno)||   //Check mobile validity
+      formData.taxprofmobile === "" ||
+      !/^[789]\d{9}$/.test(formData.clientmobileno) ||   //Check mobile validity
       !/^[789]\d{9}$/.test(formData.taxprofmobile) //Check mobile validity
     ) {
       swal.fire({
@@ -50,12 +50,12 @@ function ClientAccount() {
           formData.clientname === ""
             ? `Please enter your name.`
             : (formData.clientmobileno === "" || !(/^[789]\d{9}$/.test(formData.clientmobileno)))
-            ? `Please enter valid mobile no.`
-            : formData.taxprofname === ""
-            ? `Please enter Tax Professional name.`
-            : (formData.taxprofmobile === "" ||!(/^[789]\d{9}$/.test(formData.taxprofmobile)))&&
-              `Please enter valid Tax professional mobile no.`
-            // :!(formData.clientmobileno.test(e.target.value))&&`Please check mobile no entered`,
+              ? `Please enter valid mobile no.`
+              : formData.taxprofname === ""
+                ? `Please enter Tax Professional name.`
+                : (formData.taxprofmobile === "" || !(/^[789]\d{9}$/.test(formData.taxprofmobile))) &&
+                `Please enter valid Tax professional mobile no.`
+        // :!(formData.clientmobileno.test(e.target.value))&&`Please check mobile no entered`,
       });
     } else {
 
@@ -73,7 +73,7 @@ function ClientAccount() {
 
       const subject = `Client Registration : `;
 
-        const message = `Dear Support Team,
+      const message = `Dear Support Team,
   Greeting from TAXKO!
 
   I hope this message finds you well. 
@@ -89,24 +89,24 @@ function ClientAccount() {
 
   ${formData.clientname},
   Contact no : ${formData.clientmobileno}`;
-     
 
-     
+
+
 
       var formdata = new FormData();
-formdata.append("subject", subject);
-formdata.append("text",message);
-formdata.append("yourname", formData.clientname);
-formdata.append("yourmobileno", formData.clientmobileno);
-formdata.append("taxprofessionalname", formData.taxprofname);
-formdata.append("taxprofessionalmobile",formData.taxprofmobile);
+      formdata.append("subject", subject);
+      formdata.append("text", message);
+      formdata.append("yourname", formData.clientname);
+      formdata.append("yourmobileno", formData.clientmobileno);
+      formdata.append("taxprofessionalname", formData.taxprofname);
+      formdata.append("taxprofessionalmobile", formData.taxprofmobile);
 
       var requestOptions = {
         method: 'POST',
         body: formdata,
         redirect: 'follow'
       };
-     
+
 
       try {
         const response = await fetch(
@@ -116,7 +116,7 @@ formdata.append("taxprofessionalmobile",formData.taxprofmobile);
         const result = await response.text();
         if (response.status === 200) {
           swal.close();
-          
+
           swal.fire({
             icon: "success",
             text: "Thank you for registering with us. We will contact you soon.",
@@ -126,7 +126,7 @@ formdata.append("taxprofessionalmobile",formData.taxprofmobile);
         swal.close();
         console.log(error);
       }
-clearForm()
+      clearForm()
       closemodal.current.click();
     }
   }
@@ -139,14 +139,14 @@ clearForm()
     });
   }
   return (
-    <div>
-      <div
-        className={`${style.yellow}`}
+    <>
+      <span
+        // className={`${style.yellow}`}
         data-toggle="modal"
         data-target="#exampleModal"
       >
-        <Link>CREATE NEW ACCOUNT</Link>
-      </div>
+        {props.children}
+      </span>
 
       <div
         className="modal fade "
@@ -256,7 +256,7 @@ clearForm()
           </div>
         </div>
       </div>
-    </div>
+    </>
 
   );
 }

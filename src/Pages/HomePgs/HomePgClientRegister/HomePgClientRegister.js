@@ -303,18 +303,19 @@ const HomePgClientRegister = () => {
 
   return (
     <div>
-      <div
-        className={`${styles.cyellow}`}
-        data-toggle="modal" data-target=".bd-example-modal-lg"
-      >
-        <Link>CREATE NEW ACCOUNT</Link>
-      </div>
-      <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              {/* <h5 class="modal-title" id="exampleModalLabel">New message</h5> */}
-              <span type="button" class="close" data-dismiss="modal" aria-label="Close">
+
+      
+      <div className="modal fade" 
+      id="clientregistrationform" 
+      tabindex="-1" 
+      role="dialog" 
+      aria-labelledby="myLargeModalLabel" 
+      aria-hidden="true">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              {/* <h5 className="modal-title" id="exampleModalLabel">New message</h5> */}
+              <span type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </span>
             </div>
