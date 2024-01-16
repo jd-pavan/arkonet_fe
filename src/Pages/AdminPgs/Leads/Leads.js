@@ -217,10 +217,10 @@ const Leads = () => {
                   <td className='' style={{ cursor: "pointer" }}>{items.pan}</td>
                   <td>{items.mobile}</td>
 
-                  <td>
-                    <div className={`${styles.Cbtn_submit}`}>
-                      <h6 data-toggle="modal" data-target="#myModal" onClick={() => UserDataList(items)}>ADD</h6>
-                    </div>
+                  <td >
+
+                    <h6 data-toggle="modal" data-target="#myModal" onClick={() => UserDataList(items)} className={`${styles.LCbtn_add_submit}`}>ADD</h6>
+
                   </td>
                 </tr>
               ))}
@@ -247,18 +247,18 @@ const Leads = () => {
                   <RadioInput name='category' label='Both' onChange={handleChange} value='Both' checked={formdata.category === 'Both'} manadatory='*' disabled={true} />
                 </div>
                 <div>
-                  <InputField lblname='Name' name='name' onChange={handleChange} value={formdata.name} />
-                  <InputField lblname='PAN' name='pan' onChange={handleChange} value={formdata.pan} />
-                  <InputField lblname='DOB' name='dob' onChange={handleChange} value={formdata.dob} />
-                  <InputField lblname='Profession' name='profession' onChange={handleChange} value={formdata.profession} />
-                  <InputField lblname='Telephone' name='telephone' onChange={handleChange} value={formdata.telephone} />
-                  <InputField lblname='Mobile' name='mobile' onChange={handleChange} value={formdata.mobile} />
-                  <InputField lblname='Email' name='email' onChange={handleChange} value={formdata.email} />
-                  <InputField lblname='Address' name='address' onChange={handleChange} value={formdata.address} />
-                  <InputField lblname='Pincode' name='pin_code' onChange={handleChange} value={formdata.pin_code} />
-                  <InputField lblname='State' name='state' onChange={handleChange} value={formdata.state} />
-                  <InputField lblname='InvestNow Email' name='invest_now_email' onChange={handleChange} value={formdata.invest_now_email} />
-                  <InputField lblname='Residential Status' name='residential_status' onChange={handleChange} value={formdata.residential_status} />
+                  <InputField lblname='Name' placeholder='Enter your Name' name='name' onChange={handleChange} value={formdata.name} disabled={true} />
+                  <InputField lblname='PAN' placeholder='Enter your PAN' name='pan' onChange={handleChange} value={formdata.pan} disabled={true} />
+                  <InputField lblname='DOB' placeholder='Enter your DOB in YYYYY-MM-DD' name='dob' onChange={handleChange} value={formdata.dob} disabled={true} />
+                  <InputField lblname='Profession' name='profession' onChange={handleChange} value={formdata.profession} disabled={true} />
+                  <InputField lblname='Telephone' placeholder='Enter your Telephone' name='telephone' onChange={handleChange} value={formdata.telephone} disabled={true} />
+                  <InputField lblname='Mobile' placeholder='Enter your Mobile' name='mobile' onChange={handleChange} value={formdata.mobile} disabled={true} />
+                  <InputField lblname='Email' placeholder='Enter your Email' name='email' onChange={handleChange} value={formdata.email} disabled={true} />
+                  <InputField lblname='Address' placeholder='Enter your address' name='address' onChange={handleChange} value={formdata.address} disabled={true} />
+                  <InputField lblname='Pincode' placeholder='Enter your pincode' name='pin_code' onChange={handleChange} value={formdata.pin_code} disabled={true} />
+                  <InputField lblname='State' name='state' onChange={handleChange} value={formdata.state} disabled={true} />
+                  <InputField lblname='InvestNow Email' name='invest_now_email' onChange={handleChange} value={formdata.invest_now_email} disabled={true} />
+                  <InputField lblname='Residential Status' name='residential_status' onChange={handleChange} value={formdata.residential_status} disabled={true} />
                 </div>
 
               </div>
@@ -267,9 +267,7 @@ const Leads = () => {
             </div>
             <div class="modal-footer d-flex justify-content-center">
               <div className={styles.LCbtn_submit} >
-
                 <button type="submit" onClick={handleSubmit}>SUBMIT</button>
-
               </div>
             </div>
           </div>

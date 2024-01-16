@@ -48,7 +48,7 @@ const SaleManagerPayment = () => {
       })
 
   }
-  
+
 
   async function updateResponse(res) {
     if (res === 200) {
@@ -106,7 +106,7 @@ const SaleManagerPayment = () => {
   };
 
   const handleButtonClick = () => {
-    
+
 
     const filledValuesWithNames = userdata.reduce((result, user, index) => {
       const inputValue = inputValues[index] || 0; // If input value is falsy, set it to 0
@@ -126,7 +126,7 @@ const SaleManagerPayment = () => {
 
   const [isTargetExist, setisTargetExist] = useState();
 
-  async function saveSaleManagerPayment(e,  pan, index) {
+  async function saveSaleManagerPayment(e, pan, index) {
     // console.log( pan, parseInt(inputValues[index]),isTargetExist);
 
     const index1 = isTargetExist.findIndex((item) => item.salesman_pan === pan);
@@ -197,7 +197,7 @@ const SaleManagerPayment = () => {
                 onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h1><i class="fa-solid fa-magnifying-glass"></i></h1>
+              <h4><i class="fa-solid fa-magnifying-glass"></i></h4>
             </div>
           </div>
         </div>
@@ -214,7 +214,7 @@ const SaleManagerPayment = () => {
             <div className={`${style.name} `} ><p className={`${style.gdtxt4} `}>Paid</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt6} `}>Unpaid</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt6} `}>Amount</p></div>
-            <div className={`${style.btn_submit}`} style={{"visibility":"hidden"}}><button>SAVE</button></div>
+            <div className={`${style.btn_submit}`} style={{ "visibility": "hidden" }}><button>SAVE</button></div>
           </div>
 
           {
@@ -232,10 +232,10 @@ const SaleManagerPayment = () => {
                   <div className={`${style.name} `} ><p className={`${style.mobile} `}>{item.totalpaidamount}</p></div>
 
 
-                  <div className={`${style.name} `} ><p className={`${style.status} `}>{item.totalIncomeCount-item.totalpaidamount}</p></div>
+                  <div className={`${style.name} `} ><p className={`${style.status} `}>{item.totalIncomeCount - item.totalpaidamount}</p></div>
                   <div className={`${style.name} `} >
                     <p className={`${style.status} `}>
-                     
+
                       <input
                         key={index}
                         type="text"

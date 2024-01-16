@@ -17,18 +17,18 @@ const MasterChangePass = () => {
   };
 
   const handleSubmit = async () => {
-    
+
     const storedToken = window.localStorage.getItem('jwtToken');
 
     if (data.newPassword === data.confirmpass) {
-      const changeurl = `${url_}/change-password?username=ABC&oldPassword=${data.oldPassword}&newPassword=${data.newPassword}`;
+      const changeurl = `${url_}/change-password?username=${localStorage.getItem('Username')}&oldPassword=${data.oldPassword}&newPassword=${data.newPassword}`;
 
       try {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
-       
+
 
         var requestOptions = {
           method: 'POST',

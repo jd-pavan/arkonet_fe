@@ -64,7 +64,7 @@ const NEWSubLogin = () => {
 
       const ClientsDataResponse = await fetch(`${url_}/getClientByUserid/${user_id}`, requestOptions);
       const ClientsDataResult = await ClientsDataResponse.json();
-      // console .log(ClientsDataResult);
+      // console.log(ClientsDataResult);
       setClientsData(ClientsDataResult)
     } catch (error) {
       console.error('Error fetching data:', error);

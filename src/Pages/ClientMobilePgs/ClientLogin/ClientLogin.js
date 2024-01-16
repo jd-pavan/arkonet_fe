@@ -71,7 +71,7 @@ function ClientLogin() {
           return response.json();
         })
         .then((result) => {
-          // console.log(result);
+          console.log(result);
           //Pass Password Status,clientpan) to next page
           Navigate(`clientpasscheck`, {
             state: {

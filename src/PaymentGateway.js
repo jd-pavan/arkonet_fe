@@ -94,7 +94,7 @@ const PaymentGateway = (props) => {
         const result = await response.text();
         if (response.status === 200) {
           props.FunctionToExcute();
-          console.log(result);
+          // console.log(result);
         } else {
           console.log(result);
         }

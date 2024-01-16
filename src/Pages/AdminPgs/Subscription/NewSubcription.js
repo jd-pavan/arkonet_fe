@@ -82,9 +82,9 @@ const NewSubcription = () => {
         // console.log(formattedMsg);
         // console.log(submitAcknowledgement);
         // console.log(result);
-        window.location.reload();
+        // window.location.reload();
         localStorage.clear();
-        Navigate('/admin/')
+        Navigate('/admin')
 
       } else {
         console.log(result);
