@@ -5,11 +5,14 @@ import { url_ } from "../../../Config";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import GenerateReport from "../GenerateReport/GenerateReport";
 
 const SalesManagersList = () => {
   const Navigate = useNavigate();
   const userProf = useLocation().state.userProfession;
   const storedToken = window.localStorage.getItem("jwtToken");
+  const reportGenRef = useRef(null);
+
   // console.log(userProf)
   useEffect(() => {
     GetUserDATA();
@@ -52,19 +55,19 @@ const SalesManagersList = () => {
       .then((response) => response.json())
       .then((result) => {
         // console.log(result.filter((item) => item.id !== 1));
-        const currentYear=new Date().getFullYear()
-        const hasRecordsForCurrentYear = result.filter((item) => item.year.includes(currentYear) );
-        
+        const currentYear = new Date().getFullYear()
+        const hasRecordsForCurrentYear = result.filter((item) => item.year.includes(currentYear));
+
         const mostRecentYearWithRecords = hasRecordsForCurrentYear
-        ? currentYear
-        : Math.max(...result['year']);    
+          ? currentYear
+          : Math.max(...result['year']);
         updateItem = result;
       })
       .catch((error) => {
         console.log(error);
       });
 
-    if (userProf === "Sale Manager Target" && activeTab===0) {
+    if (userProf === "Sale Manager Target" && activeTab === 0) {
       updateItem.map((item) => {
         document.getElementById(item.salesmanid).value = item.amount;
       });
@@ -89,19 +92,18 @@ const SalesManagersList = () => {
     window.history.back(); // This will navigate to the previous page in the browser's history
   }
 
-  const GOTOSaleManagerdata = (userid,userpan,username) => {
-    if(activeTab===0)
-    {
-      console.log(userid,userpan);
+  const GOTOSaleManagerdata = (userid, userpan, username) => {
+    if (activeTab === 0) {
+      console.log(userid, userpan);
       Navigate('saledash', {
         state: {
           saleid: userid,
-          salepan:userpan,
-          salename:username
+          salepan: userpan,
+          salename: username
         },
       });
     }
-    
+
   };
   const [inputValues, setInputValues] = useState(
     Array(userdata.length).fill("")
@@ -115,10 +117,11 @@ const SalesManagersList = () => {
 
   async function saveSaleManagerTarget(e, id, pan, index) {
     // console.log(id, pan);
-    const index1 = isTargetExist.findIndex((item) => (item.pan === pan && item.year===new Date().getFullYear().toString()));
-    const isExist = isTargetExist.filter((item) => (item.pan === pan ));
+    const index1 = isTargetExist.findIndex((item) => (item.pan === pan && item.year === new Date().getFullYear().toString()));
+    const isExist = isTargetExist.filter((item) => (item.pan === pan));
 
-    // console.log(isExist[0].fixdate)
+    const todate = new Date()
+    const fdate = `${todate.getFullYear()}-${todate.getMonth() + 1}-01)`
     if (inputValues[index]) {
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -128,7 +131,7 @@ const SalesManagersList = () => {
         salesmanid: id,
         pan: pan,
         date: new Date().toISOString().split("T")[0],
-        fixdate:isExist.length>0?isExist[0].fixdate:new Date().toISOString().split("T")[0],
+        fixdate: isExist.length > 0 ? isExist[0].fixdate : fdate,
         year: new Date().getFullYear(),
         amount: parseInt(inputValues[index]),
       });
@@ -174,18 +177,17 @@ const SalesManagersList = () => {
       text:
         name === "stop" ? "Stop the sale manager.?"
           : name === "resume" ? "Resume sale manager.?"
-          : name === "deactivate" ? "Remove sale manager.?" 
-          : name==="permanentDelete" &&"Delete whole record permanently.? You will not be able to restore the records.!!",
+            : name === "deactivate" ? "Remove sale manager.?"
+              : name === "permanentDelete" && "Delete whole record permanently.? You will not be able to restore the records.!!",
       icon: "error",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: `Yes, ${
-        name === "stop" ? "Stop"
+      confirmButtonText: `Yes, ${name === "stop" ? "Stop"
           : name === "resume" ? "Resume"
-          : name === "deactivate" ? "Deactivate"
-          : name==="permanentDelete" && "Delete"
-      } it!`,
+            : name === "deactivate" ? "Deactivate"
+              : name === "permanentDelete" && "Delete"
+        } it!`,
     }).then((result) => {
       if (result.isConfirmed) {
         manageStatus(name, pan);
@@ -198,8 +200,8 @@ const SalesManagersList = () => {
 
     var requestOptions = {
       method:
-        (name === "stop" || name === "resume")? "PUT"
-      : (name === "deactivate"||name==="permanentDelete") && "DELETE",
+        (name === "stop" || name === "resume") ? "PUT"
+          : (name === "deactivate" || name === "permanentDelete") && "DELETE",
       headers: myHeaders,
       redirect: "follow",
     };
@@ -209,9 +211,9 @@ const SalesManagersList = () => {
         name === "stop"
           ? `${url_}/changestatus/salesmanager/${pan}/false`
           : name === "resume"
-          ? `${url_}/changestatus/salesmanager/${pan}/true`
-          : name === "deactivate" ? `${url_}/salesmanager/delete/${pan}`
-          : name==="permanentDelete"  &&  `${url_}/salesmanager/permentdelete/${pan}`,
+            ? `${url_}/changestatus/salesmanager/${pan}/true`
+            : name === "deactivate" ? `${url_}/salesmanager/delete/${pan}`
+              : name === "permanentDelete" && `${url_}/salesmanager/permentdelete/${pan}`,
         requestOptions
       );
       const result = await response.text();
@@ -223,9 +225,9 @@ const SalesManagersList = () => {
               name === "stop"
                 ? `Stopped temporarily.`
                 : name === "resume"
-                ? `Service resumed.`
-                : name === "deactivate" ? `Sale manager deactivated.`
-                :name==="permanentDelete" && "Sale manager removed permanently.",
+                  ? `Service resumed.`
+                  : name === "deactivate" ? `Sale manager deactivated.`
+                    : name === "permanentDelete" && "Sale manager removed permanently.",
           },
           3000
         );
@@ -236,8 +238,8 @@ const SalesManagersList = () => {
     }
   }
 
-  async function paidUppaid(){
-    
+  async function paidUppaid() {
+
   }
 
   function handleTabClick(index) {
@@ -248,13 +250,18 @@ const SalesManagersList = () => {
       setuserdata(inactiveuserdata);
     }
   }
-  const fixeddateRef=useRef(null)
+  const fixeddateRef = useRef(null)
 
+  const handleGenReportClick = () => {
+    if (reportGenRef.current) {
+      reportGenRef.current.click();
+    }
+  };
   return (
     <div className="d-flex w-100">
       <div className={`${style.workport} `}>
         {/* Top Port Starts */}
-        <h2 className=" mt-2 d-flex justify-content-around align-items-center w-100">
+        <h4 className=" mt-2 d-flex justify-content-around align-items-center w-100">
           <div
             style={{ fontSize: "xxx-large", cursor: "pointer" }}
             onClick={GoBack}
@@ -263,7 +270,7 @@ const SalesManagersList = () => {
           </div>
           <b>{userProf}</b>
           <div></div>
-        </h2>
+        </h4>
         <div className={`${style.top} `}>
           <div className={`${style.inputbox} `}>
             <div className={`${style.seachbox} `}>
@@ -276,9 +283,9 @@ const SalesManagersList = () => {
               />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h1>
+              <h4>
                 <i className="fa-solid fa-magnifying-glass"></i>
-              </h1>
+              </h4>
             </div>
           </div>
         </div>
@@ -326,7 +333,7 @@ const SalesManagersList = () => {
             )}
             {userProf === "Sale Manager Target" && activeTab !== 1 && (
               <div className={`${style.name} `}>
-                <p className={`${style.gdtxt6} `}>Amount</p>
+                <p className={`${style.gdtxt5} `}>Amount</p>
               </div>
             )}
             {userProf === "Sale Manager Target" && activeTab !== 1 && (
@@ -339,7 +346,7 @@ const SalesManagersList = () => {
                 </p>
               </div>
             )}
-            {(userProf === "Sale Manager Target"||(userProf !== "Sale Manager Target"&&activeTab===1))&&
+            {(userProf === "Sale Manager Target" || (userProf !== "Sale Manager Target" && activeTab === 1)) &&
               <div className={`${style.name} `}>
                 <p className={`${style.gdtxt6} `}>Action</p>
               </div>
@@ -365,7 +372,7 @@ const SalesManagersList = () => {
                 </div>
                 <div
                   className={`${style.name}`}
-                  onClick={() => GOTOSaleManagerdata(item.id,item.pan,item.name)}
+                  onClick={() => GOTOSaleManagerdata(item.id, item.pan, item.name)}
                   style={{ cursor: "pointer" }}
                 >
                   <p className={`${style.pan} text-primary`}>{item.pan}</p>
@@ -376,43 +383,43 @@ const SalesManagersList = () => {
                   </div>
                 )}
                 {/* {userProf === "Sale Manager Target" && activeTab !== 1 && ( */}
-                  <div className={userProf === "Sale Manager Target" && activeTab !== 1 ?`${style.name}`:`${style.name} ${style.hide}`}>
-                    <p className={`${style.status} `}>
-                      <input
-                        id={item.id}
-                        key={index}
-                        type="text"
-                        value={inputValues[index]}
-                        onChange={(e) =>
-                          handleInputChange(index, e.target.value)
-                        }
-                        style={{
-                          width: "100%",
-                          borderRadius: "10px",
-                          border: "none",
-                          boxShadow: "inset 0 6px 10px 0 rgba(0, 0, 0, 0.19)",
-                          paddingLeft: "5px",
-                        }}
-                      />
-                    </p>
-                    
-                  </div>
+                <div className={userProf === "Sale Manager Target" && activeTab !== 1 ? `${style.name}` : `${style.name} ${style.hide}`}>
+                  <p className={`${style.inputamount} `}>
+                    <input
+                      id={item.id}
+                      key={index}
+                      type="text"
+                      value={inputValues[index]}
+                      onChange={(e) =>
+                        handleInputChange(index, e.target.value)
+                      }
+                      style={{
+                        "width": "100%",
+                        "borderRadius": "5px",
+                        "border": "none",
+                        "boxShadow": "inset 0 6px 10px 0 rgba(0, 0, 0, 0.19)",
+                        "paddingLeft": "5px",
+                      }}
+                    />
+                  </p>
+
+                </div>
                 {/* )} */}
-                
-               
+
+
                 {userProf === "Sale Manager Target" && activeTab !== 1 && (
                   <div
                     className={`${style.btn_submit}`}
                     onClick={(e) => {
-                      saveSaleManagerTarget(e, item.id, item.pan, index,item.fixdate);
+                      saveSaleManagerTarget(e, item.id, item.pan, index, item.fixdate);
                     }}
                   >
-                    <button>UPDATE{item.fixdate}</button>
+                    <button>UPDATE</button>
                   </div>
                 )}
                 {userProf === "Sale Manager Target" && activeTab !== 1 && (
                   <div className={`${style.name} `}>
-                    <p className={`${style.status} `}>
+                    <p className={`${style.pan} `}>
                       <i
                         id="deactivate"
                         className="fa-solid fa-ban"
@@ -450,8 +457,10 @@ const SalesManagersList = () => {
                 {activeTab === 1 && (
                   <div className={`${style.name} `}>
                     <p className={`${style.status} `}>
-                      <i id="permanentDelete" className="fa-solid fa-trash" title="Permenent Delete" style={{marginRight: "9px","cursor":"pointer"}} onClick={(e)=>{confirm(e,item.pan)}}></i>
-                      <i className="fas fa-file-excel" style={{ cursor: "pointer","color":"green" }} title="Generate report"></i>
+                      <i id="permanentDelete" className="fa-solid fa-trash" title="Permenent Delete" style={{ marginRight: "9px", "cursor": "pointer" }} onClick={(e) => { confirm(e, item.pan) }}></i>
+                      <i className="fas fa-file-excel" style={{ cursor: "pointer", "color": "green" }} title="Generate report" ></i>
+                      {/* onClick={handleGenReportClick} */}
+                      <GenerateReport reportGenRef={reportGenRef} salmanagerpan={item.pan} />
                     </p>
                   </div>
                 )}

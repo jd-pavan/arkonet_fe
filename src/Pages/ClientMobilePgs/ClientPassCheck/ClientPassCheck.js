@@ -175,11 +175,13 @@ function ClientPassCheck() {
         // const jwtToken = storedToken;
         console.log(data);
         //localStorage.setItem("jwtToken", jwtToken);
+        localStorage.setItem("Login_fRelation", data.users[0].fRelation);
 
         if (data.users.length > 0)
           data.users.map((item) => {
-
-            console.log(item.category);
+            localStorage.setItem("fRelation", item.fRelation);
+            localStorage.setItem("familyId", item.familyId);
+            // console.log(item.category);
             switch (item.category) {
               case "Income_Tax":
                 localStorage.setItem("client_id_it", item.clientId);

@@ -31,7 +31,7 @@ const MasterChangePass = () => {
 
 
         var requestOptions = {
-          method: 'POST',
+          method: 'PUT',
           headers: myHeaders,
           redirect: 'follow'
         };
@@ -64,7 +64,7 @@ const MasterChangePass = () => {
   return (
     <div>
       <div className="container">
-        <div className={`${style.title} row m - 5 mt - 5 `}>Change Password</div>
+        <div className={`${style.title} row m-5 mt-5 `}>Change Password</div>
         <div className={`${style.changePass} row m-4 d-flex flex-column `}>
           <label htmlFor="">Current Password</label>
           <input type="password" value={data.oldPassword} onChange={handleChange} name='oldPassword' placeholder='Enter registered password ....' autoComplete='off' />
@@ -78,7 +78,7 @@ const MasterChangePass = () => {
           <input type="password" value={data.confirmpass} onChange={handleChange} name='confirmpass' placeholder='Enter confirm password ....' autoComplete='off' />
         </div>
 
-        <div className={`row d - flex justify - content - center ${style.changePass}`}>
+        <div className={`row d-flex justify-content-center ${style.changePass}`}>
           <button onClick={handleSubmit}>Submit</button>
         </div>
       </div>

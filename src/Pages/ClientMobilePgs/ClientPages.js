@@ -22,49 +22,55 @@ import PaymentDetails from "./PaymentDetails/PaymentDetails";
 import KYC from "./KYC/KYC";
 import DOCs from "./DOCs/DOCs";
 import ClientTallyBackup from "./ClientTallyBackup/ClientTallyBackup";
-import  ChatBot from "../../components/ChatBot/ChatBot"
+import ChatBot from "../../components/ChatBot/ChatBot"
 import ClientTallyView from "./ClientTallyBackup/ClientTallyView";
 import ProfileUpdate from "./ProfileUpdate/ProfileUpdate";
+import GSTRFiling from "./GSTRFiling/GSTRFiling";
 
 function ClientPages() {
   return (
     <SidebarProvider>
       <ClientSideBar />
-    <Routes>        
-      <Route path="" element={<ClientLogin />} />
-      <Route path="clientpasscheck" element={<ClientPassCheck />} />
-      <Route path="clientpasscheck/clienthome" element={<ClientHome />} />
-      <Route path="clientpasscheck/clienthome/gstdashboard" element={<GstDashboard />} />
+      <Routes>
+        <Route path="" element={<ClientLogin />} />
+        <Route path="clientpasscheck" element={<ClientPassCheck />} />
+        <Route path="clientpasscheck/clienthome" element={<ClientHome />} />
+        <Route path="clientpasscheck/clienthome/gstdashboard" element={<GstDashboard />} />
 
-      <Route path="clientdashboard" element={<ClientDashboard />} />
-      <Route path="clientdashboard/clientincometax" element={<ClientDocFolder />} />
-      <Route path="clientdashboard/clientincometax/clientfileview" element={<ClientFileView />} />
-
-      
-      <Route path="clientdashboard/gstfolder" element={<GstFolder />} />
-      <Route path="clientdashboard/gstfolder/gstmonthly" element={<GstMonthly />} />
-      <Route path="clientdashboard/gstfolder/gstmonthly/gstfile" element={<GstFileView />} />
-
-      <Route path="clientdashboard/kyc" element={<KYC />} />
-      <Route path="clientdashboard/docs" element={<DOCs />} />
-
-      <Route path="clientdashboard/tallybackup" element={<ClientTallyBackup />} />
-      <Route path="clientdashboard/tallybackup/tallyview" element={<ClientTallyView />} />
-      
-      <Route path="caprofile" element={<CAProfile />} />
-      <Route path="caprofile/payment" element={<PaymentDetails />} />
-      
-      <Route path="investnow" element={<InvestNow />} />            
-      <Route path="help" element={<ClientHelp />} />
-      <Route path="changepass" element={<ClientPassChange />} />
-      <Route path="updateinfo" element={<ProfileUpdate />} />            
+        <Route path="clientdashboard" element={<ClientDashboard />} />
+        <Route path="clientdashboard/clientincometax" element={<ClientDocFolder />} />
+        <Route path="clientdashboard/clientincometax/clientfileview" element={<ClientFileView />} />
 
 
-    </Routes>
-    <ChatBot />
+        <Route path="clientdashboard/gstfolder" element={<GstFolder />} />
+        <Route path="clientdashboard/gstfolder/gstmonthly" element={<GstMonthly />} />
+        <Route path="clientdashboard/gstfolder/gstmonthly/gstfile" element={<GstFileView />} />
+
+        <Route path="clientdashboard/kyc" element={<KYC />} />
+        <Route path="clientdashboard/docs" element={<DOCs />} />
+
+        <Route path="clientdashboard/tallybackup" element={<ClientTallyBackup />} />
+        <Route path="clientdashboard/tallybackup/tallyview" element={<ClientTallyView />} />
+
+        <Route path="caprofile" element={<CAProfile />} />
+        <Route path="caprofile/payment" element={<PaymentDetails />} />
+
+        <Route path="investnow" element={<InvestNow />} />
+        <Route path="help" element={<ClientHelp />} />
+        <Route path="changepass" element={<ClientPassChange />} />
+        <Route path="updateinfo" element={<ProfileUpdate />} />
+
+
+        {/* <Route path="gstr" element={<GSTRFiling />} />     */}
+
+
+
+
+      </Routes>
+      <ChatBot />
 
     </SidebarProvider>
-    
+
   );
 }
 

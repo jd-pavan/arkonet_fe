@@ -68,6 +68,9 @@ const MasterLogIn = ({ setLoggedIn }) => {
         }
     };
 
+    useEffect(()=>{setLoggedIn(false)},[])
+
+
 
     return (
 

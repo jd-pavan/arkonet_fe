@@ -35,9 +35,9 @@ const SaleManagerPayment = () => {
     await fetch(`${url_}/list/allpaid/amount`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        console.log(result.filter((item) => item.pan !== 'XXXXX1111X'))
+        // console.log(result.filter((item) => item.salesman_pan !== 'XXXXX1111X'))
 
-        const filteredData = result.filter((item) => item.pan !== 'XXXXX1111X');
+        const filteredData = result.filter((item) => item.salesman_pan !== 'XXXXX1111X');
         setuserdata(filteredData)
         setisTargetExist(filteredData);
 
@@ -182,13 +182,13 @@ const SaleManagerPayment = () => {
       <div className={`${style.workport} `}>
 
         {/* Top Port Starts */}
-        <h2 className=' mt-2 d-flex justify-content-around align-items-center w-100'>
+        <h4 className=' mt-2 d-flex justify-content-around align-items-center w-100'>
           <div >
           </div>
           <b>Sale Manager's Payment</b>
           <div>
           </div>
-        </h2>
+        </h4>
         <div className={`${style.top} `}>
           <div className={`${style.inputbox} `}>
             <div className={`${style.seachbox} `}>
@@ -209,10 +209,10 @@ const SaleManagerPayment = () => {
           <div className={`${style.drow} `}>
             {/* <div className={`${style.name} `} ><p className={`${style.gdtxt1} `}>Sr. No</p></div> */}
             <div className={`${style.name} `} ><p className={`${style.gdtxt2} `}>Name</p></div>
-            <div className={`${style.name} `} ><p className={`${style.gdtxt2} `}>PAN</p></div>
-            <div className={`${style.name} `} ><p className={`${style.gdtxt3} `}>Total Earning</p></div>
+            <div className={`${style.name} `} ><p className={`${style.gdtxt3} `}>PAN</p></div>
+            <div className={`${style.name} `} ><p className={`${style.gdtxt4} `}>Total Earning</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt4} `}>Paid</p></div>
-            <div className={`${style.name} `} ><p className={`${style.gdtxt6} `}>Unpaid</p></div>
+            <div className={`${style.name} `} ><p className={`${style.gdtxt4} `}>Unpaid</p></div>
             <div className={`${style.name} `} ><p className={`${style.gdtxt6} `}>Amount</p></div>
             <div className={`${style.btn_submit}`} style={{ "visibility": "hidden" }}><button>SAVE</button></div>
           </div>
@@ -227,14 +227,14 @@ const SaleManagerPayment = () => {
               .map((item, index) => (
                 <div className={`${style.ddata} `}>
                   <div className={`${style.name} `} ><p className={`${style.an} `}>{item.saleman_name}</p></div>
-                  <div className={`${style.name} `} ><p className={`${style.an} `}>{item.salesman_pan}</p></div>
-                  <div className={`${style.name} `}><p className={`${style.pan} `}>{item.totalIncomeCount}</p></div>
-                  <div className={`${style.name} `} ><p className={`${style.mobile} `}>{item.totalpaidamount}</p></div>
+                  <div className={`${style.name} `} ><p className={`${style.pan} `}>{item.salesman_pan}</p></div>
+                  <div className={`${style.name} `}><p className={`${style.amount} `}>{item.Total_incetative_amunt}</p></div>
+                  <div className={`${style.name} `} ><p className={`${style.amount} `}>{item.totalpaidamount}</p></div>
 
 
-                  <div className={`${style.name} `} ><p className={`${style.status} `}>{item.totalIncomeCount - item.totalpaidamount}</p></div>
+                  <div className={`${style.name} `} ><p className={`${style.amount} `}>{item.Total_incetative_amunt - item.totalpaidamount}</p></div>
                   <div className={`${style.name} `} >
-                    <p className={`${style.status} `}>
+                    <p className={`${style.inputamount} `}>
 
                       <input
                         key={index}
@@ -244,7 +244,7 @@ const SaleManagerPayment = () => {
 
                         style={{
                           width: "100%",
-                          borderRadius: "10px",
+                          borderRadius: "5px",
                           border: "none",
                           boxShadow: "inset 0 6px 10px 0 rgba(0, 0, 0, 0.19)",
                           paddingLeft: "5px",
