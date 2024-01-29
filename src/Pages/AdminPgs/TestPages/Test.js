@@ -1,210 +1,445 @@
-// import React, { useState } from 'react';
-// import style from './Test.module.css';
-
-// const Test = () => {
-//   const [selectedCountry, setSelectedCountry] = useState('Select your C.A ...');
-//   const [searchWord, setSearchWord] = useState('');
-//   const [isActive, setIsActive] = useState(false);
-
-
-
-
-//   const options = [
-//     { value: "1", name: "A", pin_code: "12345" },
-//     { value: "2", name: "B", pin_code: "12345" },
-//     { value: "3", name: "C", pin_code: "12345" },
-//     { value: "4", name: "D", pin_code: "12345" },
-//     { value: "5", name: "E", pin_code: "12345" },
-//     { value: "6", name: "F", pin_code: "78901" },
-//     { value: "7", name: "G", pin_code: "34567" },
-//     { value: "8", name: "H", pin_code: "89012" },
-//     { value: "9", name: "I", pin_code: "45678" },
-//     { value: "10", name: "J", pin_code: "90123" },
-//     { value: "11", name: "K", pin_code: "56789" },
-//     { value: "12", name: "L", pin_code: "01234" },
-//     { value: "13", name: "M", pin_code: "67890" },
-//     { value: "14", name: "N", pin_code: "12345" },
-//     { value: "15", name: "O", pin_code: "78901" },
-//     { value: "16", name: "P", pin_code: "23456" },
-//     { value: "17", name: "Q", pin_code: "89012" },
-//     { value: "18", name: "R", pin_code: "34567" },
-//     { value: "19", name: "S", pin_code: "90123" },
-//     { value: "20", name: "T", pin_code: "45678" },
-//     { value: "21", name: "U", pin_code: "01234" },
-//     { value: "22", name: "V", pin_code: "56789" },
-//     { value: "23", name: "W", pin_code: "12345" },
-//     { value: "24", name: "X", pin_code: "67890" },
-//     { value: "25", name: "Y", pin_code: "54321" },
-//     { value: "26", name: "Z", pin_code: "98765" },
-//     { value: "27", name: "AA", pin_code: "23456" },
-//     { value: "28", name: "BB", pin_code: "78901" },
-//     { value: "29", name: "CC", pin_code: "34567" },
-//     { value: "30", name: "DD", pin_code: "89012" },
-//     { value: "31", name: "EE", pin_code: "45678" },
-//     { value: "32", name: "FF", pin_code: "90123" },
-//     { value: "33", name: "GG", pin_code: "56789" },
-//     { value: "34", name: "HH", pin_code: "01234" },
-//     { value: "35", name: "II", pin_code: "67890" },
-//     { value: "36", name: "JJ", pin_code: "12345" },
-//     { value: "37", name: "KK", pin_code: "78901" },
-//     { value: "38", name: "LL", pin_code: "23456" },
-//     { value: "39", name: "MM", pin_code: "89012" },
-//     { value: "40", name: "NN", pin_code: "34567" },
-//     { value: "41", name: "OO", pin_code: "90123" },
-//     { value: "42", name: "PP", pin_code: "45678" },
-//     { value: "43", name: "QQ", pin_code: "01234" },
-//     { value: "44", name: "RR", pin_code: "56789" },
-//     { value: "45", name: "SS", pin_code: "12345" },
-//     { value: "46", name: "TT", pin_code: "67890" },
-//     { value: "47", name: "UU", pin_code: "54321" },
-//     { value: "48", name: "VV", pin_code: "98765" },
-//     { value: "49", name: "WW", pin_code: "23456" },
-//     { value: "50", name: "XX", pin_code: "12345" }
-//   ];
-
-//   // const options = data.map(item => {
-
-//   //   return {
-//   //     value: item.registration.regId,
-//   //     name: item.registration.name,
-//   //     pin_code: item.registration.pin_code
-//   //   };
-//   // });
-
-//   const addCountry = () => {
-//     return options.map((item, index) => {
-//       const isSelected = item.value === selectedCountry ? 'selected' : '';
-//       return (
-//         <li key={item.value} onClick={() => updateName(item.value, item.name)} className={isSelected}>
-//           {item.name}
-//         </li>
-//       );
-//     });
-//   };
-
-
-
-
-//   const handleInputChange = (e) => {
-//     setSearchWord(e.target.value.toLowerCase());
-//   };
-
-//   // ...
-
-//   const filterCountries = () => {
-//     const filteredOptions = options.filter((item) => item.pin_code.startsWith(searchWord));
-
-//     if (filteredOptions.length === 0) {
-//       return (
-//         <li key="no-result" className="no-result">
-//           No result found
-//         </li>
-//       );
-//     }
-
-//     const matchingResults = filteredOptions.map((item, index) => {
-//       const isSelected = item.value === selectedCountry ? 'selected' : '';
-//       return (
-//         <li key={index} onClick={() => updateName(item)} className={isSelected}>
-//           {item.name}
-//         </li>
-//       );
-//     });
-
-//     const remainingResults = options
-//       .filter((item) => !filteredOptions.includes(item))
-//       .map((item, index) => {
-//         const isSelected = item.value === selectedCountry ? 'selected' : '';
-//         return (
-//           <>
-//             <li key={matchingResults.length + index} onClick={() => updateName(item)} className={isSelected}>
-//               {item.name}
-//             </li>
-//             <li key={matchingResults.length + index} onClick={() => updateName(item)} className={isSelected}>
-//               {item.name}
-//             </li>
-//           </>
-//         );
-//       });
-
-//     return [...matchingResults, ...remainingResults];
-//   };
-
-
-
-//   const updateName = (regid, name) => {
-//     setSearchWord('');
-//     setSelectedCountry(name); // Change this line to setSelectedCountry(selectedCountry)
-//     setIsActive(false);
-
-//     // Log the selected value and name to the console
-//     console.log("Selected Value:", regid);
-//     console.log("Selected Name:", name);
-//   };
-
-//   // ...
-
-
-//   return (
-//     <div className={`${style.wrapper} ${isActive ? 'active' : ''}`}>
-//       <div className={style.select_btn} onClick={() => setIsActive(!isActive)}>
-//         <span>{selectedCountry}</span>
-//         {isActive ?
-//           <i className="uil uil-angle-down"></i>
-//           :
-//           <i className="uil uil-angle-up"></i>}
-//       </div>
-//       {isActive && <>
-//         <div className={style.content}>
-//           <div className={style.search}>
-//             <i className="uil uil-search"></i>
-//             <input
-//               spellCheck="false"
-//               type="text"
-//               placeholder="Search"
-//               value={searchWord}
-//               onChange={handleInputChange}
-//             />
-//           </div>
-//           <ul className={style.options}>{searchWord ? filterCountries() : addCountry()}</ul>
-//         </div>
-//       </>}
-//     </div>
-//   );
-// };
-
-import React, { useRef } from 'react';
-import defaultImage from '../../../../src/Images/Taxko.jpg'; // Adjust the path to your default image
+import React, { useState } from 'react';
+import style from './Test.module.css'
 
 const Test = () => {
-  const fileInputRef = useRef();
+  const [formdata, setFormdata] = useState({
+    query_nature: "",
+    financialyear: "",
+    details: ""
+  });
 
-  const handleButtonClick = () => {
-    // Simulating a click on the hidden file input
-    fileInputRef.current.click();
-  };
 
-  const handleFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-    console.log('Selected File:', selectedFile);
-  };
+  const wordLimit = 300;
+  function handleChange(e) {
+    const { name, value } = e.target;
+    //console.log(name,value)
+    switch (name) {
+      case "details":
+        const inputText = e.target.value;
+        // Split the text into words and filter out empty strings
+        const words = inputText.split(' ').filter(word => word.length > 0);
 
+        if (words.length <= wordLimit) {
+          setFormdata({ ...formdata, [name]: value });
+        }
+        else {
+
+        }
+        break;
+      default:
+        setFormdata({ ...formdata, [name]: value });
+
+    }
+
+  }
+  const Name = "Pavan Jidimath"
+  const name = Name.split(" ")[0];
   return (
-    <div>
-      <button onClick={handleButtonClick}>Select Default Image</button>
-      <input
-        type="file"
-        accept="image/*"
-        style={{ display: 'none' }}
-        ref={fileInputRef}
-        onChange={handleFileChange}
-      />
-    </div>
+    <>
+
+      <div className={style.noti_Titile}>
+        <h3>
+          <b>
+            Notify your clients
+          </b>
+        </h3>
+      </div>
+      <div className={style.noti_TextareaAndIMGarea}>
+        <div className={style.noti_First_Section}>
+          <div className={style.noti_input_area}>
+            <h5 className='text-center'><b>Add Text</b></h5>
+            <div className={style.TEXT_area}>
+              <textarea name="details" className={`${style.text2}`} value={formdata.details}
+                onChange={handleChange} placeholder={`Max. ${wordLimit} Words..`} />
+
+              <div className={`${style.p2}`}>
+                <p className={`${style.wordcount}`}>Word Count: {formdata.details.split(' ').filter(word => word.length > 0).length}/{wordLimit}</p>
+              </div>
+            </div>
+          </div>
+          <div className={style.noti_img_area}>
+            <label htmlFor="noti_img_upload"><b>Upload file</b></label>
+            <div class={style.upload_btn_wrapper}>
+              <button class={style.btn}>Upload a file</button>
+              <input type="file" name="myfile" id='noti_img_upload' />
+            </div>
+          </div>
+        </div>
+        <div className={style.noti_Second_Section}>
+          <button data-toggle="modal" data-target=".bd-example-modal-xl">SEND</button>
+        </div>
+      </div>
+      <div className={style.noti_Lists}>
+        <h4 className='mt-3 mb-2'><b>Notifications</b></h4>
+        <div className={style.noti_lists} >
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+          <div className={`${style.noti_list} row`}>
+            <span className="col-4">1</span>
+            <span className="col-4">{name}</span>
+            <span className="col-4">Preview...</span>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="modal fade bd-example-modal-xl" tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Send To...</h5>
+            </div>
+            <div class="modal-body">
+              <div style={{ height: "70vh", overflowY: "auto" }}>
+                <>
+                  <div className='d-flex flex-column justify-content-center'>
+                    <table className="table table-striped ">
+                      <thead>
+                        <tr style={{ backgroundColor: "#ffd401e6" }}>
+                          <th scope="col" className="text-center">#</th>
+                          <th scope="col" className="text-center">NAME</th>
+                          <th scope="col" className="text-center">PAN</th>
+                          <th scope="col" className="text-center">Mobile</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+
+
+
+
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+                        <tr >
+                          <td className="text-center">
+                            <input
+                              type="checkbox"
+                            // id={item.clientId}
+                            // checked={checkedCheckboxes.includes(item.clientId)}
+                            // onChange={() => handleCheckboxChange(item.clientId, item)}
+                            />
+                          </td>
+                          <td className='text-center'>Name</td>
+                          <td className='text-center'>PAN</td>
+                          <td className='text-center'>mobile</td>
+
+                        </tr>
+
+
+
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              </div>
+
+            </div>
+            <div className={`${style.noti_Modal_footer_btn} modal-footer d-flex justify-content-center `}>
+              <button >Send Notification</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
-};
+}
 
 export default Test;
-
-
-
-
