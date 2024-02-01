@@ -26,6 +26,7 @@ import ChatBot from "../../components/ChatBot/ChatBot"
 import ClientTallyView from "./ClientTallyBackup/ClientTallyView";
 import ProfileUpdate from "./ProfileUpdate/ProfileUpdate";
 import GSTRFiling from "./GSTRFiling/GSTRFiling";
+import ClientNotification from "./ClientNotification/ClientNotification";
 
 function ClientPages() {
   return (
@@ -59,6 +60,8 @@ function ClientPages() {
         <Route path="help" element={<ClientHelp />} />
         <Route path="changepass" element={<ClientPassChange />} />
         <Route path="updateinfo" element={<ProfileUpdate />} />
+
+        <Route path="notificationsClient" element={<ClientNotification />} />
 
 
         {/* <Route path="gstr" element={<GSTRFiling />} />     */}

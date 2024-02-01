@@ -67,7 +67,7 @@ const ClientsFamilyDropdown = (props) => {
     setIsActive1(!isActive1)
 
     await GetClientData(cpan);
-    checkSubscriptionStatus();
+    window.location.reload();
 
   };
 
@@ -123,7 +123,7 @@ const ClientsFamilyDropdown = (props) => {
       //const client_id = data.client.clientId;            
       //localStorage.setItem("client_id", client_id);
       storeJwtData(result.users[0]);
-
+      checkSubscriptionStatus();
 
 
 
@@ -179,12 +179,8 @@ const ClientsFamilyDropdown = (props) => {
         localStorage.setItem("it_subs_status", 'off');
       }
     }
-    else {
-      setITSubStatus("off");//localStorage.setItem("it_subs_status",'off'); 
-    }
+    else if (user_id_gst) {
 
-
-    if (user_id_gst) {
       const response = await fetch(
         `${url_}/subscriptionpackuserdata/userid/${user_id_gst}`,
         requestOptions

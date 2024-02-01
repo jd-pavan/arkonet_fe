@@ -51,6 +51,7 @@ import CheckPan from './Login/CheckPan';
 import SubUserLogin from './Login/SubUserLogin';
 import UserOTOVerify from './Login/UserOTOVerify';
 import FamilyGroup from './FamilyGroup/FamilyGroup';
+import NotificationsCA from './NotificationsCA/NotificationsCA';
 
 const Adminhome = () => {
 
@@ -114,6 +115,7 @@ const Adminhome = () => {
 
               <Route path="tallybackup" element={<Protected Cmp={TallyBackup} />} />
               <Route path="tallybackup/tallyview" element={<Protected Cmp={TallyBackupView} />} />
+              <Route path="notification" element={<Protected Cmp={NotificationsCA} />} />
 
 
               <Route path="/dashboard/tc/myfolder/tallyclient" element={<Protected Cmp={ClientTallyBackup} />} />
