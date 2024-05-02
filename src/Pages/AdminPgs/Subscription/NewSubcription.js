@@ -5,8 +5,9 @@ import style from './Subscription.module.css'
 import { url_ } from '../../../Config';
 import PaymentGateway from '../../../PaymentGateway';
 import samplepdf from "../../../Files/payment.pdf";
+import Swal from 'sweetalert2';
 
-const NewSubcription = () => {
+const NewSubcription = ({ setLoggedIn }) => {
   const Navigate = useNavigate();
 
   const U_Name = window.localStorage.getItem('user_name');
@@ -16,7 +17,7 @@ const NewSubcription = () => {
   const userid = window.localStorage.getItem('user_id');
   const storedToken = window.localStorage.getItem('jwtToken');
 
-  const { subs_pack, subs_amount, no_of_client } = useLocation().state;
+  const { subs_pack, subs_amount, no_of_client, user_subStatus } = useLocation().state;
 
   // const blob = new Blob([DemoImage], { type: 'application/pdf' });
 
@@ -48,7 +49,14 @@ const NewSubcription = () => {
     const formattedMsg = message.replace(/\n/g, '<br>')
     // console.log(message)
 
-
+    Swal.fire({
+      title: 'Updating pack.',
+      text: 'Please wait...',
+      showConfirmButton: false,
+      onBeforeOpen: () => {
+        Swal.showLoading();
+      },
+    });
     try {
       var myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${storedToken}`);
@@ -83,8 +91,17 @@ const NewSubcription = () => {
         // console.log(submitAcknowledgement);
         // console.log(result);
         // window.location.reload();
-        localStorage.clear();
-        Navigate('/admin')
+        if (user_subStatus === 'on') {
+
+          Navigate('/admin/UserSubscriptionPage')
+          window.location.reload();
+        } else {
+          Swal.close();
+          localStorage.clear();
+          Navigate('/admin');
+          setLoggedIn(false);
+          window.location.reload();
+        }
 
       } else {
         console.log(result);
@@ -96,39 +113,49 @@ const NewSubcription = () => {
   }
 
 
-  // const handlepayment = () => {
+  const handlepayment = () => {
 
-  //   const blob = new Blob([samplepdf], { type: 'application/pdf' });
+    //   const blob = new Blob([samplepdf], { type: 'application/pdf' });
 
-  //   // Create a File object from the blob
-  //   const emptyFile = new File([blob], 'empty_file_attatchment.pdf')
-
-
-  //   const message = `Dear Accounts Team,
-  //   Greeting from TAXKO!
-
-  //   I hope this message finds you well. 
-
-  //   Our client ${localStorage.getItem("user_name")}, has made payment for ${subs_pack} subcription pack worth Rs${subs_amount}. 
-  //   Following is the attachment of payment acknowledgement.Kindly activate the subscription as soon as possible.
-
-  //   Best regards,
-
-  //   ${localStorage.getItem("user_name")},
-  //   Contact no : ${localStorage.getItem("mobile")}`;
+    //   // Create a File object from the blob
+    //   const emptyFile = new File([blob], 'empty_file_attatchment.pdf')
 
 
-  //   const formattedMsg = message.replace(/\n/g, '<br>')
-  //   // console.log(message)
-  //   console.log(no_of_client);
-  //   console.log(userid);
-  //   console.log(emptyFile);
-  //   console.log(subs_amount);
-  //   console.log(subs_pack);
-  //   console.log("Payment Acknowledgement");
-  //   console.log(formattedMsg);
-  //   console.log(submitAcknowledgement);
-  // }
+    //   const message = `Dear Accounts Team,
+    //   Greeting from TAXKO!
+
+    //   I hope this message finds you well. 
+
+    //   Our client ${localStorage.getItem("user_name")}, has made payment for ${subs_pack} subcription pack worth Rs${subs_amount}. 
+    //   Following is the attachment of payment acknowledgement.Kindly activate the subscription as soon as possible.
+
+    //   Best regards,
+
+    //   ${localStorage.getItem("user_name")},
+    //   Contact no : ${localStorage.getItem("mobile")}`;
+
+
+    //   const formattedMsg = message.replace(/\n/g, '<br>')
+    //   // console.log(message)
+    //   console.log(no_of_client);
+    //   console.log(userid);
+    //   console.log(emptyFile);
+    //   console.log(subs_amount);
+    //   console.log(subs_pack);
+    //   console.log("Payment Acknowledgement");
+    //   console.log(formattedMsg);
+    //   console.log(submitAcknowledgement);
+
+
+
+    // if (user_subStatus === 'on') {
+    //   Navigate('/admin/UserSubscriptionPage')
+    // } else {
+    //   localStorage.clear();
+    //   Navigate('/admin')
+    // }
+  }
+
   return (
 
     <div style={{
@@ -183,6 +210,7 @@ const NewSubcription = () => {
         </div>
       </div>
 
+
       <PaymentGateway
         ClientContact={U_Mobile}
         ClientEmail={U_Email}
@@ -192,15 +220,21 @@ const NewSubcription = () => {
         FunctionToExcute={submitAcknowledgement}
       >
         <div className='d-flex flex-column align-items-center '>
-          <div className={`${style.btn} mb-5 d-flex justify-content-center mt-4`}>
-            {/* <button className={`${style.button1}`} onClick={handlepayment} > */}
+          <div className={`${style.btn} mb-2 d-flex justify-content-center mt-4`}>
             <button className={`${style.button1}`}>
               Confirm Order
             </button>
           </div>
         </div>
       </PaymentGateway>
+      <div className={`${style.btn} mb-5 d-flex justify-content-center `} onClick={() => Navigate(-1)}>
+        <button className={`${style.button2}`}>
+          Go Back
+        </button>
+      </div>
     </div>
+
+
 
 
   );

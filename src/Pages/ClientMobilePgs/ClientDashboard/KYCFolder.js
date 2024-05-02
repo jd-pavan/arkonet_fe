@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const KYCFolder = (props) => {
   return (
     <div className='col-6' id="kyc" onClick={props.handleCardClick}>
-      <Link >
+      <Link to="kyc">
         <div className={`${style.uniclass} ${style.card3}`}>
           <div className={`${style.icons} `}>
             <div className={`${style.lefticons} `}>

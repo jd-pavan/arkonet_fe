@@ -108,31 +108,30 @@ const KYCFile = () => {
     }
   };
 
-  async function viewImage(fileid)
-  {
+  async function viewImage(fileid) {
 
 
 
-    
-      let fetchUrl = ""
-      switch (fileid) {
-        case "aadhar_card":
-          fetchUrl = `getclientkycadhar`;
-          break;
-  
-        case "pan_card":
-          fetchUrl = `getclientkycapan`;
-          break;
-  
-        case "bank_cheque":
-          fetchUrl = `getclientkyccheck`;
-  
-          break;
-  
-        default:
-          break;
-  
-      }
+
+    let fetchUrl = ""
+    switch (fileid) {
+      case "aadhar_card":
+        fetchUrl = `getclientkycadhar`;
+        break;
+
+      case "pan_card":
+        fetchUrl = `getclientkycapan`;
+        break;
+
+      case "bank_cheque":
+        fetchUrl = `getclientkyccheck`;
+
+        break;
+
+      default:
+        break;
+
+    }
 
 
 
@@ -154,18 +153,18 @@ const KYCFile = () => {
           const fileBlob = new Blob([result], {
             type: `image/jpeg`,
           });
-         
-        
 
-            const blobUrl = URL.createObjectURL(fileBlob);
-            // console.log(blobUrl)
-      
-      
-            const pdfWindow = window.open(blobUrl, "_blank");
-            pdfWindow.addEventListener("beforeunload", () => {
-              URL.revokeObjectURL(blobUrl);
-            });
-          
+
+
+          const blobUrl = URL.createObjectURL(fileBlob);
+          // console.log(blobUrl)
+
+
+          const pdfWindow = window.open(blobUrl, "_blank");
+          pdfWindow.addEventListener("beforeunload", () => {
+            URL.revokeObjectURL(blobUrl);
+          });
+
         }).catch((error) => console.log(error));
     } catch (error) {
       console.error(
@@ -177,9 +176,9 @@ const KYCFile = () => {
   }
 
 
-  async function getImageData(fetchURL, index,view) {
+  async function getImageData(fetchURL, index, view) {
 
-   
+
 
     try {
       var myHeaders = new Headers();
@@ -209,7 +208,7 @@ const KYCFile = () => {
             reader.readAsDataURL(blob);
           };
           blobToDataURL(fileBlob);
-         
+
         }).catch((error) => console.log(error));
     } catch (error) {
       console.error(
@@ -219,10 +218,10 @@ const KYCFile = () => {
     }
 
 
-    
+
   }
 
-  
+
 
   // function handleSelectFile(e) {
   //   const fileid = e.currentTarget.id;
@@ -316,7 +315,7 @@ const KYCFile = () => {
               e.preventDefault();
               Navigate(-1);
             }}><h3>
-              <i class="fa-solid fa-angle-left"></i></h3></Link>
+              <i className="fa-solid fa-angle-left"></i></h3></Link>
         </div>
         <div className={`${style.eyes} ml-5`} ><h2>KYC Files</h2></div>
         <div className={`${style.rightear}`} ><h3>&nbsp;</h3></div>
@@ -351,7 +350,7 @@ const KYCFile = () => {
                         <>
                           <i
                             className="bi bi-file-earmark-pdf-fill text-danger"
-                            style={{ "font-size": "4rem" ,"cursor":"pointer"}}
+                            style={{ "font-size": "4rem", "cursor": "pointer" }}
                             onClick={(e) => {
                               e.preventDefault();
                               openFileAndDownload(item.id);
@@ -364,9 +363,13 @@ const KYCFile = () => {
                           src={item.imgsrc}
                           alt="Preview"
                           className={`${style.img}`}
-                          style={{"cursor":"pointer"}}
+                          style={{
+                            "cursor": "pointer",
+                            "width": "18rem",
+                            "objectFit": "cover",
+                          }}
                           loading="lazy"
-                          onClick={(e)=>{viewImage(item.id);}}
+                          onClick={(e) => { viewImage(item.id); }}
                         />
                       )}
                     </div>

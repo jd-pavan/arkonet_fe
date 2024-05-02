@@ -92,7 +92,7 @@ const RefUserview = () => {
                                         onChange={(e) => setSearchQuery(e.target.value)} />
                                 </div>
                                 <div className={`${style.seachlogo}`}>
-                                    <h4><i class="fa-solid fa-magnifying-glass"></i></h4>
+                                    <h4><i className="fa-solid fa-magnifying-glass"></i></h4>
                                 </div>
                             </div>
                         </div>
@@ -161,7 +161,7 @@ const RefUserview = () => {
                                         onChange={(e) => setSearchQuery(e.target.value)} />
                                 </div>
                                 <div className={`${style.seachlogo}`}>
-                                    <h4><i class="fa-solid fa-magnifying-glass"></i></h4>
+                                    <h4><i className="fa-solid fa-magnifying-glass"></i></h4>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +207,7 @@ const RefUserview = () => {
                                             {/* <div className={`${style.name} `} onClick={() => GOTOClients(item.registration.pan)}><p className={`${style.reference} text-primary`} style={{ cursor: "pointer" }}>{item.count}</p></div> */}
 
 
-                                            <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={item.substartdatebyuser === null ? { color: "#d2cccc" } : { color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
+                                            <div className={`${style.name} `} ><p className={`${style.status} `}><i className="fa-solid fa-circle" style={item.substartdatebyuser === null ? { color: "#d2cccc" } : { color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
                                         </div>
 
                                     ))

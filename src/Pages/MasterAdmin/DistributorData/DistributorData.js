@@ -36,7 +36,7 @@ const DistributorData = () => {
     pin_code: "",
     state: "",
     whatsApp_Link: "",
-    
+
   })
 
 
@@ -832,15 +832,15 @@ const DistributorData = () => {
         {/* <div className='ml-5'>
           <div className={`${styles.qrupload} mb-4 d-flex justify-content-around w-100 `}>
             <div className='d-flex flex-column align-items-center '>
-              <i class="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }}></i>
+              <i className="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }}></i>
               <h6>PAN Card</h6>
             </div>
             <div className='d-flex flex-column align-items-center '>
-              <i class="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }}></i>
+              <i className="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }}></i>
               <h6>Aadhar Card</h6>
             </div>
             <div className='d-flex flex-column align-items-center '>
-              <i class="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }}></i>
+              <i className="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }}></i>
               <h6>Canceled Cheque</h6>
             </div>
 
@@ -888,7 +888,7 @@ const DistributorData = () => {
   <button className={`${styles.buttons} ${styles.btnupload}`} onClick={handleSelectFile} id="aadhar_card">{KYCFiles[1].isExist ? `Update` : `Upload`}</button>} */}
 
                 {KYCFiles[1].isExist && <>
-                  <i class="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }} onClick={(e) => { viewFile("aadhar_card") }}></i></>}
+                  <i className="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }} onClick={(e) => { viewFile("aadhar_card") }}></i></>}
 
 
 
@@ -902,7 +902,7 @@ const DistributorData = () => {
                 <button onClick={handleSelectFile} id="pan_card" className={`${styles.buttons} ${styles.btnupload}`}>{KYCFiles[2].isExist ? `Update` : `Upload`}</button>} */}
 
                 {KYCFiles[2].isExist && <>
-                  <i class="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }} onClick={(e) => { viewFile("pan_card") }} ></i></>}
+                  <i className="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }} onClick={(e) => { viewFile("pan_card") }} ></i></>}
 
 
                 {/* <button onClick={(e) => { viewFile("pan_card") }} className={`${styles.buttons} ${styles.btnview}`}>View</button></>} */}
@@ -916,7 +916,7 @@ const DistributorData = () => {
                 <button className={`${styles.buttons} ${styles.btnupload}`} onClick={handleSelectFile} id="bank_cheque">{KYCFiles[3].isExist ? `Update` : `Upload`}</button>} */}
 
                 {KYCFiles[3].isExist && <>
-                  <i class="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }} onClick={(e) => { viewFile("bank_cheque") }}></i></>}
+                  <i className="bi bi-file-earmark-richtext-fill text-success" style={{ fontSize: "110px" }} onClick={(e) => { viewFile("bank_cheque") }}></i></>}
 
 
                 {/* <button className={`${styles.buttons} ${styles.btnview}`} onClick={(e) => { viewFile("bank_cheque") }}>View</button></>} */}

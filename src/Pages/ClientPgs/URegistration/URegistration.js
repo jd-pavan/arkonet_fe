@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 import formfields from './formfields';
 import InputType from "./InputType"
+import InputField from '../../../components/InputField/InputField';
 
 
 
@@ -39,16 +40,20 @@ const URegistration = () => {
   const [GST_Radio, setGST_Radio] = useState(false);
   const [Both_Radio, setBoth_Radio] = useState(false);
 
-  const [mailList,setMailList]=useState(
-    [      
+  const [mailList, setMailList] = useState(
+    [
       {
-        "val":"Other",
-        "option_name":"Other"
+        "val": "Other",
+        "option_name": "Other"
       }
-    
+
     ]
   )
+  const [GSTINValidation, setGSTINValidation] = useState("");
   const [formdata, setFormdata] = useState({
+    gstin: "",
+    gstinname: "",
+    gstinaddress: "",
     address: "",
     email: "",
     mobile: "",
@@ -56,52 +61,52 @@ const URegistration = () => {
     pin_code: "",
     profession: "",
     state: "",
-    invest_now_email:"",
+    invest_now_email: "",
     telephone: "",
     category: "",
     dob: "",
     name: "",
     residential_status: "",
     userid: `${user_id}`,
-    
+
   });
 
-useEffect(()=>{
-  fetchMailList();
-},[])
+  useEffect(() => {
+    fetchMailList();
+  }, [])
 
-async function fetchMailList(){
-  var myHeaders = new Headers();
-  myHeaders.append("Authorization", `Bearer ${storedToken}`);
+  async function fetchMailList() {
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
-  var requestOptions = {
-    method: 'GET',
-    headers: myHeaders,
-    redirect: 'follow'
-  };
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
 
-  try {
-    const response = await fetch(`${url_}/Invest_now/get_all/by-pan/${user_pan}`, requestOptions);
-    const result = await response.json();
-    
-    const updateItems=[...mailList]
-    result.map((item)=>{      
-      updateItems.push({
-        id: item.id,
-        pan: item.pan,
-        val: item.investNow_Email,
-        option_name: item.investNow_Email,
-      });
-    })
-    // console.log(updateItems)
-setMailList(updateItems)
-  }catch(error){
+    try {
+      const response = await fetch(`${url_}/Invest_now/get_all/by-pan/${user_pan}`, requestOptions);
+      const result = await response.json();
+
+      const updateItems = [...mailList]
+      result.map((item) => {
+        updateItems.push({
+          id: item.id,
+          pan: item.pan,
+          val: item.investNow_Email,
+          option_name: item.investNow_Email,
+        });
+      })
+      // console.log(updateItems)
+      setMailList(updateItems)
+    } catch (error) {
       console.log(error)
     }
-}
+  }
 
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
 
     if (name === "pan") {
@@ -144,10 +149,13 @@ setMailList(updateItems)
         break;
 
       case "pan":
-        setFormdata({ ...formdata, [e.target.name]: e.target.value });
+
+        const userPAN = e.target.value;
+        const uppercaseName = userPAN.toUpperCase();
+        setFormdata({ ...formdata, [e.target.name]: uppercaseName });
         //---Basic PAN Validation
         const panPattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-        setIsValidPAN(panPattern.test(e.target.value));
+        setIsValidPAN(panPattern.test(uppercaseName));
         break;
 
       case "mobile":
@@ -159,12 +167,15 @@ setMailList(updateItems)
         break;
 
       case "pin_code":
-          setFormdata({ ...formdata, [e.target.name]: value.replace(/\D/g, "") });
-          e.target.value = value.replace(/\D/g, "");
-          // Basic pin code validation
-          const pinPattern = /^[1-9]{1}[0-9]{5}$/;
-          setIsValidPIN(pinPattern.test(e.target.value));
-          break;
+        setFormdata({ ...formdata, [e.target.name]: value.replace(/\D/g, "") });
+        e.target.value = value.replace(/\D/g, "");
+        // Basic pin code validation
+        const pinPattern = /^[1-9]{1}[0-9]{5}$/;
+        setIsValidPIN(pinPattern.test(e.target.value));
+        // if (e.target.value.length > 5) {
+        //   FetchStateFromPincode(e.target.value)
+        // }
+        break;
 
       case "telephone":
         setFormdata({ ...formdata, [e.target.name]: value.replace(/\D/g, "") });
@@ -172,28 +183,38 @@ setMailList(updateItems)
         break;
 
 
-        case "invest_now_email":
-          const index = formfields.findIndex(item => item.name === "invest_now_email");
-          if(index !==-1){
-          if(formfields[index].type==="dropdown"&&e.target.value==="Other")
-          {            
-              formfields[index].type="text";
-              if(e.target.value==="Other"){
-                setFormdata({ ...formdata, [e.target.name]: "" });
-                e.target.value = "";
-              }              
+      case "invest_now_email":
+        const index = formfields.findIndex(item => item.name === "invest_now_email");
+        if (index !== -1) {
+          if (formfields[index].type === "dropdown" && e.target.value === "Other") {
+            formfields[index].type = "text";
+            if (e.target.value === "Other") {
+              setFormdata({ ...formdata, [e.target.name]: "" });
+              e.target.value = "";
+            }
           }
-          else if(formfields[index].type==="dropdown" && e.target.value!=="Other"){
-            formfields[index].type="dropdown";
+          else if (formfields[index].type === "dropdown" && e.target.value !== "Other") {
+            formfields[index].type = "dropdown";
             setFormdata({ ...formdata, [e.target.name]: e.target.value });
           }
-          else{
+          else {
             setFormdata({ ...formdata, [e.target.name]: e.target.value });
           }
         }
-        
-      
-          break;
+      case "gstinname":
+        setFormdata({ ...formdata, [e.target.name]: value.replace(/\d/g, "") });
+
+        break;
+      case "gstin":
+
+
+        setFormdata({ ...formdata, [e.target.name]: value.toUpperCase() });
+
+
+        break;
+
+
+
       default:
         setFormdata({ ...formdata, [e.target.name]: e.target.value });
     }
@@ -203,7 +224,16 @@ setMailList(updateItems)
 
 
 
-
+  const FetchStateFromPincode = async (value) => {
+    try {
+      const response = await fetch(`https://api.postalpincode.in/pincode/${value}`)
+      const result = await response.json()
+      // console.log(result[0].PostOffice[0].State)
+      setFormdata({ ...formdata, state: result[0].PostOffice[0].State });
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
   const FetchClientDATA = async (Cpan) => {
@@ -271,7 +301,7 @@ setMailList(updateItems)
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-console.log(formdata.invest_now_email)
+    // console.log(formdata.invest_now_email)
 
 
 
@@ -301,24 +331,42 @@ console.log(formdata.invest_now_email)
 
     // Check Form Fields
     if (
-      !formdata.name ||
-      !formdata.profession ||
-      !isValidPAN ||
-      !isValidMobile ||
-      !isValidPIN||
-      !isValidEmail ||
-      !formdata.category
+      formdata.category === "GST" || formdata.category === "Both" ?
+        !formdata.name ||
+        !formdata.profession ||
+        !isValidPAN ||
+        !isValidMobile ||
+        !isValidPIN ||
+        !isValidEmail ||
+        !formdata.category ||
+        !formdata.gstin ||
+        !formdata.gstinname ||
+        !formdata.gstinaddress
+        :
+        !formdata.name ||
+        !formdata.profession ||
+        !isValidPAN ||
+        !isValidMobile ||
+        !isValidPIN ||
+        !isValidEmail ||
+        !formdata.category
 
     ) {
       swal.fire("Failed!", "Please fill the mandatory fields!!", "error");
       console.log(formdata);
       return;
     } else {
-      // const url = `${url_}/createclient`;
-      // console.log(url);
-      console.log(formdata);
-      // console.log(user_id)
 
+      console.log(formdata);
+
+      swal.fire({
+        title: 'Registering Client.',
+        text: 'Please wait...',
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          swal.showLoading();
+        },
+      });
 
 
 
@@ -344,7 +392,10 @@ console.log(formdata.invest_now_email)
           residential_status: formdata.residential_status,
           category: formdata.category,
           userid: user_id,
-          invest_now_email:formdata.invest_now_email
+          invest_now_email: formdata.invest_now_email,
+          gstin: formdata.category === "GST" || formdata.category === "Both" ? formdata.gstin : ``,
+          gstinname: formdata.category === "GST" || formdata.category === "Both" ? formdata.gstinname : ``,
+          gstinaddress: formdata.category === "GST" || formdata.category === "Both" ? formdata.gstinaddress : ``
         });
 
         const requestOptions = {
@@ -356,6 +407,10 @@ console.log(formdata.invest_now_email)
 
         const response = await fetch(`${url_}/createclient`, requestOptions);
         const result = await response.text();
+
+
+
+        /////////////////////////////////////////////************************** */
         console.log(result);
         if (response.status === 200) {
           swal.fire("Success!", `${result}`, "success");
@@ -373,7 +428,7 @@ console.log(formdata.invest_now_email)
             name: "",
             residential_status: "",
             userid: "",
-            invest_now_email:""
+            invest_now_email: ""
           });
           setFieldDisable(false)
           Navigate(-1)
@@ -391,7 +446,35 @@ console.log(formdata.invest_now_email)
 
 
 
+  const isGSTINExits = async (name, GSTIN_value) => {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow"
+      };
+
+      const response = await fetch(`${url_}/checkValuePresence/gstin?gstin=${GSTIN_value}`, requestOptions)
+      const result = await response.text();
+      console.log(response.status)
+      console.log(result)
+
+      if (result === "Value is not present") {
+        setFormdata({ ...formdata, [name]: GSTIN_value.toUpperCase() });
+      } else {
+        swal.fire("", `GSTIN already exits!`, "warning");
+        setFormdata({ ...formdata, [name]: "" });
+      }
+
+
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
 
   return (
@@ -401,47 +484,68 @@ console.log(formdata.invest_now_email)
           <span>CLIENT REGISTRATION FORM</span>
         </div>
         <div className={styles.regform}>
-          <form >
+          {/* <form > */}
 
-            <div className={styles.radio}>
-              <RadioInput name='category' label='Income Tax' value='Income_Tax' checked={formdata.category === 'Income_Tax'} onChange={handleChange} manadatory='*' disabled={Income_Tax_Radio} />
-              <RadioInput name='category' label='GST' value='GST' checked={formdata.category === 'GST'} onChange={handleChange} manadatory='*' disabled={GST_Radio} />
-              <RadioInput name='category' label='Both' value='Both' checked={formdata.category === 'Both'} onChange={handleChange} manadatory='*' disabled={Both_Radio} />
+          <div className={styles.radio}>
+            <RadioInput name='category' label='Income Tax' value='Income_Tax' checked={formdata.category === 'Income_Tax'} onChange={handleChange} manadatory='*' disabled={Income_Tax_Radio} />
+            <RadioInput name='category' label='GST' value='GST' checked={formdata.category === 'GST'} onChange={handleChange} manadatory='*' disabled={GST_Radio} />
+            <RadioInput name='category' label='Both' value='Both' checked={formdata.category === 'Both'} onChange={handleChange} manadatory='*' disabled={Both_Radio} />
 
-            </div>
-
-            {formfields.map((formfield) => (
-              <InputType
-                key={"k" + formfield.id}
-                labelname={formfield.labelname}
-                name={formfield.name}
-                type={formfield.type}
-                placeholder={formfield.placeholder}
-                value={formdata[formfield.name]}
-                mandatory={formfield.mandatory}
-                onChange={handleChange}
-                disabled={(formfield.name==="invest_now_email"&&GST_Radio)?false
-                            :fieldDisable}
-                validationmsg={formfield.validationmsg}
-                isNameNull={formfield.name === "name" && isNameNull}
-                isValidPIN={formfield.name === "pin_code" && isValidPIN}
-                isValidEmail={formfield.name === "email" && isValidEmail}
-                isValidMobile={formfield.name === "mobile" && isValidMobile}
-                isValidPAN={formfield.name === "pan" && isValidPAN}
-                isProfessionNull={formfield.name === "profession" && isProfessionNull}
-                mailList={mailList}
-              />
-            ))}
+          </div>
 
 
-            <div className={styles.btn_submit}>
-              {SUbmitbtn ? null : (
 
-                <button type="submit" onClick={handleSubmit}>SUBMIT</button>
-              )}
-            </div>
 
-          </form>
+          {formfields.map((formfield) => (
+            <InputType
+              key={"k" + formfield.id}
+              labelname={formfield.labelname}
+              name={formfield.name}
+              type={formfield.type}
+              placeholder={formfield.placeholder}
+              value={formdata[formfield.name]}
+              mandatory={formfield.mandatory}
+              onChange={handleChange}
+              disabled={(formfield.name === "invest_now_email" && GST_Radio) ? false
+                : fieldDisable}
+              validationmsg={formfield.validationmsg}
+              isNameNull={formfield.name === "name" && isNameNull}
+              isValidPIN={formfield.name === "pin_code" && isValidPIN}
+              isValidEmail={formfield.name === "email" && isValidEmail}
+              isValidMobile={formfield.name === "mobile" && isValidMobile}
+              isValidPAN={formfield.name === "pan" && isValidPAN}
+              isProfessionNull={formfield.name === "profession" && isProfessionNull}
+              mailList={mailList}
+            />
+          ))}
+
+
+
+          <>{formdata.category !== "Income_Tax" ?
+            <>
+              {/* <InputField lblname='GSTIN' color='black' placeholder='Enter GST number' name='gstin' value={formdata.gstin} onChange={handleChange} manadatory={"*"} maxLength={15} />
+                <InputField lblname='GSTIN Name' color='black' placeholder='Enter GSTIN name' name='gstinName' value={formdata.gstinName} onChange={handleChange} manadatory={"*"} />
+                <InputField lblname='GSTIN Address' color='black' placeholder='Enter GSTIN address' name='gstinAddress' value={formdata.gstinAddress} onChange={handleChange} /> */}
+
+              <InputField placeholder='Enter your GSTIN' onChange={handleChange} lblname='GSTIN' name='gstin' value={formdata.gstin} maxLength={15} manadatory={"*"} validationmsg={GSTINValidation} />
+              <InputField placeholder='Enter your GSTIN name' onChange={handleChange} lblname='GSTIN Name' name='gstinname' value={formdata.gstinname} manadatory={"*"} maxLength={100} />
+              <InputField placeholder='Enter your GSTIN address' onChange={handleChange} lblname='GSTIN Address' name='gstinaddress' value={formdata.gstinaddress} manadatory={"*"} maxLength={100} />
+
+            </>
+            :
+            <>
+
+            </>
+          }</>
+
+          <div className={styles.btn_submit}>
+            {SUbmitbtn ? null : (
+
+              <button type="submit" onClick={handleSubmit}>SUBMIT</button>
+            )}
+          </div>
+
+          {/* </form> */}
         </div>
       </div>
 

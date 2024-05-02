@@ -45,18 +45,17 @@ const TotalClient = () => {
   useEffect(() => {
     totalClient();
   }, [totalClient]);
-
-
-  const Goto = (cid, cname, cpan, ccategory, cprofession) => {
+  function GoToUpdateBack(itemsclientId) {
+    Navigate(`Cupdate/${itemsclientId}`, { state: { sentTotitle: "noNavigate" } })
+  }
+  const Goto = (client_data) => {
     Navigate('myfolder', {
       state: {
-        clientId: cid,
-        clientname: cname,
-        clientpan: cpan,
-        clientCategory: ccategory,
-        clientProfession: cprofession,
+
+        client_information: client_data
       },
     });
+    // console.log(client_data)
 
   }
   function GoBack() {
@@ -127,7 +126,7 @@ const TotalClient = () => {
                   <td>{index + 1}</td>
                   <td>{items.name}</td>
                   {/* <Link to={`myfolder/${items.clientId}`} className='h6'> */}
-                  <td onClick={() => Goto(items.clientId, items.name, items.pan, items.category, items.profession)} className='text-primary' style={{ cursor: "pointer" }}>{items.pan}</td>
+                  <td onClick={() => Goto(items)} className='text-primary' style={{ cursor: "pointer" }}>{items.pan}</td>
                   {/* </Link> */}
                   <td>{items.mobile}</td>
                   <td>{items.category}</td>
@@ -138,7 +137,7 @@ const TotalClient = () => {
                     </svg>
                   </Link></td>
                   <td>
-                    <Link to={`Cupdate/${items.clientId}`} ><h6>Edit</h6></Link>
+                    <span onClick={() => GoToUpdateBack(items.clientId)} className={styles.edit_btn}><h6>Edit</h6></span>
                   </td>
                 </tr>
               ))}

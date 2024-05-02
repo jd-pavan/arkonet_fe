@@ -14,8 +14,10 @@ const Loginpage = ({ setLoggedIn }) => {
 
   const grace_period_days = 30;
 
+  const myUsername = localStorage.getItem("User_Pan");
+
   const [formdata, setFormdata] = useState({
-    username: localStorage.getItem("User_Pan"),
+    username: myUsername,
     password: ""
 
 
@@ -25,6 +27,7 @@ const Loginpage = ({ setLoggedIn }) => {
   };
 
   useEffect(() => {
+
     setLoggedIn(false)
   }, [])
 
@@ -58,14 +61,15 @@ const Loginpage = ({ setLoggedIn }) => {
     };
 
     const response = await fetch(
-      `${url_}/subscriptionpackuserdata/${formdata.username}`,
+      `${url_}/subscriptionpackuserdata/${localStorage.getItem("pan")}`,
       requestOptions
     );
-    const result = await response.json();
-    console.log(result);
+
+    // console.log(result);
+
 
     if (response.status === 200) {
-
+      const result = await response.json();
       const daysDiff = (Math.floor((new Date(result.subscriptionData.subendtdate) - new Date()) / (1000 * 60 * 60 * 24))) + 1;
       const time_left = result.getSubendtdate && getTimeDifference(new Date(), result.getSubendtdate);
       // console.log(time_left)
@@ -97,8 +101,8 @@ const Loginpage = ({ setLoggedIn }) => {
         }
         return 'on'
       }
-    }
-    else {
+    } else {
+
       return
     }
 
@@ -122,33 +126,106 @@ const Loginpage = ({ setLoggedIn }) => {
   }
 
 
+  const ChangeLoginUserStatus = async (cstoredToken, cuserPan) => {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${cstoredToken}`);
+
+      const requestOptions = {
+        method: "PUT",
+        headers: myHeaders,
+        redirect: "follow"
+      };
+
+      const Response = await fetch(`${url_}/pan/loginstatus/${cuserPan}/true`, requestOptions)
+      const Result = await Response.json();
+    } catch (error) {
+
+    }
+  }
+
+  function getCurrentDateTime() {
+    const now = new Date();
+
+    // Get the current date
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todaydate = `${year}-${month}-${day}`;
+
+    // Get the current time
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const logintime = `${hours}:${minutes}:${seconds}`;
+
+    return { todaydate, logintime };
+  }
+
+  const UserLogData = async (storedTOKEN, LoginTime, Logindate, UserPAN) => {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${storedTOKEN}`);
+
+      const raw = JSON.stringify({
+        "checkIn": LoginTime,
+        "checkOut": "",
+        "workingDate": Logindate
+      });
+
+      const requestOptions = {
+        method: "PUT",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+      };
+
+      const response = await fetch(`${url_}/CACheckInOROut/${UserPAN}`, requestOptions)
+      const result = response.json();
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleLogin = async () => {
+    // e.preventDefault();
+    const { todaydate, logintime } = getCurrentDateTime();
 
-
-    const url = `${url_}/authenticate`;
+    console.log(formdata)
 
     try {
-      const result = await axios({
-        url: url,
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        data: JSON.stringify(formdata),
+
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        "username": formdata.username,
+        "password": formdata.password
       });
+
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+      };
+      const Response = await fetch(`${url_}/authenticate`, requestOptions)
+      const result = await Response.json()
+
       console.log(result)
-      if (result.status === 200) {
+      if (Response.status === 200) {
         // const end=await JSON.parse(result.text());
 
-        const jwtToken = result.data.token;
-        const user_id = result.data.user.regId;
-        const user_pan = result.data.user.pan;
-        const user_name = result.data.user.name;
-        const user_mobile = result.data.user.mobile;
-        const user_profession = result.data.user.profession;
-        const email = result.data.user.email;
-        const End_Date = result.data.subenddate;
+        const jwtToken = result.token;
+        const user_id = result.user.regId;
+        const user_pan = result.user.pan;
+        const user_name = result.user.name;
+        const user_mobile = result.user.mobile;
+        const user_profession = result.user.profession;
+        const email = result.user.email;
+        const End_Date = result.subenddate;
 
         localStorage.setItem('jwtToken', jwtToken);
         localStorage.setItem('user_name', user_name);
@@ -157,17 +234,21 @@ const Loginpage = ({ setLoggedIn }) => {
         localStorage.setItem('mobile', user_mobile);
         localStorage.setItem('pan', user_pan);
         localStorage.setItem('profession', user_profession);
-        localStorage.setItem('logintime', new Date());
+        localStorage.setItem('logintime', logintime);
+        localStorage.setItem('logindate', todaydate);
+        localStorage.setItem('Page', "LLoginPage");
         localStorage.setItem('email', email);
         localStorage.setItem('End_Date', End_Date);
 
         localStorage.removeItem("User_Pan")
         localStorage.removeItem("otp")
 
-
-
+        // localStorage.setItem("gstin", "27AAAAA1111A123");
+        // await ChangeLoginUserStatus(jwtToken, user_pan);
+        ChangeLoginUserStatus(jwtToken, user_pan);
+        UserLogData(jwtToken, logintime, todaydate, user_pan);
         const sub_status = await checkSubscriptionStatus();
-        // console.log(sub_status)
+        console.log(sub_status)
         localStorage.setItem(`subscription_status`, sub_status);
         // await checkSubscriptionStatus();
         const subscription_status = localStorage.getItem(`subscription_status`)
@@ -175,7 +256,7 @@ const Loginpage = ({ setLoggedIn }) => {
           case "forceful_stop":
             Swal.fire({
               icon: "error",
-              text: `Your services has been stoped due to some reasons. Kindly contact admin team to resume your services.`,
+              text: `Your services has been stoped due to some reasons.Kindly contact admin team to resume your services.`,
             });
             setFormdata({
               username: "",
@@ -208,7 +289,8 @@ const Loginpage = ({ setLoggedIn }) => {
             const next_date = new Date(localStorage.getItem("grace_perido_end"))
             Swal.fire({
               icon: "warning",
-              text: `Your subscription has expired on ${end_date.getDate()} ${numberToMonth(end_date.getMonth() + 1)} ${end_date.getFullYear()},
+              text: `Your subscription has expired on ${end_date.getDate()} ${numberToMonth(end_date.getMonth() + 1)
+                } ${end_date.getFullYear()},
                        Your grace period to renew subscription is till ${next_date.getDate()} ${numberToMonth(next_date.getMonth() + 1)} ${next_date.getFullYear()}. After that all of your services will be stopped.`,
             });
             Navigate("/admin/dashboard");
@@ -221,6 +303,7 @@ const Loginpage = ({ setLoggedIn }) => {
 
             break;
           default:
+            setLoggedIn(false);
             break;
         }
 
@@ -230,7 +313,7 @@ const Loginpage = ({ setLoggedIn }) => {
     } catch (error) {
       swal("Failed!", "Invalid login credential !!!", "error");
       setFormdata({
-        username: "",
+        ...formdata,
         password: ""
       });
       console.log(error);
@@ -262,23 +345,24 @@ const Loginpage = ({ setLoggedIn }) => {
                 </div> */}
               <div className={styles.user_pass}>
                 <InputField placeholder='Enter your Password' onChange={handleChange} name='password' value={formdata.password} lblname='Password' type="password" />
+
               </div>
 
               <div className={styles.btn_login}>
-                <button onClick={handleLogin}>LOGIN</button>
+                <button onClick={() => handleLogin()}>LOGIN</button>
               </div>
 
             </div>
 
             <div className={styles.link}>
-              <Link to="User_registration">New to TAXKO? Click Here</Link>
+              {/* <Link to="User_registration">New to TAXKO? Click Here</Link> */}
               <Link to="forgetpass">Forget Password</Link>
             </div>
           </div>
 
           <div className={styles.footer}>
             <div className={styles.follow}>
-              <h6 className={`${styles.followtxt}`}>Follow Us On</h6>
+              <h6 className={`${styles.followtxt} `}>Follow Us On</h6>
             </div>
             <div className={styles.icon}>
               <h1><a href="https://www.facebook.com/arkonetglobal%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -286,7 +370,7 @@ const Loginpage = ({ setLoggedIn }) => {
                 <path
                   d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
               </svg></a></h1>
-              <h1><a href="https://twitter.com/arkonetglobal?s=11&t=_tXcbzY9oJ0xsskd5YCcMw%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+              <h1><a href="https://twitter.com/arkonetglobal?s=11&t=_tXcbzY9oJ0xsskd5YCcMw%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-twitter-x" viewBox="0 0 16 16">
                 <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
               </svg></a></h1>
               <h1><a href="https://www.instagram.com/arkonetglobal/?igshid=YmMyMTA2M2Y%3D%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -298,6 +382,10 @@ const Loginpage = ({ setLoggedIn }) => {
           </div>
         </div>
       </div>
+
+
+
+
     </div>
   );
 }

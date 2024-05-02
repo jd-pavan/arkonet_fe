@@ -268,16 +268,16 @@ const FamilyGroup = () => {
       <>
 
 
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Set Priority..</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+        <div className="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div className="modal-dialog" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="exampleModalLabel">Set Priority..</h5>
+                {/* <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span> */}
+                {/* </button> */}
               </div>
-              <div class="modal-body" style={{ height: "auto", overflowY: "auto" }}>
+              <div className="modal-body" style={{ height: "auto", overflowY: "auto" }}>
 
                 <>
 
@@ -358,7 +358,7 @@ const FamilyGroup = () => {
 
 
               </div>
-              <div class="modal-footer">
+              <div className="modal-footer">
                 <div className='mt-3 d-flex justify-content-center w-100'>
                   <button className={`${style.Family_Group_btn} d-flex justify-content-center`} onClick={SetFamilyIdToClients}><b>Group Famiy</b></button>
                 </div>

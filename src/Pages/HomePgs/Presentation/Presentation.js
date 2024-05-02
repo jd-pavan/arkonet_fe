@@ -229,21 +229,19 @@ function Presentation() {
 
   function moveSlide(e) {
     e.preventDefault();
-    console.log( currentSlideNo);
+    console.log(currentSlideNo);
     if (e.target.id === "right_btn") {
-      if(currentSlideNo===totalSides)
-      {
+      if (currentSlideNo === totalSides) {
         setCurrentSlideNo(1)
       }
-      else{
+      else {
         setCurrentSlideNo(currentSlideNo + 1);
       }
-    } else if (e.target.id === "left_btn" ) {
-      if(currentSlideNo===1)
-      {
+    } else if (e.target.id === "left_btn") {
+      if (currentSlideNo === 1) {
         setCurrentSlideNo(totalSides)
       }
-      else{
+      else {
         setCurrentSlideNo(currentSlideNo - 1);
       }
     }
@@ -251,74 +249,74 @@ function Presentation() {
 
   function screenMode(e) {
     console.log(e.target.id)
-    switch(e.target.id){
+    switch (e.target.id) {
       case "full_screen":
         console.log("full_screen")
         setIsFullscreen(true);
-      break;
+        break;
       case "small_screen":
         console.log("small_screen")
         setIsFullscreen(false);
-      break;
-      default : break;
+        break;
+      default: break;
     }
-    
+
   }
 
-  
+
 
   return (
-    <div className={`container mt-3 mb-3 ${style.maincontainer}`} style={{"width":"80%","textAlign":"center",}}>
-    <div className={style.outercontainer}>
-      <div class={style.heading}>TAXKO</div>
-      <div className={style.container}>
-        <div
-          id={
-            isFullScreen
-              ? `${style.presentation_area} ${style.full_screen}`
-              : `${style.presentation_area}`
-          }
-        >
-          
-          <section class={style.presentation}>
-            {slides.map((item, index) => (
-              <div
-                class={
-                  currentSlideNo === index + 1
-                    ? `${style.slide} ${style.show}`
-                    : `${style.slide}`
-                }
-              >
-                <img src={item.content} alt="" />
-              </div>
-            ))}
-          </section>
-          
-        </div>
-      </div>
-      <section className={style.navigation}>
-          <p>{`${currentSlideNo} of ${totalSides}`}</p>
-            
+    <div className={`container mt-3 mb-3 ${style.maincontainer}`} style={{ "width": "80%", "textAlign": "center", }}>
+      <div className={style.outercontainer}>
+        <div className={style.heading}>TAXKO</div>
+        <div className={style.container}>
+          <div
+            id={
+              isFullScreen
+                ? `${style.presentation_area} ${style.full_screen}`
+                : `${style.presentation_area}`
+            }
+          >
 
-            <button
-              id="left_btn"
-              className={`${style.btn} ${style.show}`}
-              onClick={moveSlide}
-            >
-              <i className="fas fa-solid fa-caret-left" id="left_btn"></i>
-            </button>
-            
-            <button
-              id="right_btn"
-              className={
-                `${style.btn} ${style.show}`
-              }
-              onClick={moveSlide}
-            >
-              <i className="fa-solid fa-caret-right" id="right_btn"></i>
-            </button>
-          </section>
-    </div>
+            <section className={style.presentation}>
+              {slides.map((item, index) => (
+                <div
+                  className={
+                    currentSlideNo === index + 1
+                      ? `${style.slide} ${style.show}`
+                      : `${style.slide}`
+                  }
+                >
+                  <img src={item.content} alt="" />
+                </div>
+              ))}
+            </section>
+
+          </div>
+        </div>
+        <section className={style.navigation}>
+          <p>{`${currentSlideNo} of ${totalSides}`}</p>
+
+
+          <button
+            id="left_btn"
+            className={`${style.btn} ${style.show}`}
+            onClick={moveSlide}
+          >
+            <i className="fas fa-solid fa-caret-left" id="left_btn"></i>
+          </button>
+
+          <button
+            id="right_btn"
+            className={
+              `${style.btn} ${style.show}`
+            }
+            onClick={moveSlide}
+          >
+            <i className="fa-solid fa-caret-right" id="right_btn"></i>
+          </button>
+        </section>
+      </div>
     </div>
   );
 }

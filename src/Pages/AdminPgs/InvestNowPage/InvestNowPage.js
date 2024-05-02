@@ -7,6 +7,7 @@ import FD from "../../../Images/ticksack.png";
 import { Link, useNavigate } from "react-router-dom";
 import AdDisplay from "../../../components/AdDisplay/AdDisplay"
 import Swal from "sweetalert2";
+import AdCarousel from "../../../components/AdCarousel/AdCarousel";
 
 
 const InvestNow = () => {
@@ -85,7 +86,7 @@ const InvestNow = () => {
 
       {/* Mobile Viewport */}
       <div
-        className={`col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-4 ${style.mobileport}`}
+        className={`col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-2 ${style.mobileport}`}
       >
         {/* Headbar Starts*/}
         {/* <div className={`${style.headerbar}`}>
@@ -105,7 +106,10 @@ const InvestNow = () => {
         {/* Headbar Ends ....................................................................................................... */}
 
         {/* Ad Starts */}
-        <AdDisplay />
+        {/* <AdDisplay /> */}
+        <div style={{ width: "100%", border: "1px dashed black", height: "30vh", borderRadius: "10px" }}>
+          <AdCarousel />
+        </div>
         {/* Ad Ends......................................................................................................... */}
 
         <div className={`row ${style.components}`}>
@@ -115,7 +119,7 @@ const InvestNow = () => {
                 className={`col-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 ${style.cards}`}
                 id={item.text}
               >
-                <Link onClick={(e) => {e.preventDefault();Goto(item.img_alt, item.text)}} className={item.classname}>
+                <Link onClick={(e) => { e.preventDefault(); Goto(item.img_alt, item.text) }} className={item.classname}>
                   <img src={item.img_src} alt={item.img_alt} />
                   <p>{item.text} </p>
                 </Link>

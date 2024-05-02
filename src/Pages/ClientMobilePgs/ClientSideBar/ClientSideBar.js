@@ -151,6 +151,12 @@ function ClientSideBar(props) {
           <h5>
             <Link to="updateinfo" onClick={toggleSidebar}>Update Information</Link>
           </h5>
+          <h5>
+            <Link to="bankdetails" onClick={toggleSidebar}>Add Bank</Link>
+          </h5>
+          <h5>
+            <Link to="transferCA" onClick={toggleSidebar}>Tranfer CA</Link>
+          </h5>
         </div>
         {/* Adress Ends......................................................................................................... */}
 

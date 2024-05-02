@@ -68,7 +68,7 @@ const SubLoginClientView = (props) => {
               <div className=' mt-4 mb-2 ml-3'>
                 <h4><b>All Clients</b></h4>
               </div>
-              <button className={`${style.close}`} type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <button className={`${style.close}`} type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>

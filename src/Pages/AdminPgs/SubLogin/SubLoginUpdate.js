@@ -142,10 +142,10 @@ const SubLoginUpdate = (props) => {
       </span>
 
 
-      <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
+      <div className="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
               <div className=' mt-4 mb-2 ml-3'>
                 <h4><b>UPDATE SUB-LOGIN</b></h4>
               </div>
@@ -153,7 +153,7 @@ const SubLoginUpdate = (props) => {
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">
+            <div className="modal-body">
               <>
                 <div className='d-flex flex-column justify-content-center'>
 
@@ -165,7 +165,7 @@ const SubLoginUpdate = (props) => {
                 </div>
               </>
             </div>
-            <div class="modal-footer">
+            <div className="modal-footer">
 
               <div className='mt-3 d-flex justify-content-center w-100'>
                 <button className={`${style.buysublogin_btn} d-flex justify-content-center`} onClick={handleUpdate}><b>UPDATE</b></button>

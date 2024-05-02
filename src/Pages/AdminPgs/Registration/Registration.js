@@ -34,7 +34,7 @@ const Registration = () => {
   const [isPasswordMatch, setIsPasswordMatch] = useState(true);
   const [isValidPIN, setIsValidPIN] = useState(true);
 
-const [email,setEmail]=useState()
+  const [email, setEmail] = useState()
   //const [buttonDisable,setButtonDisable]=useState(true);
   const [formdata, setFormdata] = useState({
     name: "",
@@ -100,10 +100,12 @@ const [email,setEmail]=useState()
         break;
 
       case "pan":
-        setFormdata({ ...formdata, [e.target.name]: e.target.value });
+        const User_Pan = e.target.value;
+        const Uppercase_User_Pan = User_Pan.toUpperCase();
+        setFormdata({ ...formdata, [e.target.name]: Uppercase_User_Pan });
         //---Basic PAN Validation
         const panPattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-        setIsValidPAN(panPattern.test(e.target.value));
+        setIsValidPAN(panPattern.test(Uppercase_User_Pan));
         break;
 
       case "mobile":
@@ -120,7 +122,7 @@ const [email,setEmail]=useState()
         break;
 
 
-        case "pin_code":
+      case "pin_code":
         setFormdata({ ...formdata, [e.target.name]: value.replace(/\D/g, "") });
         e.target.value = value.replace(/\D/g, "");
         // Basic pin code validation
@@ -129,7 +131,7 @@ const [email,setEmail]=useState()
         break;
 
       case "investNow_Email":
-      
+
         setEmail(value);
         // setFormdata({ ...formdata, investNow_Email: "" });
         break;
@@ -174,36 +176,36 @@ const [email,setEmail]=useState()
   };
 
 
-  function manageMailList(event,index){
-          event.preventDefault();
-          
-          switch (event.target.id) {
-            case "add":
-              const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-              if (!email || !emailPattern.test(email)||formdata.investNow_Email.includes(email)) {
-                Swal.fire({
-                  icon: "error",
-                  text: !email
-                    ? "Blank field..!!"
-                    : !emailPattern.test(email) ? "Invalid email..!!" 
-                    : formdata.investNow_Email.includes(email) && "Item already exists",
-                });
-              } else {
-               
-                  setFormdata({...formdata, investNow_Email: [email,...formdata.investNow_Email ]});
-                  setEmail('');
-                
-              }
-              break;
+  function manageMailList(event, index) {
+    event.preventDefault();
 
-            case "remove":
-              const updatedItems = [...formdata.investNow_Email];
-              updatedItems.splice(index, 1);
-              setFormdata({...formdata,investNow_Email:updatedItems});
-              break;
-            default:
-              break;
-          }
+    switch (event.target.id) {
+      case "add":
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailPattern.test(email) || formdata.investNow_Email.includes(email)) {
+          Swal.fire({
+            icon: "error",
+            text: !email
+              ? "Blank field..!!"
+              : !emailPattern.test(email) ? "Invalid email..!!"
+                : formdata.investNow_Email.includes(email) && "Item already exists",
+          });
+        } else {
+
+          setFormdata({ ...formdata, investNow_Email: [email, ...formdata.investNow_Email] });
+          setEmail('');
+
+        }
+        break;
+
+      case "remove":
+        const updatedItems = [...formdata.investNow_Email];
+        updatedItems.splice(index, 1);
+        setFormdata({ ...formdata, investNow_Email: updatedItems });
+        break;
+      default:
+        break;
+    }
   }
 
 
@@ -248,7 +250,7 @@ const [email,setEmail]=useState()
       !formdata.profession ||
       !isValidPAN ||
       !isValidMobile ||
-      !isValidPIN||
+      !isValidPIN ||
       !isValidEmail ||
       !isPasswordMatch
     ) {
@@ -266,7 +268,7 @@ const [email,setEmail]=useState()
           name: formdata.name,
           datebirth: formdata.datebirth,
           membership_No: formdata.membership_No,
-          profession:formdata.profession,
+          profession: formdata.profession,
           pan: formdata.pan,
           telephone: formdata.telephone,
           mobile: formdata.mobile,
@@ -285,6 +287,15 @@ const [email,setEmail]=useState()
 
 
       try {
+
+        swal.fire({
+          title: 'Registering.',
+          text: 'Please wait...',
+          showConfirmButton: false,
+          onBeforeOpen: () => {
+            swal.showLoading();
+          },
+        });
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -331,7 +342,7 @@ const [email,setEmail]=useState()
       } catch (error) {
         swal.fire(
           "Failed!",
-          "Server Down!! Please try again later!!!!",
+          "Please try again later!!!!",
           "error"
         );
         console.error(error);
@@ -353,45 +364,45 @@ const [email,setEmail]=useState()
             <div >
               {formfields.map((formfield) => (
                 <>
-                <div className={formfield.name==="investNow_Email"&&`${styles.first}`}>
-                <InputType
-                  key={"k" + formfield.id}
-                  labelname={formfield.labelname}
-                  name={formfield.name}
-                  type={formfield.type}
-                  placeholder={formfield.placeholder}
-                  value={formfield.name==="investNow_Email"?email:formdata[formfield.name]}
-                  mandatory={formfield.mandatory}
-                  onChange={handleChange}
-                  validationmsg={formfield.validationmsg}
-                  strenghtScore={formfield.name === "password" ? strenghtScore : ""}
-                  isNameNull={formfield.name === "name" && isNameNull}
-                  isValidEmail={formfield.name === "email" && isValidEmail}
-                  isValidPIN={formfield.name === "pin_code" && isValidPIN}
-                  isValidMobile={formfield.name === "mobile" && isValidMobile}
-                  isValidPAN={formfield.name === "pan" && isValidPAN}
-                  isPasswordMatch={formfield.name === "confirmpassword" && isPasswordMatch}
-                  isProfessionNull={formfield.name === "profession" && isProfessionNull}
-                />
-                {formfield.name==="investNow_Email"&&<i class="fa-solid fa-plus" style={{"margin":"0px 20px","cursor":"pointer","float":"right","position":"relative","top":"1rem","right":"0rem"}} 
-                id="add" onClick={(e)=>{manageMailList(e)}}></i>}
+                  <div className={formfield.name === "investNow_Email" && `${styles.first}`}>
+                    <InputType
+                      key={"k" + formfield.id}
+                      labelname={formfield.labelname}
+                      name={formfield.name}
+                      type={formfield.type}
+                      placeholder={formfield.placeholder}
+                      value={formfield.name === "investNow_Email" ? email : formdata[formfield.name]}
+                      mandatory={formfield.mandatory}
+                      onChange={handleChange}
+                      validationmsg={formfield.validationmsg}
+                      strenghtScore={formfield.name === "password" ? strenghtScore : ""}
+                      isNameNull={formfield.name === "name" && isNameNull}
+                      isValidEmail={formfield.name === "email" && isValidEmail}
+                      isValidPIN={formfield.name === "pin_code" && isValidPIN}
+                      isValidMobile={formfield.name === "mobile" && isValidMobile}
+                      isValidPAN={formfield.name === "pan" && isValidPAN}
+                      isPasswordMatch={formfield.name === "confirmpassword" && isPasswordMatch}
+                      isProfessionNull={formfield.name === "profession" && isProfessionNull}
+                    />
+                    {formfield.name === "investNow_Email" && <i className="fa-solid fa-plus" style={{ "margin": "0px 20px", "cursor": "pointer", "float": "right", "position": "relative", "top": "1rem", "right": "0rem" }}
+                      id="add" onClick={(e) => { manageMailList(e) }}></i>}
 
-                </div>
-                {formfield.name==="investNow_Email"&&
-                <>
-               
-                 <ul className={formdata.investNow_Email.length>0&&`${styles.emaillist}`}>
-                 {formdata.investNow_Email.map((email, index) => (                  
-                  <li key={index}  className={styles.emailitem}>
-                    <i class="fa fa-times" aria-hidden="true" id="remove" 
-                    onClick={(e)=>{manageMailList(e,index)}}>
-                    </i>
-                      {email}
-                  </li>
-                 ))}
-               </ul>
-               </>
-                }
+                  </div>
+                  {formfield.name === "investNow_Email" &&
+                    <>
+
+                      <ul className={formdata.investNow_Email.length > 0 && `${styles.emaillist}`}>
+                        {formdata.investNow_Email.map((email, index) => (
+                          <li key={index} className={styles.emailitem}>
+                            <i className="fa fa-times" aria-hidden="true" id="remove"
+                              onClick={(e) => { manageMailList(e, index) }}>
+                            </i>
+                            {email}
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  }
                 </>
               ))}
               <div className={`${styles.btn_submit} mt-4`}>

@@ -206,7 +206,7 @@
 
 .noti_list span {
   text-align: center;
-  font-size: 1.4em;
+  font-size: 18px;
   font-weight: 600;
 
 }
@@ -239,7 +239,7 @@
 
   .noti_list span {
 
-    font-size: 1em;
+    font-size: 13px;
 
 
   }
@@ -263,11 +263,15 @@
 
 /* ////////////////////////////// ----------Modal CSS----------////////////////////////////////// */
 
-.noti_Clients_Option {
 
-  margin-bottom: 10px;
+
+
+
+
+.noti_Clients_Option {
   display: flex;
-  align-items: center;
+  /* flex-wrap: wrap; */
+  justify-content: center;
 }
 
 .noti_Clients_Option button {
@@ -280,6 +284,11 @@
   background-color: rgb(239, 235, 235);
   cursor: pointer;
   border: none;
+  width: calc(33.33% - 10px);
+  margin: 5px;
+  padding: 10px;
+  font-size: 16px;
+
 }
 
 /* .noti_Clients_Option div:active {
@@ -303,9 +312,36 @@
   border: none;
 }
 
+/* Media query for tablets and smaller devices */
+@media (max-width: 768px) {
+  .noti_Clients_Option button {
+    width: calc(50% - 10px);
+  }
+}
+
+@media (max-width: 355px) {
+  .noti_Clients_Option {
+
+    flex-wrap: wrap;
+
+  }
+}
+
+/* Media query for phones and smaller devices */
+@media (max-width: 480px) {
+  .noti_Clients_Option button {
+    width: 100%;
+  }
+}
+
 .Select_All {
-  margin-left: 2rem;
+  /* margin-left: 2rem; */
   font-size: 1.5em;
+}
+
+.Select_All_Option {
+  display: flex;
+  justify-content: space-between;
 }
 
 .Select_All_Option input[type=checkbox] {
@@ -356,4 +392,21 @@
   height: 100%;
   object-fit: cover;
   /* Ensures the image covers the container */
+}
+
+/* ////////////////////////////////// */
+
+.round {
+  border-radius: 20px;
+  height: 2rem;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  box-shadow: 0 1px 2px black;
+}
+
+.search {
+  position: absolute;
+  right: 11.5rem;
+  top: -5px;
 }

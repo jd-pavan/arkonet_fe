@@ -1,625 +1,787 @@
-import styles from "./PaymentDetails.module.css"
-import profileimg from '../../../Images/profile.png'
-import InputField from "../../../components/InputField/InputField";
-import { useState, useEffect } from "react";
-import Swal from "sweetalert2";
-import { useRef } from "react";
-import { url_ } from "../../../Config";
-// import { file } from "jszip";
+import React, { useEffect, useState } from 'react';
+import style from "./GstrFileUpload.module.css";
+import upload from '../../../Images/upload.png';
+import Swal from 'sweetalert2';
+import { Link, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { url_ } from '../../../Config';
 
-function PaymentDetails() {
-  const disrtributor_pan = window.localStorage.getItem('pan');
+
+const GstrFileUpload = () => {
+  const subscription_status = localStorage.getItem('subscription_status');
+  const client_Information = useLocation().state.client_Information;
+  const Navigate = useNavigate();
+  const clientid = client_Information.clientId;
+  const year = useLocation().state.year;
+  const gst_title = useLocation().state.gstCategory;
+
+
+  // console.log(client_Information)
+  // console.log(gst_title)
+  // console.log(clientid)
+
+  const user_id = window.localStorage.getItem('user_id');
   const storedToken = window.localStorage.getItem('jwtToken');
 
-  const maxSize = 5;
 
 
-  ////////////////////////////////////////////////////////////////////////////////////
+  const [codeVisible, setCodeVisible] = useState(false);
+  const [fileResponse, setFileResponse] = useState(false);
+  const [Fileresponsedata, setFileresponsedata] = useState([]);
+  const [dbfilename, setDbfilename] = useState([]);
+  const [dbfilelength, setDbfilelength] = useState([]);
 
 
-  const [bankdatalength, setBankDataLength] = useState();
-  const [imgcontent, setImgContent] = useState();
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  const [bankdetails, setBankdetails] = useState({
+  const fetchData = async () => {
+    try {
+      await getFile();
+      await GetFileResponse();
 
-    bankname: "",
-    accountname: "",
-    accountnumber: "",
-    ifsc: ""
+
+    } catch (error) {
+      console.error('An error occurred:', error);
+    }
+  };
+
+  const currentYear = year.substring(0, 4);
+  // const currentYear = year;
+
+
+  const mappedMonths = [];
+
+  const months = [
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+    'January',
+    'February',
+    'March',
+  ];
+
+  for (let i = 0; i < 12; i++) {
+    const monthName = months[i];
+    const year = i < 9 ? currentYear : parseInt(currentYear) + 1; // Fix the typo here
+    mappedMonths.push(monthName + " " + year);
+    // mappedMonths.push(monthName + year);
+  }
+
+  // Get the current month and year
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1; // Adding 1 because months are zero-indexed
+  // const currentYear = currentDate.getFullYear();
+
+  // Find the index of the current month in the array
+  const currentIndex = mappedMonths.findIndex(month => {
+    const [monthName, year] = month.split(' ');
+    return monthName === new Date().toLocaleString('default', { month: 'long' }) && year == currentYear;
   });
 
+  // if (currentIndex !== -1) {
+  // Split the array into two parts and rearrange them
+  const beforeCurrentMonth = mappedMonths.slice(0, currentIndex);
+  const afterCurrentMonth = mappedMonths.slice(currentIndex);
+
+  // Map the array
+  const mappedArray = afterCurrentMonth.concat(beforeCurrentMonth);
+  // console.log(mappedArray);
+  // } else {
+  //   console.log("Current month not found in the array.");
+  // }
 
 
-  const [KYCFiles, setKYCFiles] = useState([
-    {
-      name: "Profile Picture",
-      id: "profilepic",
-      fileType: "",
-      selectedFile: null,
-      isExist: false,
-      imgsrc: null,
-      fileRef: useRef(null),
-      uploadStatus: false
-    },
-    {
-      name: "Aadhar Card",
-      id: "aadhar_card",
-      fileType: "",
-      selectedFile: null,
-      isExist: false,
-      imgsrc: null,
-      fileRef: useRef(null),
-      uploadStatus: false
-    },
-    {
-      name: "PAN Card",
-      id: "pan_card",
-      fileType: "",
-      selectedFile: null,
-      isExist: false,
-      imgsrc: null,
-      fileRef: useRef(null),
-      uploadStatus: false
-    },
-    {
-      name: "Bank Cheque",
-      id: "bank_cheque",
-      fileType: "",
-      selectedFile: null,
-      isExist: false,
-      imgsrc: null,
-      fileRef: useRef(null),
-      uploadStatus: false
-    }]);
+  // filename gstr ==>
 
 
-  const bankhandleChange = (e) => {
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //  Fetch file Code
 
 
-    setBankdetails({ ...bankdetails, [e.target.name]: e.target.value });
-    if (e.target.name === "accountnumber") {
-      setBankdetails({ ...bankdetails, [e.target.name]: e.target.value.replace(/\D/g, "") });
-      e.target.value = e.target.value.replace(/\D/g, "");
+  const getFile = async () => {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
+    const requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+
+    try {
+      const response = await fetch(`${url_}/Gstgetfile/${user_id}/${clientid}/${year}/${gst_title}`, requestOptions);
+      const data = await response.json();
+      // console.log(data)
+      setDbfilelength(data)
+      const extractedNames = data.map(file => {
+        const fileid = file.id;
+        const filePath = file.filePath;
+        // const parts = file.fileName.split(`${user_id}_${clientid}_${year}_`);
+        // const extractedName = parts[1].split('.pdf')[0];
+        // const fileName = "1_2_GSTR-1_Pavan_Resume_October 2023";
+
+        let splitString = file.fileName.split('_');
+        let extractedName = splitString.slice(2).join('_');
+
+        return { fileid, extractedName, filePath };
+      });
+      // console.log(extractedNames)
+      setDbfilename(extractedNames);
+    } catch (error) {
+      console.error('An error occurred while fetching files:', error);
     }
+  };
 
 
+  const filenameStatusArray = [];
+
+  mappedArray.forEach(month => {
+    const match = dbfilename.find(item => item.extractedName.includes(month));
+    if (match) {
+      filenameStatusArray.push({
+        month: month,
+        status: true,
+        fileid: match.fileid,
+        filePath: match.filePath,
+        filename: match.extractedName
+      });
+    } else {
+      filenameStatusArray.push({
+        month: month,
+        status: false,
+        fileid: null,
+        filePath: null,
+        filename: null
+      });
+    }
+  });
+
+  // console.log(filenameStatusArray);
+
+
+
+
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //  Toggle Switch Code
+
+
+
+
+  const GetFileResponse = async () => {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+    const requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
+
+    try {
+      const response = await fetch(`${url_}/GST_Statusfilednotfiled/${user_id}/${clientid}/${year.slice(0, 4)}/${gst_title}`, requestOptions);
+      const data = await response.json();
+      setFileresponsedata(data)
+
+
+
+    } catch (error) {
+      console.error('An error occurred while fetching files:', error);
+    }
   };
 
 
 
-  const SaveBankData = async (event) => {
-    console.log(KYCFiles)
-    event.preventDefault();
 
+  const handleToggle = async (month) => {
 
-    if (!bankdetails.bankname || !bankdetails.accountname || !bankdetails.accountnumber || !bankdetails.ifsc) {
-      Swal.fire("Fill all bank details")
+    if (subscription_status === "grace_period") {
+      Swal.fire({
+        icon: "error",
+        text: "Sorry this service is currently not available due to end of subscription. Renew subscription to resume services."
+      })
+
+    }
+
+    else if (subscription_status === "not_subscribed") {
+      Swal.fire({
+        icon: "error",
+        text: "Subscribe to avail this service."
+      })
+
     }
     else {
+      if (fileResponse === true) {
+        // console.log("It's TRUE");
+      } else {
+
+
+        console.log(user_id)
+        console.log(clientid)
+        console.log(month)
+        console.log(year.slice(0, 4))
+        console.log(gst_title)
+
+
+        try {
+          const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, confirm!'
+          });
+
+          if (result.isConfirmed) {
+            var myHeaders = new Headers();
+            myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+            var requestOptions = {
+              method: 'PUT',
+              headers: myHeaders,
+              redirect: 'follow'
+            };
+
+            fetch(`${url_}/GSTupdateFiledNotFiled/${user_id}/${clientid}/${month}/${year.slice(0, 4)}/${gst_title}`, requestOptions)
+              .then(response => console.log(response.status))
+              .then(result => console.log(result))
+              .catch(error => console.log('error', error));
+            window.location.reload();
+
+
+          } else {
+            console.log("Canceled the toggle!");
+          }
+        } catch (error) {
+          console.log("Failed to call function!!!");
+
+          console.log('Error:', error);
+          if (error.response) {
+            console.log('Response Status:', error.response.status);
+            console.log('Response Data:', error.response.text());
+          }
+        }
+      }
+    }
+  };
 
 
 
-      Swal.fire({
-        title: 'Saving details',
-        text: 'Please wait...',
-        showConfirmButton: false,
-        onBeforeOpen: () => {
-          Swal.showLoading();
-        },
+  /////////////////////////////////////////////////////////////////
+
+
+
+
+
+  var NEWARRAY = filenameStatusArray.map(fileStatus => {
+    const dataItem = Fileresponsedata.find(item => item.month === fileStatus.month);
+    if (dataItem) {
+      fileStatus.filednotfiled = dataItem.filednotfiled;
+    } else {
+      fileStatus.filednotfiled = 'no'; // Set default value if no match found
+    }
+    return fileStatus; // Return the updated fileStatus
+  });
+
+  // console.log(NEWARRAY);
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+
+  function filterArrayBasedOnYear(data, currentYear, fyYear) {
+    if (fyYear === currentYear) {
+
+      const parseMonth = (monthString) => {
+        const [month, year] = monthString.split(' ');
+        return new Date(`${month} 1, ${year}`);
+      };
+
+      // Sort the data array based on the month
+      const rearrangeddata = data.sort((a, b) => parseMonth(a.month) - parseMonth(b.month));
+
+      // Get the current month and year
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth() + 1; // Adding 1 because months are zero-indexed
+      const currentYear = currentDate.getFullYear();
+
+      // Filter the array until the current month
+      const rearrangedDataUntilCurrentMonth = rearrangeddata.filter(item => {
+        const itemDate = new Date(item.month);
+        const itemMonth = itemDate.getMonth() + 1;
+        const itemYear = itemDate.getFullYear();
+
+        return itemYear < currentYear || (itemYear === currentYear && itemMonth <= currentMonth);
       });
 
-      var myHeaders = new Headers();
+      console.log(rearrangedDataUntilCurrentMonth);
+
+
+      return rearrangedDataUntilCurrentMonth.reverse();
+
+    } else {
+      // Function to convert month string to Date object
+      const parseMonth = (monthString) => {
+        const [month, year] = monthString.split(' ');
+        return new Date(`${month} 1, ${year}`);
+      };
+
+      // Sort the data array based on the month
+      data.sort((a, b) => parseMonth(a.month) - parseMonth(b.month));
+      return data.reverse();
+    }
+  }
+
+  // Given data
+
+
+  // Current year and fiscal year
+  const currentYearr = `${currentDate.getFullYear()}`;
+  const fyYear = `${currentYear}`;
+
+
+  // console.log(currentYearr)
+  // console.log(fyYear)
+  // Call the function with the data, current year, and fiscal year
+  const NEWARRAYUpdated = filterArrayBasedOnYear(NEWARRAY, currentYearr, fyYear);
+  // console.log(NEWARRAYUpdated);
+
+
+  // ///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////
+
+  // File Upload Code
+  const checkSubsriptionStatus = (e) => {
+    if (subscription_status === "grace_period") {
+      Swal.fire({
+        icon: "error",
+        text: "Sorry this service is currently not available due to end of subscription. Renew subscription to resume services."
+      })
+      e.preventDefault();
+    }
+
+    else if (subscription_status === "not_subscribed") {
+      Swal.fire({
+        icon: "error",
+        text: "Subscribe to avail this service."
+      })
+      e.preventDefault();
+    }
+
+  }
+
+  const handleFileUpload = async (event, month) => {
+    const file = event.target.files[0];
+
+    if (file) {
+
+
+      if (file.name.endsWith('.pdf')) {
+
+        FileUpload(file, month);
+      } else {
+        Swal.fire(
+          'Invalid File Type!',
+          "Please select a valid file type (PDF).",
+          "error"
+        );
+      }
+
+
+
+    } else {
+      console.log("No file selected");
+    }
+  };
+
+  async function FileUpload(file, month) {
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, confirm!'
+    });
+
+    if (result.isConfirmed) {
+      // console.log(user_id)
+      // console.log(clientid)
+      // console.log(file)
+      // console.log(month)
+      // console.log(year)
+      // console.log(gst_title)
+
+      const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
-      var formdata = new FormData();
-      formdata.append("imagePathProfile", KYCFiles[0].selectedFile && KYCFiles[0].selectedFile);
-      formdata.append("Bank_Name", bankdetails.bankname);
-      formdata.append("AccountName", bankdetails.accountname);
-      formdata.append("AccountNumber", bankdetails.accountnumber);
-      formdata.append("IFSC", bankdetails.ifsc);
+      const formdata = new FormData();
+      formdata.append("file", file);
+      formdata.append("userid", user_id);
+      formdata.append("clientid", clientid);
+      formdata.append("financialYear", year);
+      formdata.append("category", gst_title);
+      formdata.append("month", month);
 
-      var requestOptions = {
-        method: 'PUT',
+      const requestOptions = {
+        method: 'POST',
         headers: myHeaders,
         body: formdata,
         redirect: 'follow'
       };
 
       try {
-        const response = await fetch(`${url_}/UpdatedistributorPaymentDetails/${disrtributor_pan}`, requestOptions)
-        const result = await response.text();
+        const response = await fetch(`${url_}/GSTFileUpload`, requestOptions);
+        const responseData = await response.text();
+        console.log(responseData)
         if (response.status === 200) {
-          Swal.close();
-          Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: 'Details saved.!',
-            showConfirmButton: false,
-            timer: 5000
-          });
+          await Swal.fire(
+            'Success.',
+            `${responseData}`,
+            'success'
+          )
+          window.location.reload();
+
+        } else {
+          Swal.fire(
+            'Failed!',
+            `${responseData}`,
+            'error'
+          )
         }
-      } catch (error) { Swal.close(); console.log('error', error) };
+      } catch (error) {
+        console.log('Error:', error);
+        if (error.response) {
+          console.log('Response Status:', error.response.status);
+          console.log('Response Data:', await error.response.text());
+        }
+      }
+    } else {
+      console.log("Upload is canceled.");
+      window.location.reload();
     }
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //  Select button code
+
+  const toggleCodeVisibility = () => {
+    setCodeVisible(!codeVisible);
   };
 
 
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
+  const handleCheckboxChange = (event, fileId) => {
+    if (event.target.checked) {
+      setSelectedFiles(prevSelectedFiles => [...prevSelectedFiles, fileId]);
+    } else {
+      setSelectedFiles(prevSelectedFiles => prevSelectedFiles.filter(id => id !== fileId));
+    }
+  };
 
-  async function getImageData(updatedItems) {
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${storedToken}`);
+  // Delete file Code
 
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
+  const DeleteFile = async () => {
 
-
-    await fetch(`${url_}/getdistributorprofile/${disrtributor_pan}`, requestOptions)
-      .then(response => response.blob())
-      .then(result => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const dataURL = reader.result;
-          updatedItems[0].imgsrc = dataURL;
-
-          updatedItems[0].selectedFile = new File([result], `$profile.jpeg`, {
-            type: "image/jpeg",
-          });
-        };
-        reader.readAsDataURL(result);
-      })
-      .catch((error) => console.log(error));
-
-
-    await fetch(`${url_}/getdistributoradhar/${disrtributor_pan}`, requestOptions)
-      .then(response => response.blob())
-      .then(result => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const dataURL = reader.result;
-          updatedItems[1].imgsrc = dataURL;
-        };
-        reader.readAsDataURL(result);
-      })
-      .catch((error) => console.log(error));
-
-
-
-    await fetch(`${url_}/getdistributorpan/${disrtributor_pan}`, requestOptions)
-      .then(response => response.blob())
-      .then(result => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const dataURL = reader.result;
-          updatedItems[2].imgsrc = dataURL;
-        };
-        reader.readAsDataURL(result);
-      })
-      .catch((error) => console.log(error));
-
-
-
-    await fetch(`${url_}/getdistributorcheque/${disrtributor_pan}`, requestOptions)
-      .then(response => response.blob())
-      .then(result => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const dataURL = reader.result;
-          updatedItems[3].imgsrc = dataURL;
-        };
-        reader.readAsDataURL(result);
-      })
-      .catch((error) => console.log(error));
-
-    setKYCFiles(updatedItems);
-
-
-  }
-
-
-  async function saveKyc(e) {
-    console.log(e.target.id)
-    const updatedItems = [...KYCFiles];
-    const index = updatedItems.findIndex((item) => item.id === e.target.id);
-
-
-
-    if (index !== -1) {
-
-
-
+    if (subscription_status === "grace_period") {
       Swal.fire({
-        title: 'Saving details',
-        text: 'Please wait...',
-        showConfirmButton: false,
-        onBeforeOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
-      var myHeaders = new Headers();
-      myHeaders.append("Authorization", `Bearer ${storedToken}`);
-
-      var formdata = new FormData();
-      formdata.append("pan", disrtributor_pan);
-
-
-      let url_opt = "";
-      switch (e.target.id) {
-        case "aadhar_card":
-          url_opt = "Kycadharimage";
-          formdata.append("imagePathAdhar", KYCFiles[1].selectedFile);
-
-          break;
-        case "pan_card":
-          url_opt = "Kycpanimage";
-          formdata.append("imagePathpan", KYCFiles[2].selectedFile);
-
-          break;
-        case "bank_cheque":
-          url_opt = "Kycchequeimage";
-
-          formdata.append("imagePathcheque", KYCFiles[3].selectedFile);
-
-          break;
-        default:
-          break;
-      }
-
-
-      var requestOptions = {
-        method: 'PUT',
-        headers: myHeaders,
-        body: formdata,
-        redirect: 'follow'
-      };
-
-      fetch(`${url_}/distributor/upload/${url_opt}`, requestOptions)
-        .then(response => {
-          if (response.status === 200) {
-            Swal.close();
-            Swal.fire({
-              position: 'center',
-              icon: 'success',
-              title: `${KYCFiles[index].name} Saved successfully.!!`,
-              showConfirmButton: false,
-              timer: 5000
-            });
-          }
-          response.text()
-        }
-        )
-        .then(result => console.log(result))
-        .catch(error => console.log('error', error));
-
+        icon: "error",
+        text: "Sorry this service is currently not available due to end of subscription. Renew subscription to resume services."
+      })
 
     }
 
+    else if (subscription_status === "not_subscribed") {
+      Swal.fire({
+        icon: "error",
+        text: "Subscribe to avail this service."
+      })
+
+    }
+
+    else {
+      try {
+        const result = await Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, confirm!'
+        });
+
+        if (result.isConfirmed) {
 
 
-
-
-  }
-
-  async function deleteFile(e) {
-
-    const updatedItems = [...KYCFiles];
-    const index = updatedItems.findIndex((item) => item.id === e.target.id);
-
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `${KYCFiles[index].name} will be Deleted .!!`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-      if (result.isConfirmed) {
-
-        if (index !== -1) {
-
-
-          let url_opt = "";
-          switch (e.target.id) {
-            case "aadhar_card":
-              url_opt = "Kycadharimage"
-              break;
-            case "pan_card":
-              url_opt = "Kycpanimage"
-              break;
-            case "bank_cheque":
-              url_opt = "Kycachequeimage"
-              break;
-            default:
-              break;
-          }
-          Swal.fire({
-            title: 'Saving details',
-            text: 'Please wait...',
-            showConfirmButton: false,
-            onBeforeOpen: () => {
-              Swal.showLoading();
-            },
-          });
 
           var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
           myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
-          var formdata = new FormData();
-          formdata.append("pan", disrtributor_pan);
+          var raw = JSON.stringify({
+            "fileIds": selectedFiles
+          });
 
           var requestOptions = {
-            method: 'PUT',
+            method: 'DELETE',
             headers: myHeaders,
-            body: formdata,
+            body: raw,
             redirect: 'follow'
           };
 
-          fetch(`${url_}/distributor/delete/${url_opt}`, requestOptions)
-            .then(response => {
-              if (response.status === 200) {
-                Swal.close();
-                Swal.fire({
-                  position: 'center',
-                  icon: 'success',
-                  title: `${KYCFiles[index].name} Deleted successfully.!!`,
-                  showConfirmButton: false,
-                  timer: 5000
-                });
-              }
-              response.text()
-            }
+
+          const response = await fetch(`${url_}/gstdeletefile`, requestOptions);
+          const responseData = await response.text();
+          console.log(responseData)
+          if (response.status === 200) {
+            await Swal.fire(
+              'Success.',
+              `${responseData}`,
+              'success'
             )
-            .then(result => console.log(result))
-            .catch(error => console.log('error', error));
+            window.location.reload();
 
-
-        }
-
-      }
-    })
-
-
-
-  }
-
-
-  const handleFileChange = (e, fileid) => {
-
-
-    const updatedItems = [...KYCFiles];
-    const index = updatedItems.findIndex((item) => item.id === fileid);
-
-    const file = e.target.files[0];
-
-
-    if (file) {
-      const fileSizeInBytes = file.size;
-      const fileSizeInKb = fileSizeInBytes / 1024;
-      const fileSizeInMb = fileSizeInKb / 1024;
-      //console.log(fileSizeInBytes,":",fileSizeInKb+":",fileSizeInMb);
-      if (fileSizeInMb > maxSize) {
-        Swal.fire({
-          title: `Select file with a size less than ${maxSize} MB.`,
-          text: 'Click OK to open a file reducer website in a new tab',
-          icon: 'info',
-          showCancelButton: true,
-          confirmButtonText: 'OK',
-        }).then((result) => {
-          if (result.isConfirmed) {
-            if (file.type === "image/jpeg" ||
-              file.type === "image/jpg" ||
-              file.type === "image/png") {
-              window.open("https://www.reduceimages.com/", '_blank');
-            }
-
-
-            e.target.value = '';
+          } else {
+            Swal.fire(
+              'Failed!',
+              `${responseData}`,
+              'error'
+            )
           }
-          else {
-            e.target.value = '';
-          }
-        });
-      } else {
-        const renamedFile = new File([file], `${e.target.id}.${file.type.split("/")[1]}`, {
-          type: file.type,
-        });
-        if (
-          file.type === "image/jpeg" ||
-          file.type === "image/jpg" ||
-          file.type === "image/png"
 
-        ) {
-          const reader = new FileReader();
-
-          reader.onload = (e) => {
-            // Get the binary data of the uploaded image
-            const binaryData = e.target.result;
-            // Find the index of the item with the given name
+          console.log(selectedFiles)
 
 
-            if (index !== -1) {
-              // Update the item's value
-              updatedItems[index].selectedFile = renamedFile;
-              if (
-                file.type === "image/jpeg" ||
-                file.type === "image/jpg" ||
-                file.type === "image/png"
-              ) {
-                updatedItems[index].imgsrc = binaryData;
-                updatedItems[index].fileType = "image";
-              }
-              // console.log(updatedItems)
-              setKYCFiles(updatedItems);
-            }
-          };
-          reader.readAsDataURL(file);
         } else {
-          Swal
-            .fire({
-              title: `Select (JPEG or PNG ) `,
-              icon: "info",
-              confirmButtonText: "OK",
-            })
-            .then((result) => {
-              if (result.isConfirmed) {
-                e.target.value = "";
-              } else {
-                e.target.value = "";
-              }
-            });
+          console.log("Canceled the delete!");
+        }
+      } catch (error) {
+        console.log("Failed to call function!!!");
+
+        console.log('Error:', error);
+        if (error.response) {
+          console.log('Response Status:', error.response.status);
+          console.log('Response Data:', error.response.text());
         }
       }
     }
+  }
+  ///////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+  const [pdfBlobUrl, setPdfBlobUrl] = useState(null);
+
+  const openFileAndDownload = async (contentType, fileName, file_ID) => {
+
+
+    if (subscription_status === "grace_period") {
+      Swal.fire({
+        icon: "error",
+        text: "Sorry this service is currently not available due to end of subscription. Renew subscription to resume services."
+      })
+
+    }
+
+    else if (subscription_status === "not_subscribed") {
+      Swal.fire({
+        icon: "error",
+        text: "Subscribe to avail this service."
+      })
+
+    }
+    else {
+
+      try {
+        const response = await fetch(`${url_}/openGstfile/${file_ID}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${storedToken}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+
+        const arrayBuffer = await response.arrayBuffer();
+        const fileBlob = new Blob([arrayBuffer], { type: `application/${contentType}` });
+        const blobUrl = URL.createObjectURL(fileBlob);
+
+        if (contentType === 'pdf') {
+          setPdfBlobUrl(blobUrl);
+          const pdfWindow = window.open(blobUrl, '_blank');
+          pdfWindow.addEventListener('beforeunload', () => {
+            URL.revokeObjectURL(blobUrl);
+          });
+        } else if (contentType === 'xlsx') {
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = fileName;
+          link.click();
+          URL.revokeObjectURL(blobUrl);
+        }
+      } catch (error) {
+        console.error(`Error fetching or downloading ${contentType.toUpperCase()} file:`, error);
+      }
+    }
   };
 
-  function handleSelectFile(e) {
 
-
-    const fileid = e.target.id;
-    const index = KYCFiles.findIndex((item) => item.id === fileid);
-    // console.log(fileid,index)  
-
-    if (index !== -1) {
-      KYCFiles[index].fileRef.current.click();
-    }
-
+  function GoBack() {
+    window.history.back(); // This will navigate to the previous page in the browser's history
   }
 
-
-  async function viewFile(filename) {
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${storedToken}`);
-
-    var requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow",
-    };
-
-    let url_opt = "";
-    switch (filename) {
-      case "aadhar_card":
-        url_opt = "getdistributoradhar"
-        break;
-      case "pan_card":
-        url_opt = "getdistributorpan"
-        break;
-      case "bank_cheque":
-        url_opt = "getdistributorcheque"
-        break;
-      default:
-        break;
-    }
-
-
-
-    await fetch(`${url_}/${url_opt}/${disrtributor_pan}`, requestOptions)
-      .then(response => response.arrayBuffer())
-      .then(result => {
-        const fileBlob = new Blob([result], {
-          type: `image/jpeg`,
-        });
-
-        const blobUrl = URL.createObjectURL(fileBlob);
-        console.log(blobUrl)
-
-
-        const pdfWindow = window.open(blobUrl, "_blank");
-        pdfWindow.addEventListener("beforeunload", () => {
-          URL.revokeObjectURL(blobUrl);
-        });
-      })
-      .catch((error) => console.log(error));
-
-
-
-  }
-
-  async function getKYCDetails() {
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${storedToken}`);
-
-    var requestOptions = {
-      method: 'GET',
-      headers: myHeaders,
-      redirect: 'follow'
-    };
-
-    const updatedItems = [...KYCFiles];
-
-    await fetch(`${url_}/getdistributordetail/${disrtributor_pan}`, requestOptions)
-      .then(response => response.json())
-      .then(result => {
-        console.log(result)
-
-        setBankdetails({
-          bankname: result.bank_name,
-          accountname: result.accountName,
-          accountnumber: result.accountNumber,
-          ifsc: result.ifsc
-        })
-
-        if (result.imageNameprofile) {
-          const index = updatedItems.findIndex((item) => item.id === "profilepic");
-          if (index !== -1) {
-
-            updatedItems[index].isExist = true;
-            updatedItems[index].fileType = "image";
-
-
-          }
-        }
-
-
-
-        if (result.imageNameAdhar) {
-          const index = updatedItems.findIndex((item) => item.id === "aadhar_card");
-          if (index !== -1) {
-            updatedItems[index].isExist = true;
-            updatedItems[index].fileType = "image";
-
-          }
-        }
-
-
-        if (result.imageNamepan) {
-          const index = updatedItems.findIndex((item) => item.id === "pan_card");
-          if (index !== -1) {
-            updatedItems[index].isExist = true;
-            updatedItems[index].fileType = "image";
-          }
-        }
-
-        if (result.imageNamecheque) {
-          const index = updatedItems.findIndex((item) => item.id === "bank_cheque");
-          if (index !== -1) {
-            updatedItems[index].isExist = true;
-            updatedItems[index].fileType = "image";
-
-          }
-        }
-
-      }).catch(error => console.log('error', error));
-
-    getImageData(updatedItems);
-  }
-  useEffect(() => {
-    getKYCDetails()
-  }, [])
-
-  const imageSrc = imgcontent ? `data:image/jpeg;base64,${imgcontent}` : profileimg;
-
+  /////////////////////////////////////////////////////////////////////////////////////////////////
   return (
     <>
+      <div className="container">
+        <div className="row m-3" style={{ "minWidth": "300px" }} id="maindiv">
+          <div >
+            <h1 className={`d-flex align-items-center ${style.h1}`}>
+              <div style={{ fontSize: "xxx-large", cursor: "pointer" }} onClick={GoBack}>
+                &#8617;&nbsp;
+              </div>
+              <b>{gst_title}</b>
+            </h1>
+            <p className={`${style.headpara}`}>F.Y {year}</p>
+
+          </div>
+
+        </div>
+        <div className={`${style.neckbar}`}>
+          <div className="d-flex">
+            <div className="col-4 col-sm-4 col-md-6 col-lg-9 col-xl-9" id="select">
+              {dbfilelength.length > 0
+                ? <button type="button" className="btn btn-danger" onClick={toggleCodeVisibility}>Select</button>
+                : null}
+              {/* <button type="button" className="btn btn-danger" onClick={toggleCodeVisibility}>Select</button> */}
+            </div>
+            <div className="col-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 d-flex justify-content-center" id="delet">
+              <h2 className="icons">
+                {codeVisible && (
+                  <i className="fa-solid fa-trash-can" onClick={DeleteFile}></i>
+                )}
+              </h2>
+            </div>
+            <div className="col-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 d-flex justify-content-center" id="share">
+              <h2 className="icons">
+                {codeVisible && (
+                  <i className="fa-solid fa-share-from-square" ></i>
+                )}
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <div className={`w-100 d-flex align-items-center m-2 row ${style.minwidth}`}>
+          {NEWARRAYUpdated.map((item, index) => (
+            <>
+              <div className={`col-4 col-sm-4 col-md-4 col-lg-5 col-xl-5 ${style.filename}`}>
+                <div className={`${style.gstr1_mothn_filename} col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 `}>
+                  <p className={`${style.filename_text} text-danger h4`} >{item.month}</p>
+                </div>
+
+                <div className={`${style.gstr_1_file_toggle}  col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 d-flex justify-content-center `} style={{ margin: "auto" }}>
+                  <label className={`${style.switch}`}>
+                    <input type="checkbox" checked={item.filednotfiled === "yes" ? true : false} onChange={() => handleToggle(item.month)} />
+                    <span className={`${style.slider} ${style.round}`}></span>
+                  </label>
+                </div>
+              </div>
+
+
+              <div className={`col-8 col-sm-8 col-md-8 col-lg-7 col-xl-7 ${style.files}`}>
+                <div className={`${style.file_upload}  mr-2 ml-2 col`}>
+                  <div className={style.image_upload_wrap}>
+                    <input className={style.file_upload_input} type='file' onChange={(event) => handleFileUpload(event, item.month)} onClick={checkSubsriptionStatus} />
+                    <div className={style.drag_text}>
+                      <img src={upload} alt="" />
+                      <p className=''>Upload File</p>
+                    </div>
+                  </div>
+                </div>
+
+
+                {item.status ? (
+                  <div className=' col-6'>
+
+                    <div className={style.file_upload}>
+                      {codeVisible && (
+                        <label className={style.checkbox_label}>
+                          <input
+                            type="checkbox"
+                            className={style.checkbox}
+                            onChange={event => handleCheckboxChange(event, item.fileid)}
+                          />
+                          <span className={style.checkbox_custom}>
+                            <span className={style.checkbox_tick}></span>
+                          </span>
+                        </label>
+                      )}
+
+
+                      <i className="bi bi-file-earmark-pdf-fill text-danger" onDoubleClick={() => openFileAndDownload('pdf', 'document.pdf', item.fileid)}>
+
+                      </i>
+
+
+                    </div>
+                    <p className={`${style.filename_text2} w-100`} >
+                      {item.filename}
+                    </p>
+                  </div>
+                ) : (
+
+                  <div className=' col-6'></div>
+
+
+                )}
+
+              </div>
+
+            </>
+
+          ))}
+
+        </div>
+
+      </div >
 
     </>
-  )
+
+  );
 }
-export default PaymentDetails;
+
+export default GstrFileUpload;
+
+
+
+
+
+
+
+
+///////////////////////////////
+
+

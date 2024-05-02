@@ -167,16 +167,15 @@ import { useLocation } from 'react-router-dom';
 const DocFolder = () => {
   const Navigate = useNavigate();
   const clientid = useLocation().state.clientId;
-  const user_id = window.localStorage.getItem('user_id');
-  const storedToken = window.localStorage.getItem('jwtToken');
+
 
   function getLastFiveYears() {
     let currentYear = new Date().getFullYear();
-    const currentMonth=new Date().getMonth();
+    const currentMonth = new Date().getMonth();
 
     //if Month is Jan,Feb or March 
-    if(currentMonth<3){    
-      currentYear=currentYear-1
+    if (currentMonth < 3) {
+      currentYear = currentYear - 1
     }
     const lastFiveYears = [];
 
@@ -219,32 +218,32 @@ const DocFolder = () => {
   return (
     <div className="container">
       <div className='row'>
-      <h2 className={` mt-5 d-flex align-items-center ${styles.h1}`}>
-            <div style={{ fontSize: "xxx-large", cursor: "pointer" }} onClick={GoBack}>
-              &#8617;&nbsp;
-            </div>
-            <b>Income Tax</b>
-          </h2>
+        <h2 className={` mt-5 d-flex align-items-center ${styles.h1}`}>
+          <div style={{ fontSize: "xxx-large", cursor: "pointer" }} onClick={GoBack}>
+            &#8617;&nbsp;
+          </div>
+          <b>Income Tax</b>
+        </h2>
       </div>
       <div className="row">
-        <div className={`mt-2 ${styles.maindiv}`} id={styles.maindiv}>          
+        <div className={`mt-2 ${styles.maindiv}`} id={styles.maindiv}>
           <div className={`${styles.folder_div}`}>
             {lastFiveYearsArray.map((year, index) => (
-                <div onClick={() => sendCountData(year)} className={styles.folderlink}> {/* Pass the year to SendData */}
-                  <div className={`${styles.card} ${styles[`card${index + 1}`]}`} id={styles.card1}>
-                    <div className={styles.icon}>
-                      <p className={styles.icons}>
-                        <i className={`bi bi-folder-fill ${getFolderColor(index)}`} id={styles.icon_left}></i>
-                        <i className={`fa-solid fa-ellipsis-vertical ${getFolderColor(index)}`} id={styles.icon_right}></i>
-                      </p>
-                    </div>
-                    <div className={`${getFolderColor(index)} ${styles.cont}`}>
-                      <h5>A.Y {year}-{(year + 1).toString().slice(-2)}</h5>
-                      <p >Financial Year {year - 1}-{year.toString().slice(-2)}</p>
-                    </div>
+              <div onClick={() => sendCountData(year)} className={styles.folderlink}> {/* Pass the year to SendData */}
+                <div className={`${styles.card} ${styles[`card${index + 1}`]}`} id={styles.card1}>
+                  <div className={styles.icon}>
+                    <p className={styles.icons}>
+                      <i className={`bi bi-folder-fill ${getFolderColor(index)}`} id={styles.icon_left}></i>
+                      <i className={`fa-solid fa-ellipsis-vertical ${getFolderColor(index)}`} id={styles.icon_right}></i>
+                    </p>
+                  </div>
+                  <div className={`${getFolderColor(index)} ${styles.cont}`}>
+                    <h5>A.Y {year}-{(year + 1).toString().slice(-2)}</h5>
+                    <p >Financial Year {year - 1}-{year.toString().slice(-2)}</p>
                   </div>
                 </div>
-              
+              </div>
+
             ))}
           </div>
         </div>

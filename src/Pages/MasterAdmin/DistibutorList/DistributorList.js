@@ -100,7 +100,7 @@ const DistibutorList = () => {
                 onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h4><i class="fa-solid fa-magnifying-glass"></i></h4>
+              <h4><i className="fa-solid fa-magnifying-glass"></i></h4>
             </div>
           </div>
         </div>
@@ -152,7 +152,7 @@ const DistibutorList = () => {
                     style={{ cursor: "pointer" }}>
                     <p className={`${style.pan} text-primary`}>{item.pan}</p></div>
                   <div className={`${style.name} `} ><p className={`${style.mobile} `}>{item.mobile}</p></div>
-                  <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={{ color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
+                  <div className={`${style.name} `} ><p className={`${style.status} `}><i className="fa-solid fa-circle" style={{ color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
                   {(userProf === "Distributor List" && activeTab === 1) && <div className={`${style.name} `} ><p className={`${style.mobile} `}>{item.salesmanid}</p></div>}
 
                 </div>

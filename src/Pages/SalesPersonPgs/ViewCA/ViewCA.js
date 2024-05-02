@@ -42,38 +42,38 @@ const ViewCA = () => {
     await fetch(`       
         
     ${userProf === "All C.A" ? `${url_}/forsalesmanager/combined-lists-CA?pan=${sale_mgm_pan}&id=${salesmanager_id}` :
-      // userProf === "Today's Subscription" ? `${url_}/Renewal/today/salesmanger/SSSSS2222S/3` :
-      //   userProf === "Yesterday's Subscription" ? `${url_}/distrubutor/subscriptionslist/yestarday/${sale_mgm_pan}` :
-      //     userProf === "Week's Subscription" ? `${url_}/distrubutor/subscriptionslist/week/${sale_mgm_pan}` :
-      //       userProf === "Present Year's Subscription" ? `${url_}/distrubutor/subscriptionslist/year/${sale_mgm_pan}` :
-      //         userProf === "Last Year's Subscription" ? `${url_}/distrubutor/subscriptionslist/previousyear/${sale_mgm_pan}` :
-                userProf === "Today's Renewal" ? `${url_}/Renewal/today/salesmanger/${sale_mgm_pan}/${salesmanager_id}` :
-                  userProf === "Tomorrow's Renewal" ? `${url_}/Renewal/tomorrow/salesmanager/${sale_mgm_pan}/${salesmanager_id}` :
-                    userProf === "Week's Renewal" ? `${url_}/Renewal/week/salesmanager/${sale_mgm_pan}/${salesmanager_id}` :
-                      userProf === "Month's Renewal" ? `${url_}/Renewal/month/salesmanger/${sale_mgm_pan}/${salesmanager_id}` :
-                        userProf === "3 Months's Renewal" ? `${url_}/Renewal/threemonth/salesmanager/${sale_mgm_pan}/${salesmanager_id}` :
-                          userProf === "6 Months's Renewal" ? `${url_}/Renewal/sixmonth/salesmanager/${sale_mgm_pan}/${salesmanager_id}` :
-                          userProf === "category" ? `${url_}/salesmanager/users/displayBothLists/by-profession?profession=${userCategory}&pan=${sale_mgm_pan}&id=${salesmanager_id}`:
-                            null}
+        // userProf === "Today's Subscription" ? `${url_}/Renewal/today/salesmanger/SSSSS2222S/3` :
+        //   userProf === "Yesterday's Subscription" ? `${url_}/distrubutor/subscriptionslist/yestarday/${sale_mgm_pan}` :
+        //     userProf === "Week's Subscription" ? `${url_}/distrubutor/subscriptionslist/week/${sale_mgm_pan}` :
+        //       userProf === "Present Year's Subscription" ? `${url_}/distrubutor/subscriptionslist/year/${sale_mgm_pan}` :
+        //         userProf === "Last Year's Subscription" ? `${url_}/distrubutor/subscriptionslist/previousyear/${sale_mgm_pan}` :
+        userProf === "Today's Renewal" ? `${url_}/Renewal/today/salesmanger/${sale_mgm_pan}/${salesmanager_id}` :
+          userProf === "Tomorrow's Renewal" ? `${url_}/Renewal/tomorrow/salesmanager/${sale_mgm_pan}/${salesmanager_id}` :
+            userProf === "Week's Renewal" ? `${url_}/Renewal/week/salesmanager/${sale_mgm_pan}/${salesmanager_id}` :
+              userProf === "Month's Renewal" ? `${url_}/Renewal/month/salesmanger/${sale_mgm_pan}/${salesmanager_id}` :
+                userProf === "3 Months's Renewal" ? `${url_}/Renewal/threemonth/salesmanager/${sale_mgm_pan}/${salesmanager_id}` :
+                  userProf === "6 Months's Renewal" ? `${url_}/Renewal/sixmonth/salesmanager/${sale_mgm_pan}/${salesmanager_id}` :
+                    userProf === "category" ? `${url_}/salesmanager/users/displayBothLists/by-profession?profession=${userCategory}&pan=${sale_mgm_pan}&id=${salesmanager_id}` :
+                      null}
 
     `, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        
-console.log(result)
-        const MyCA=result.salesmanager_personal_ca.length>0?
-        result.salesmanager_personal_ca.filter((item) => {
-          if (new Date(item.subendtdate) < new Date().getDate()) return false;
-          else return true;
-        }):[]
+
+        console.log(result)
+        const MyCA = result.salesmanager_personal_ca.length > 0 ?
+          result.salesmanager_personal_ca.filter((item) => {
+            if (new Date(item.subendtdate) < new Date().getDate()) return false;
+            else return true;
+          }) : []
         console.log(result.salesmanager_personal_ca)
         setMyCAData(MyCA);
 
-        const DistCA=result.Salesmanager_distributor_ca.length>0?
-        result.Salesmanager_distributor_ca.filter((item) => {
-          if (new Date(item.subendtdate) < new Date().getDate()) return false;
-          else return true;
-        }):[]
+        const DistCA = result.Salesmanager_distributor_ca.length > 0 ?
+          result.Salesmanager_distributor_ca.filter((item) => {
+            if (new Date(item.subendtdate) < new Date().getDate()) return false;
+            else return true;
+          }) : []
         // console.log(result.Salesmanager_distriubutor_ca)
         setDistCAData(DistCA);
 
@@ -90,19 +90,19 @@ console.log(result)
 
   const [activeTab, setActiveTab] = useState(0);
 
-  const [tabs,SetTabs] = useState([
+  const [tabs, SetTabs] = useState([
     { title: 'My CA' },
-    { title: 'Distributor CA',},
+    { title: 'Distributor CA', },
   ]);
 
-  function handleTabClick (index){
+  function handleTabClick(index) {
     setActiveTab(index);
-    if(index===0){
-        setuserdata(myCAData)
+    if (index === 0) {
+      setuserdata(myCAData)
     }
-    else{
-        setuserdata(distCAData)
-    }          
+    else {
+      setuserdata(distCAData)
+    }
   }
 
 
@@ -119,7 +119,7 @@ console.log(result)
           <div style={{ fontSize: "xxx-large", cursor: "pointer" }} onClick={GoBack}>
             &#8617;&nbsp;
           </div>
-          <b>{userProf==="category"?userCategory:userProf}</b>
+          <b>{userProf === "category" ? userCategory : userProf}</b>
           <div>
           </div>
         </h4>
@@ -131,7 +131,7 @@ console.log(result)
                 onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h4><i class="fa-solid fa-magnifying-glass"></i></h4>
+              <h4><i className="fa-solid fa-magnifying-glass"></i></h4>
             </div>
           </div>
         </div>
@@ -143,19 +143,19 @@ console.log(result)
 
 
           <div style={{ overflow: "auto", width: "100%" }} className={`${style.VUtable}`}>
-          <div className={`${style.tab_bar}`}>
-        {tabs.map((tab, index) => (
-            <div key={index}
-            onClick={(e) => {
-              e.preventDefault();
-              handleTabClick(index)
-              }} 
-            className={index===activeTab?`${style.tab} ${style.active}`:`${style.tab}`}>{tab.title}</div>
-        ))}
-        {/* <div className={`${style.tab} ${style.active}`}>TAXKO</div>
+            <div className={`${style.tab_bar}`}>
+              {tabs.map((tab, index) => (
+                <div key={index}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleTabClick(index)
+                  }}
+                  className={index === activeTab ? `${style.tab} ${style.active}` : `${style.tab}`}>{tab.title}</div>
+              ))}
+              {/* <div className={`${style.tab} ${style.active}`}>TAXKO</div>
         <div className={`${style.tab}`}>Sale Manager</div>         */}
-        </div>
-            <table style={{"width":"100%"}}>
+            </div>
+            <table style={{ "width": "100%" }}>
               <thead>
                 <tr className='text-warning'>
                   <th>Sr. No</th>
@@ -188,7 +188,7 @@ console.log(result)
                         <td>{item.pan}</td>
                         <td>{item.mobile}</td>
                         {/* <td>
-                          <i class="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i>
+                          <i className="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i>
                         </td> */}
                       </tr>
 

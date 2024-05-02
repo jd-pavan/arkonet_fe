@@ -8,8 +8,16 @@
   left: 1rem;
 }
 
-@media (max-width: 480px) { 
+@media (max-width: 480px) {
   .whatsappimg img {
     width: 4rem;
+  }
+}
+
+@media print {
+
+  /* CSS rules for printing */
+  .whatsappimg {
+    display: none;
   }
 }

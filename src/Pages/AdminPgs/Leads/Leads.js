@@ -231,13 +231,13 @@ const Leads = () => {
 
 
 
-      <div class="modal fade" id="myModal" role="dialog">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <div className="modal fade" id="myModal" role="dialog">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            <div className="modal-header">
+              <button type="button" className="close" data-dismiss="modal">&times;</button>
             </div>
-            <div class="modal-body">
+            <div className="modal-body">
 
 
               <div className='mr-5 ml-5'>
@@ -265,7 +265,7 @@ const Leads = () => {
 
 
             </div>
-            <div class="modal-footer d-flex justify-content-center">
+            <div className="modal-footer d-flex justify-content-center">
               <div className={styles.LCbtn_submit} >
                 <button type="submit" onClick={handleSubmit}>SUBMIT</button>
               </div>

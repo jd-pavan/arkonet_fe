@@ -6,7 +6,7 @@ const WhatsappChat = () => {
   return (
     <div className={`${style.whatsappimg}`}>
       <a href="https://wa.me/919820105056" target='_blank'>
-        <img src={Whatsappicon} alt="" sizes="" srcset="" />
+        <img src={Whatsappicon} alt="" sizes="" srcSet="" />
       </a>
     </div>
   );

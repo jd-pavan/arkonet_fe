@@ -11,15 +11,17 @@ import PdfViewerModal from "../PdfViewerModal/PdfViewerModal";
 
 const UserSubscriptionPage = () => {
 
-  const subscription_status=localStorage.getItem(`subscription_status`)
+  const subscription_status = localStorage.getItem(`subscription_status`)
 
   const Navigate = useNavigate();
-  const [isRefferFriend,setIsRefferFriend]=useState(true);
-  const [isSuggession,setIsSuggession]=useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [iserror, setError] = useState(false);
+  const [isRefferFriend, setIsRefferFriend] = useState(true);
+  const [isSuggession, setIsSuggession] = useState(false);
   const [isValidMobile, setIsValidMobile] = useState(true);
 
-  const [readTerm,setReadTerm]=useState(false);
-  const [termConfirm,setTermConfirm]=useState(false);
+  const [readTerm, setReadTerm] = useState(false);
+  const [termConfirm, setTermConfirm] = useState(false);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -31,60 +33,64 @@ const UserSubscriptionPage = () => {
     setModalIsOpen(false);
   };
 
-  const storedToken=localStorage.getItem("jwtToken");
+  const storedToken = localStorage.getItem("jwtToken");
 
-  const [refferFriend,setRefferFriend]=useState({
-    name:"",
-    contactNo:"",
-    profession:""
+  const [refferFriend, setRefferFriend] = useState({
+    name: "",
+    contactNo: "",
+    profession: ""
   })
 
-  const [suggession,setSuggession]=useState({
-    suggession:"",
+  const [suggession, setSuggession] = useState({
+    suggession: "",
   })
 
 
-  function handleChange(e){
+  function handleChange(e) {
     const { name, value } = e.target;
-    if(isRefferFriend){
-     switch(name){
-      case "contactNo":
-        setRefferFriend({ ...refferFriend, [name]: value.replace(/\D/g, "") });
-        e.target.value = value.replace(/\D/g, "");
-        const mobilePattern = /^[789]\d{9}$/;
-        setIsValidMobile(mobilePattern.test(e.target.value));
-        break;
-      default:
-        setRefferFriend({...refferFriend,[name]:value})
-        break;
-     }
-      
-     
-      
+    if (isRefferFriend) {
+      switch (name) {
+        case "contactNo":
+          setRefferFriend({ ...refferFriend, [name]: value.replace(/\D/g, "") });
+          e.target.value = value.replace(/\D/g, "");
+          const mobilePattern = /^[789]\d{9}$/;
+          setIsValidMobile(mobilePattern.test(e.target.value));
+          break;
+        default:
+          setRefferFriend({ ...refferFriend, [name]: value })
+          break;
+      }
+
+
+
     }
-    if(isSuggession){
-      setSuggession({...suggession,[name]:value})
+    if (isSuggession) {
+      setSuggession({ ...suggession, [name]: value })
     }
   }
   const GOTO = () => {
-    if(termConfirm)
-    {
-    Navigate('subscriptionplan')
+    if (termConfirm) {
+      Navigate('subscriptionplan',
+
+        {
+          state: { USER_SUB_STATUS: subscription_status },
+        }
+
+      )
 
     }
-    else
-    {
+    else {
       Swal.fire({
-        icon:"error",
-        text:"Please view and confirm terms and policies before proceeding..!!"
+        icon: "error",
+        text: "Please check view and confirm terms and policies before proceeding..!!"
       })
     }
-    
+
 
   }
 
 
-  
+
   function DateConvert(ConvertingDate) {
 
     if (ConvertingDate === null) {
@@ -119,168 +125,168 @@ const UserSubscriptionPage = () => {
   function getTimeDifference(startDate, endDate) {
     const startDateTime = new Date();
     const endDateTime = new Date(endDate);
-    const timeDiff=((endDateTime.getHours()*60)+endDateTime.getMinutes())-
-    ((startDateTime.getHours()*60)+startDateTime.getMinutes())
-    
-    const hours = parseInt(timeDiff/60);
-    const minutes = timeDiff%60;
+    const timeDiff = ((endDateTime.getHours() * 60) + endDateTime.getMinutes()) -
+      ((startDateTime.getHours() * 60) + startDateTime.getMinutes())
 
-    
-  
-    return { hours, minutes }; 
+    const hours = parseInt(timeDiff / 60);
+    const minutes = timeDiff % 60;
+
+
+
+    return { hours, minutes };
   }
 
-  const [userInfo,setUserInfo]=useState({
-    userid:localStorage.getItem("user_id"),
-    userPAN:localStorage.getItem("pan"),
-    days_left:"0",
-    time_left:"0",
-    referredBy:"Sonali Shyamkumar Goel",
-    refferedPan:"",
-    registration_date:"14 April 2024",
-    end_date:"",
-    end_time:"",
-    pack_amount:"",
-    pack_type:""
+  const [userInfo, setUserInfo] = useState({
+    userid: localStorage.getItem("user_id"),
+    userPAN: localStorage.getItem("pan"),
+    days_left: "0",
+    time_left: "0",
+    referredBy: "Sonali Shyamkumar Goel",
+    refferedPan: "",
+    registration_date: "14 April 2024",
+    end_date: "",
+    end_time: "",
+    pack_amount: "",
+    pack_type: ""
 
   });
 
 
-  function copyReferralLink(){
-   // const refferalLink=`http://localhost:3000/admin/refferal/user/${parseInt(new Date().getTime() / 1000)}_${userInfo.userPAN}`;
-    const refferalLink=`http://taxko.in/admin/refferal/user/${parseInt(new Date().getTime() / 1000)}_${userInfo.userPAN}`;
+  function copyReferralLink() {
+    // const refferalLink=`http://localhost:3000/admin/refferal/user/${parseInt(new Date().getTime() / 1000)}_${userInfo.userPAN}`;
+    const refferalLink = `http://taxko.in/admin/refferal/user/${parseInt(new Date().getTime() / 1000)}_${userInfo.userPAN}`;
     const copy = require('clipboard-copy')
     copy(refferalLink);
-   
+
     swal.fire('Refferal link has been copied to clipboard');
   }
 
 
-  function openPanel(e){
-    if(e.target.id==="referfriendbtn"){
+  function openPanel(e) {
+    if (e.target.id === "referfriendbtn") {
       setIsSuggession(false);
-    setIsRefferFriend(true);
+      setIsRefferFriend(true);
     }
-    if(e.target.id==="suggessionbtn")
-    {setIsSuggession(true);
-    setIsRefferFriend(false);}
+    if (e.target.id === "suggessionbtn") {
+      setIsSuggession(true);
+      setIsRefferFriend(false);
+    }
   }
 
 
 
-  async function fetchData(){
+  async function fetchData() {
 
-// console.log(userInfo.userPAN)
-const updateItem={...userInfo};
+    // console.log(userInfo.userPAN)
+    const updateItem = { ...userInfo };
 
     var myHeaders = new Headers();
-myHeaders.append("Authorization", `Bearer ${storedToken}`);
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
-var requestOptions = {
-  method: 'GET',
-  headers: myHeaders,
-  redirect: 'follow'
-};
+    var requestOptions = {
+      method: 'GET',
+      headers: myHeaders,
+      redirect: 'follow'
+    };
 
-try{
-  const response=await fetch(`${url_}/subscriptionpackuserdata/${userInfo.userPAN}`, requestOptions);
-const result= await response.text();
-
-
-
-if(response.status===200)
-{
-  const data=JSON.parse(result) 
-  
-  console.log(data,data.subscriptionData.subscriptiontype,data.subscriptionData.subscriptionprice)
-
-  updateItem.referredBy=data.Refered_by_name  &&  data.Refered_by_name;
-  
-  updateItem.registration_date=DateConvert(data.subscriptionData.registrationdate);
-
-  updateItem.pack_type=data.subscriptionData.subscriptiontype &&  data.subscriptionData.subscriptiontype;
-
-  updateItem.pack_amount=data.subscriptionData.subscriptionprice  && data.subscriptionData.subscriptionprice;
-  
-  updateItem.end_date=data.subscriptionData.subendtdate &&  DateConvert(data.subscriptionData.subendtdate);
-
-  updateItem.end_time=data.getSubendtdate &&  TimeConvert(data.getSubendtdate);
-
-  updateItem.time_left=data.getSubendtdate &&  getTimeDifference(data.getSubendtdate, data.getSubendtdate);
-  
-  updateItem.refferedPan=data.subscriptionData.refrenceId &&  data.subscriptionData.refrenceId;
-
-}
-
-}catch(error){
-  console.log(error)
-}
+    try {
+      const response = await fetch(`${url_}/subscriptionpackuserdata/${userInfo.userPAN}`, requestOptions);
+      const result = await response.text();
 
 
-const daysDiff = (Math.floor((new Date(updateItem.end_date)-new Date())/ (1000 * 60 * 60 * 24)))+1;
 
-console.log(updateItem)
+      if (response.status === 200) {
+        const data = JSON.parse(result)
 
-setUserInfo({...userInfo,
-  days_left:daysDiff,
-  time_left:updateItem.time_left,//`${updateItem.time_left.hours}h : ${updateItem.time_left.minutes}m`,
-  referredBy:updateItem.referredBy,
-    refferedPan:updateItem.refferedPan,
-    registration_date:updateItem.registration_date,
-    end_date:updateItem.end_date,
-    pack_amount:updateItem.pack_amount,
-    pack_type:updateItem.pack_type,
-    end_time:updateItem.end_time
-});
+        console.log(data, data.subscriptionData.subscriptiontype, data.subscriptionData.subscriptionprice)
+        console.log(data.subscriptionData.subendtdate)
+        updateItem.referredBy = data.Refered_by_name && data.Refered_by_name;
+
+        updateItem.registration_date = DateConvert(data.subscriptionData.registrationdate);
+
+        updateItem.pack_type = data.subscriptionData.subscriptiontype && data.subscriptionData.subscriptiontype;
+
+        updateItem.pack_amount = data.subscriptionData.subscriptionprice && data.subscriptionData.subscriptionprice;
+
+        updateItem.end_date = data.subscriptionData.subendtdate && DateConvert(data.subscriptionData.subendtdate);
+
+        updateItem.end_time = data.getSubendtdate && TimeConvert(data.getSubendtdate);
+
+        updateItem.time_left = data.getSubendtdate && getTimeDifference(data.getSubendtdate, data.getSubendtdate);
+
+        updateItem.refferedPan = data.subscriptionData.refrenceId && data.subscriptionData.refrenceId;
+
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+
+
+    const daysDiff = (Math.floor((new Date(updateItem.end_date) - new Date()) / (1000 * 60 * 60 * 24))) + 1;
+
+    console.log(updateItem.end_date)
+    console.log(updateItem)
+
+    setUserInfo({
+      ...userInfo,
+      days_left: daysDiff,
+      time_left: updateItem.time_left,//`${updateItem.time_left.hours}h : ${updateItem.time_left.minutes}m`,
+      referredBy: updateItem.referredBy,
+      refferedPan: updateItem.refferedPan,
+      registration_date: updateItem.registration_date,
+      end_date: updateItem.end_date,
+      pack_amount: updateItem.pack_amount,
+      pack_type: updateItem.pack_type,
+      end_time: updateItem.end_time
+    });
   }
 
-  function handleSubmit(){
-    if(isRefferFriend){
-      
-      if(!isValidMobile||refferFriend.contactNo==="" ||
-        refferFriend.name===""
-        ||refferFriend.profession==="")
-      {
+  function handleSubmit() {
+    if (isRefferFriend) {
+
+      if (!isValidMobile || refferFriend.contactNo === "" ||
+        refferFriend.name === ""
+        || refferFriend.profession === "") {
         // console.log(isValidMobile)
         swal.fire({
-          icon:"warning",
-          text:(!isValidMobile||refferFriend.contactNo==="")?`Invalid Mobile no`:
-          refferFriend.name===""?`Please enter a name.`:
-          refferFriend.profession===""&&`Please enter profession`
+          icon: "warning",
+          text: (!isValidMobile || refferFriend.contactNo === "") ? `Invalid Mobile no` :
+            refferFriend.name === "" ? `Please enter a name.` :
+              refferFriend.profession === "" && `Please enter profession`
         })
       }
-      else{
+      else {
         // console.log(isValidMobile,refferFriend.name,refferFriend.contactNo,refferFriend.profession)
-        saveRefferFriend(refferFriend.name,refferFriend.contactNo,refferFriend.profession);
-      setRefferFriend({
-        name:"",
-        contactNo:"",
-        profession:""
-      })        
-      }  
-      
-    }
-    if(isSuggession){
-      if(suggession.suggession==="")
-      {
-        swal.fire({
-          icon:"warning",
-          text:"Please fill in some suggession."
+        saveRefferFriend(refferFriend.name, refferFriend.contactNo, refferFriend.profession);
+        setRefferFriend({
+          name: "",
+          contactNo: "",
+          profession: ""
         })
       }
-      else{
-        saveSuggession();
-      setSuggession({
-        suggession:""
-      })
+
+    }
+    if (isSuggession) {
+      if (suggession.suggession === "") {
+        swal.fire({
+          icon: "warning",
+          text: "Please fill in some suggession."
+        })
       }
-      
+      else {
+        saveSuggession();
+        setSuggession({
+          suggession: ""
+        })
+      }
+
     }
   }
 
-  async function saveRefferFriend(name,contact,profession) {
+  async function saveRefferFriend(name, contact, profession) {
 
-    
+
     swal.fire({
       title: 'Saving details',
       text: 'Please wait...',
@@ -292,7 +298,7 @@ setUserInfo({...userInfo,
 
     const subject = `Referral Friend Request`;
 
-        const message = `Dear Support Team,
+    const message = `Dear Support Team,
   Greeting from TAXKO!
 
   I hope this message finds you well. 
@@ -395,15 +401,14 @@ setUserInfo({...userInfo,
   };
 
 
-function openTermConditions()
-{
-  setModalIsOpen(true)
-  
-}
+  function openTermConditions() {
+    setModalIsOpen(true)
 
-  useEffect(()=>{
-fetchData();
-  },[])
+  }
+
+  useEffect(() => {
+    fetchData();
+  }, [])
   return (
     <div className={`${style.workport}`}>
 
@@ -415,42 +420,70 @@ fetchData();
         <div className={`${style.mainhead}`}>
           <div className={`${style.circular}`}>
             <div className={`${style.card1}`}>
-              
-              <h3 className={userInfo.days_left>=15 ? `${style.h31}` : 
-                              userInfo.days_left<=0 ? `${style.h31} ${style.subs_end}` : 
-                                `${style.h31} ${style.subs_about_end}`}
-                                >
-                {userInfo.end_date===null ? ``  :
-                userInfo.days_left===0  ? `${Math.abs(userInfo.time_left.hours)}h : ${Math.abs(userInfo.time_left.minutes)}m` :
-                Math.abs(userInfo.days_left)}
-                </h3>
-               
+
+              <h3 className={userInfo.days_left >= 15 ? `${style.h31}` :
+                userInfo.days_left <= 0 ? `${style.h31} ${style.subs_end}` :
+                  `${style.h31} ${style.subs_about_end}`}
+              >
+                {userInfo.end_date === null ? `` :
+                  userInfo.days_left === 0 ? `${Math.abs(userInfo.time_left.hours)}h : ${Math.abs(userInfo.time_left.minutes)}m` :
+                    Math.abs(userInfo.days_left)}
+              </h3>
+
               <p className={`${style.p1}`}>{
-              userInfo.end_date===null  ? `Not Subscribed` :
-              userInfo.days_left<0  ? `Days ago` :
-              userInfo.days_left===0  ? 
-              (userInfo.time_left.hours<=0 && userInfo.time_left.minutes<=0)?`Time Ago`:
-              `Time Left`  : `Days Left`}
+                userInfo.end_date === null ? `Not Subscribed` :
+                  userInfo.days_left < 0 ? `Days ago` :
+                    userInfo.days_left === 0 ?
+                      (userInfo.time_left.hours <= 0 && userInfo.time_left.minutes <= 0) ? `Time Ago` :
+                        `Time Left` : `Days Left`}
               </p>
             </div>
           </div>
           <div className={`${style.mainheadtextual}`}>
-            {userInfo.end_date===null?``:<p className={`${style.p1}`}>Subscription Ends on</p>}
-            {userInfo.end_date!==null  &&<><p className={`${style.p2}`}>{userInfo.end_date}&nbsp;&nbsp; {userInfo.end_time}</p>
-            <p className={`${style.sub_details}`}>
-              <span> Selected Pack:&nbsp;&nbsp;{userInfo.pack_type} </span>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp; Amount : &#8377;&nbsp;{userInfo.pack_amount}&nbsp;/- </span>
-            </p></>}
+            {userInfo.end_date === null ? `` : <p className={`${style.p1}`}>Subscription Ends on</p>}
+            {userInfo.end_date !== null && <><p className={`${style.p2}`}>{userInfo.end_date}&nbsp;&nbsp; {userInfo.end_time}</p>
+              <p className={`${style.sub_details}`}>
+                <span> Selected Pack:&nbsp;&nbsp;{userInfo.pack_type} </span>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp; Amount : &#8377;&nbsp;{userInfo.pack_amount}&nbsp;/- </span>
+              </p></>}
           </div>
-          <div className={subscription_status==="on"?`${style.card2} ${style.active_subscription}`:`${style.card2}`}>
-            <span className={`${style.cardp} `} onClick={GOTO}> {subscription_status==="on"?`Active`:userInfo.end_date===null?`Subscribe`:`RENEW`}</span>
+
+          <p style={{ "marginTop": "5px" }}>
+
+            <div className={`${style.terms}`}>
+              <input
+                className="mr-3"
+                name="confirmterms"
+                id="confirmterms"
+                type="checkbox"
+                checked={isChecked}
+                onChange={(e) => {
+                  console.log(e.target.checked)
+                  setIsChecked(e.target.checked);
+                  if (e.target.checked) {
+                    setError(false)
+                    setTermConfirm(true)
+                  } else {
+                    setTermConfirm(false)
+                  }
+
+                }}
+              />
+              <Link onClick={openTermConditions}>
+                View terms of service and privacy policy
+              </Link>
+            </div>
+
+
+          </p>
+          <PdfViewerModal isOpen={modalIsOpen} onClose={closeModal} onData={handleChildData} />
+          <div className={subscription_status === "on" ? `${style.card2} ${style.active_subscription}` : `${style.card2}`}>
+            <span className={`${style.cardp} `} onClick={GOTO}> {subscription_status === "on" ? `ADD PACK` : userInfo.end_date === null ? `Subscribe` : `RENEW`}</span>
           </div>
-          <p style={{"marginTop":"5px"}}><Link onClick={openTermConditions}  >View terms of service and privacy policy</Link></p>
-          <PdfViewerModal isOpen={modalIsOpen} onClose={closeModal} onData={handleChildData}/>
         </div>
 
         <div className={`${style.mainneck}`}>
-          {userInfo.referredBy&&<div className={`${style.neckgraycard}`} >
+          {userInfo.referredBy && <div className={`${style.neckgraycard}`} >
             <div className={`${style.title}`}><p className={`${style.titlep}`}>Referred By</p></div>
             <div className={`${style.value}`}><p className={`${style.titlev}`}>{userInfo.referredBy}</p></div>
           </div>}
@@ -463,48 +496,48 @@ fetchData();
         <div className={`${style.mainadbominal}`}>
           <div className={`${style.card3}`}>
             <p className={`${style.cardp}`} id="referfriendbtn" onClick={openPanel}> REFFER A FRIEND</p>
-            {isRefferFriend&&<h3><i class="fa-solid fa-caret-down" style={{ color: "#707070" }}></i></h3>}
+            {isRefferFriend && <h3><i className="fa-solid fa-caret-down" style={{ color: "#707070" }}></i></h3>}
           </div>
           <div className={`${style.card3}`} >
             <p className={`${style.cardp}`} onClick={copyReferralLink}> COPY REFERAL LINK</p>
           </div>
           <div className={`${style.card3}`}>
             <p className={`${style.cardp}`} id="suggessionbtn" onClick={openPanel}> SUGGESSION</p>
-            {isSuggession&&<h3><i class="fa-solid fa-caret-down" style={{ color: "#707070" }}></i></h3>}
-          </div>          
+            {isSuggession && <h3><i className="fa-solid fa-caret-down" style={{ color: "#707070" }}></i></h3>}
+          </div>
         </div>
 
         <div className={`${style.mainlow}`}>
           <div className={`${style.card4}`}>
 
-          {isRefferFriend&&<><div className={`${style.singleinput}`}>
+            {isRefferFriend && <><div className={`${style.singleinput}`}>
               <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Name</p></div>
               <div className={`${style.formvalue}`}>
-                <input name="name" className={`${style.formvalueinput}`} type="text" 
-                onChange={handleChange} value={refferFriend.name}  autocomplete="off"/></div>
+                <input name="name" className={`${style.formvalueinput}`} type="text"
+                  onChange={handleChange} value={refferFriend.name} autocomplete="off" /></div>
             </div>
-            <div className={`${style.singleinput}`}>
-              <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Contact Number</p></div>
-              <div className={`${style.formvalue}`}>
-                <input name="contactNo" className={`${style.formvalueinput}`} type="text" 
-                onChange={handleChange} value={refferFriend.contactNo} maxLength={10} autocomplete="off"/></div>
-            </div>
-            <div className={`${style.singleinput}`}>
-              <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Profession</p></div>
-              <div className={`${style.formvalue}`}>
-                <input name="profession" className={`${style.formvalueinput}`} type="text" 
-                onChange={handleChange} value={refferFriend.profession}  autocomplete="off"/></div>
-            </div></>}
+              <div className={`${style.singleinput}`}>
+                <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Contact Number</p></div>
+                <div className={`${style.formvalue}`}>
+                  <input name="contactNo" className={`${style.formvalueinput}`} type="text"
+                    onChange={handleChange} value={refferFriend.contactNo} maxLength={10} autocomplete="off" /></div>
+              </div>
+              <div className={`${style.singleinput}`}>
+                <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Profession</p></div>
+                <div className={`${style.formvalue}`}>
+                  <input name="profession" className={`${style.formvalueinput}`} type="text"
+                    onChange={handleChange} value={refferFriend.profession} autocomplete="off" /></div>
+              </div></>}
 
 
 
-            {isSuggession&&<>
-            <div className={`${style.singleinput}`} style={{"height":"300px"}}>
-            <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Suggession</p></div>
-              <div className={`${style.formvalue}`}><textarea name="suggession" className={`${style.formvalueinput}`}  
-              placeholder="Leave your suggession here" onChange={handleChange} value={suggession.suggession}/></div>
-              </div>       
-                        
+            {isSuggession && <>
+              <div className={`${style.singleinput}`} style={{ "height": "300px" }}>
+                <div className={`${style.formtitle}`}><p className={`${style.formtitlep}`}>Suggession</p></div>
+                <div className={`${style.formvalue}`}><textarea name="suggession" className={`${style.formvalueinput}`}
+                  placeholder="Leave your suggession here" onChange={handleChange} value={suggession.suggession} /></div>
+              </div>
+
             </>}
 
             <div className={`${style.bottomdown}`}>

@@ -258,8 +258,8 @@ const OtherUser = (props) => {
               <div className='d-flex justify-content-center align-items-center'>
                 <h6>Not in the list, click here </h6>
                 <div className='mr-2 ml-2'>
-                  <i class="bi bi-caret-right-fill"></i>
-                  <i class="bi bi-caret-right-fill"></i>
+                  <i className="bi bi-caret-right-fill"></i>
+                  <i className="bi bi-caret-right-fill"></i>
                 </div>
                 <>
                   <ClientAccount>

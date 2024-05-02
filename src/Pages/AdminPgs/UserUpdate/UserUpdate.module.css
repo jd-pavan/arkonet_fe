@@ -137,6 +137,14 @@
   align-items: center;
 }
 
+.qrupload input {
+  width: 50%;
+}
+
+.qrupload input {
+  width: 50%;
+}
+
 
 
 .file_upload_input {
@@ -209,11 +217,12 @@
 }
 
 
-.investnow{
+.investnow {
   display: flex;
   width: 100%;
 }
-.addsign{
+
+.addsign {
   cursor: pointer;
   float: right;
   position: relative;
@@ -221,29 +230,30 @@
   top: 1rem;
 }
 
-.emaillist{
+.emaillist {
   margin-left: 12rem;
-    border-radius: 20px;
-    max-height: 7.5rem;
-    width: 50%;
-    padding: 10px;
-    border: none;
-    box-shadow: 0 1px 2px black;
-    overflow-y: auto;
+  border-radius: 20px;
+  max-height: 7.5rem;
+  width: 50%;
+  padding: 10px;
+  border: none;
+  box-shadow: 0 1px 2px black;
+  overflow-y: auto;
 }
 
-.emailitem{
+.emailitem {
   display: flex;
   align-items: center;
 }
-.emailitem i{
+
+.emailitem i {
   cursor: pointer;
   margin-right: 1rem;
- 
+
 }
 
 @media (max-width:768px) {
-  .paytitle{
+  .paytitle {
     font-size: x-large;
-  }  
+  }
 }

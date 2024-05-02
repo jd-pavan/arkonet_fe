@@ -3,10 +3,11 @@ import DropDown from '../../../components/DropDown/DropDown'
 import Uprofesion_obj from '../../../ObjData/AProf.json'
 import States_obj from '../../../ObjData/States.json'
 
-import swal from 'sweetalert';
+
 import { url_ } from '../../../Config';
 import styles from './UserUpdate.module.css';
 import profileimg from '../../../Images/profile.png'
+import SampleQrImg from '../../../Images/SampleQrImg.png'
 import InputField from '../../../components/InputField/InputField';
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
@@ -18,7 +19,7 @@ const UserUpdate = () => {
   const user_pan = window.localStorage.getItem('pan');
   const storedToken = window.localStorage.getItem('jwtToken');
   const [dbMailList, setdbMailList] = useState([]);
-  const [combinedlist, setCombinedList] = useState([]);
+  // const [combinedlist, setCombinedList] = useState([]);
   const [email, setEmail] = useState()
 
   const [values, setValues] = useState({
@@ -42,7 +43,6 @@ const UserUpdate = () => {
   useEffect(() => {
     GetClient();
     Getbankdetails();
-
   }, [])
 
 
@@ -59,7 +59,7 @@ const UserUpdate = () => {
       })
         .then(response => response.json())
         .then(res => {
-          console.log(res);
+          // console.log(res);
           const updatedItems = {
             name: res.name,
             datebirth: res.datebirth,
@@ -220,12 +220,12 @@ const UserUpdate = () => {
 
           deleteMails();
           updateInvestMails();
-          swal("Success", "Data updated successfully.", "success");
+          Swal.fire("Success", "Data updated successfully.", "success");
           window.location.reload();
           // console.log(values)
         })
         .catch(error => {
-          swal("Failed!", " Failed to update.!!!!", "error");
+          Swal.fire("Failed!", " Failed to update.!!!!", "error");
           console.log(error)
         });
     } catch (error) {
@@ -241,7 +241,8 @@ const UserUpdate = () => {
 
   const [bankdatalength, setBankDataLength] = useState();
   const [imgcontent, setImgContent] = useState();
-  const [image_name, setImage_name] = useState(null);
+  const [qrimgcontent, setQrimgcontent] = useState();
+  // const [image_name, setImage_name] = useState(null);
   const [bankdetails, setBankdetails] = useState({
 
     profilepic: null,
@@ -284,9 +285,13 @@ const UserUpdate = () => {
     switch (name) {
 
 
+      case "accountname":
+        setBankdetails({ ...bankdetails, [e.target.name]: value.replace(/\d/g, "") });
+        // e.target.value = value.replace(/\D/g, "");
+        break;
       case "accountnumber":
         setBankdetails({ ...bankdetails, [e.target.name]: value.replace(/\D/g, "") });
-        e.target.value = value.replace(/\D/g, "");
+        // e.target.value = value.replace(/\D/g, "");
         break;
 
 
@@ -302,6 +307,8 @@ const UserUpdate = () => {
         break;
       case "profilepic":
         setBankdetails({ ...bankdetails, [e.target.name]: e.target.files[0] });
+
+
         break;
 
 
@@ -330,6 +337,7 @@ const UserUpdate = () => {
           const objectPropertyCount = Object.keys(res).length;
           setBankDataLength(objectPropertyCount);
           setImgContent(res.content)
+          setQrimgcontent(res.paymentDetails.qrCode)
           setBankdetails({
             profilepic: res.paymentDetails.imageName,
             upiid: res.paymentDetails.upiId,
@@ -351,63 +359,90 @@ const UserUpdate = () => {
   }
 
   const SaveBankData = async (event) => {
-    event.preventDefault();
+    if (bankdetails.qrcode === null ||
+      !bankdetails.bankname ||
+      !bankdetails.accountname ||
+      !bankdetails.accountnumber ||
+      !bankdetails.ifsc ||
+      !bankdetails.upiid ||
+      !bankdetails.upinumber) {
+      console.log("fill all mandatory fiedls!!!")
+      Swal.fire("Failed!", "fill all mandatory fields!!!", "warning")
+      console.log(bankdetails)
+    } else {
+      event.preventDefault();
 
-    var myHeaders = new Headers();
-    myHeaders.append(
-      "Authorization",
-      `Bearer ${storedToken}`
-    );
+      Swal.fire({
+        title: 'Updating.',
+        text: 'Please wait...',
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      var myHeaders = new Headers();
+      myHeaders.append(
+        "Authorization",
+        `Bearer ${storedToken}`
+      );
 
-    var formdata = new FormData();
-    formdata.append("userid", user_id);
-    formdata.append("QR", bankdetails.qrcode);
-    formdata.append("Bank_Name", bankdetails.bankname);
-    formdata.append("AccountName", bankdetails.accountname);
-    formdata.append("AccountNumber", bankdetails.accountnumber);
-    formdata.append("IFSC", bankdetails.ifsc);
-    formdata.append("UPI_ID", bankdetails.upiid);
-    formdata.append("UPI_Number", bankdetails.upinumber);
-    formdata.append("image", bankdetails.profilepic);
+      var formdata = new FormData();
+      formdata.append("userid", user_id);
+      formdata.append("QR", bankdetails.qrcode);
+      formdata.append("Bank_Name", bankdetails.bankname);
+      formdata.append("AccountName", bankdetails.accountname);
+      formdata.append("AccountNumber", bankdetails.accountnumber);
+      formdata.append("IFSC", bankdetails.ifsc);
+      formdata.append("UPI_ID", bankdetails.upiid);
+      formdata.append("UPI_Number", bankdetails.upinumber);
+      formdata.append("image", bankdetails.profilepic);
 
 
-    console.log(formdata)
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: formdata,
-      redirect: "follow",
-    };
+      // console.log(formdata)
+      var requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: formdata,
+        redirect: "follow",
+      };
 
-    try {
-      const response = await fetch(`${url_}/paymentDetails`, requestOptions);
-      const result = await response.text();
-      console.log(result);
-      if (response.status === 200) {
-        await swal(
-          'Success.',
-          `${result}`,
-          'success'
-        )
-        window.location.reload();
+      try {
+        const response = await fetch(`${url_}/paymentDetails`, requestOptions);
+        const result = await response.text();
+        console.log(result);
+        if (response.status === 200) {
+          await Swal.fire(
+            'Success.',
+            `${result}`,
+            'success'
+          )
+          window.location.reload();
 
-      } else {
-        swal(
-          'Failed!',
-          `Failed to save data!!!`,
-          'error'
-        )
+        } else {
+          Swal.fire(
+            'Failed!',
+            `Failed to save data!!!`,
+            'error'
+          )
+        }
+      } catch (error) {
+        console.log("error", error);
       }
-    } catch (error) {
-      console.log("error", error);
     }
   };
 
 
-  const UpdateBankData = async (e) => {
+  const UpdateBankData = async () => {
     console.log(bankdetails)
-    e.preventDefault();
-
+    // e.preventDefault();
+    Swal.fire({
+      title: 'Updating.',
+      text: 'Please wait...',
+      showConfirmButton: false,
+      onBeforeOpen: () => {
+        Swal.showLoading();
+      },
+    });
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
@@ -430,9 +465,9 @@ const UserUpdate = () => {
     try {
       const response = await fetch(`${url_}/UpdatePaymentDetails/${user_id}`, requestOptions);
       const result = await response.text();
-      console.log(result);
+      // console.log(result);
       if (response.status === 200) {
-        await swal(
+        await Swal.fire(
           'Success.',
           `${result}`,
           'success'
@@ -440,7 +475,7 @@ const UserUpdate = () => {
 
 
       } else {
-        swal(
+        Swal.fire(
           'Failed!',
           `Failed to update data!!!`,
           'error'
@@ -500,9 +535,10 @@ const UserUpdate = () => {
   }
 
   const imageSrc = imgcontent ? `data:image/jpeg;base64,${imgcontent}` : profileimg;
+  const qrimageSrc = qrimgcontent ? `data:image/jpeg;base64,${qrimgcontent}` : SampleQrImg;
 
   return (
-    <div style={{"paddingLeft":"7px","paddingRight":"7px","minWidth":"320px"}}>
+    <div style={{ "paddingLeft": "7px", "paddingRight": "7px", "minWidth": "320px" }}>
       <div className={styles.right}>
         <div className={`${styles.regtitle} d-flex justify-content-around m-4`}>
           <span> C.A UPDATE FORM</span>
@@ -529,14 +565,14 @@ const UserUpdate = () => {
 
               <div className={`${styles.investnow}`}>
                 <InputField placeholder='Enter your investnow email' onChange={handleChange} lblname='InvestNow Email' name='investNow_Email' value={email} />
-                <i class="fa-solid fa-plus" style={{ "margin": "0px 20px", "cursor": "pointer", "float": "right", "position": "relative", "top": "1rem", "right": "0rem" }}
+                <i className="fa-solid fa-plus" style={{ "margin": "0px 20px", "cursor": "pointer", "float": "right", "position": "relative", "top": "1rem", "right": "0rem" }}
                   id="add" onClick={(e) => { manageMailList(e) }}></i>
               </div>
               <>
                 <ul className={values.investNow_Email.length > 0 && `${styles.emaillist}`}>
                   {values.investNow_Email.map((email, index) => (
                     <li key={index} className={styles.emailitem}>
-                      <i class="fa fa-times" aria-hidden="true" id="remove"
+                      <i className="fa fa-times" aria-hidden="true" id="remove"
                         onClick={(e) => { manageMailList(e, index) }}>
                       </i>
                       {email}
@@ -557,37 +593,48 @@ const UserUpdate = () => {
         <div className={`${styles.paytitle}`}>PAYMENT DETAILS</div>
       </div>
       <div className={` row ${styles.paymentres} m-2  `}>
-        <div className={`${styles.proimg}`} >
+        <div className={`${styles.proimg} d-flex`} >
 
           <div className={styles.file_upload}>
             <div className={styles.image_upload_wrap}>
               <input className={styles.file_upload_input} type='file' name='profilepic' onChange={bankhandleChange} />
               <div className={styles.drag_text}>
-                <img src={imageSrc} alt="Profile Image" />
+                <img src={imageSrc} alt="Profile_Image" />
                 <h4>Upload File</h4>
-                {/* <h6>{image_name}</h6> */}
+                <h6><b>Profile Image</b></h6>
+              </div>
+            </div>
+          </div>
+          <div className={styles.file_upload}>
+            <div className={styles.image_upload_wrap}>
+              <input className={styles.file_upload_input} type='file' name='qrcode' onChange={bankhandleChange} />
+              <div className={styles.drag_text}>
+                <img src={qrimageSrc} alt="Profile_Image" />
+                <h4>Upload File</h4>
+                <h6><b>QR Image</b></h6>
               </div>
             </div>
           </div>
 
         </div>
         <div className='ml-5'>
-          <div className={`${styles.qrupload} mb-4 `}>
-            <label >QR CODE</label>
+          {/* <div className={`${styles.qrupload} mb-4 `}>
+            <label >QR CODE <span style={{ fontSize: "22px" }}>*</span></label>
             <input type="file" name="qrcode" id="" className={`${styles.qrinput}`} onChange={bankhandleChange} />
-          </div>
+            <span className={` ml-4  ${bankdetails.qrcode === null ? `text-danger` : `text-success`}`} style={{ border: `5px dashed ${bankdetails.qrcode === null ? `red` : `green`}`, padding: "10px", borderRadius: "10px" }}><b>{bankdetails.qrcode === null ? `File is not uploaded` : `File is Uploaded`}</b></span>
+          </div> */}
           <div className={`${styles.upiid} `}>
-            <InputField lblname='UPI ID' color='red' placeholder='Enter your UPI ID' name='upiid' value={bankdetails.upiid} onChange={bankhandleChange} />
-            <InputField lblname='UPI Number' color='red' placeholder='Enter your UPI Number' name='upinumber' value={bankdetails.upinumber} onChange={bankhandleChange} maxLength={10} />
+            <InputField lblname='UPI ID' color='red' placeholder='Enter your UPI ID' name='upiid' value={bankdetails.upiid} onChange={bankhandleChange} manadatory={"*"} />
+            <InputField lblname='UPI Number' color='red' placeholder='Enter your UPI Number' name='upinumber' value={bankdetails.upinumber} onChange={bankhandleChange} maxLength={10} manadatory={"*"} />
 
           </div>
           <div className={`${styles.detailtitle}`}>BANK DETAILS</div>
           <div className="accname">
-            <InputField lblname='BANK NAME' color='red' placeholder='Enter bank name' name='bankname' value={bankdetails.bankname} onChange={bankhandleChange} />
-            <InputField lblname='ACCOUNT NAME' color='red' placeholder='Enter account name' name='accountname' value={bankdetails.accountname} onChange={bankhandleChange} />
-            <InputField lblname='ACCOUNT NUMBER' color='red' placeholder='Enter account number' name='accountnumber' value={bankdetails.accountnumber} onChange={bankhandleChange} />
+            <InputField lblname='BANK NAME' color='red' placeholder='Enter bank name' name='bankname' value={bankdetails.bankname} onChange={bankhandleChange} manadatory={"*"} />
+            <InputField lblname='ACCOUNT NAME' color='red' placeholder='Enter account name' name='accountname' value={bankdetails.accountname} onChange={bankhandleChange} manadatory={"*"} />
+            <InputField lblname='ACCOUNT NUMBER' color='red' placeholder='Enter account number' name='accountnumber' value={bankdetails.accountnumber} onChange={bankhandleChange} manadatory={"*"} maxLength={15} />
             <div className={`${styles.ifsc} `}>
-              <InputField lblname='IFSC' color='red' placeholder='Enter IFSC code' name='ifsc' value={bankdetails.ifsc} onChange={bankhandleChange} />
+              <InputField lblname='IFSC' color='red' placeholder='Enter IFSC code' name='ifsc' value={bankdetails.ifsc} onChange={bankhandleChange} manadatory={"*"} maxLength={15} />
 
               {bankdatalength > 0 ?
                 (

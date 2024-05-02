@@ -7,6 +7,7 @@ import { useSidebar } from "../ClientSideBar/SidebarContext";
 import { url_ } from "../../../Config";
 import NotificationBell from "../../../components/NotificationBell/NotificationBell";
 import AdDisplay from "../../../components/AdDisplay/AdDisplay";
+import AdCarousel from "../../../components/AdCarousel/AdCarousel";
 import { AdDetails } from "../../../ObjData/AdDetails";
 import swal from "sweetalert2";
 import WhatsappChat from "../../../components/WhatsappChat/WhatsappChat"
@@ -328,9 +329,9 @@ function ClientHome() {
     }
 
 
-  }, [itSubStatus, gstSubStatus, toggleSidebar]);
+  }, []);
 
-
+  // itSubStatus, gstSubStatus, toggleSidebar
   return (
     <div className={`${style.row}`}>
       {/* Background */}
@@ -365,7 +366,9 @@ function ClientHome() {
 
         {/* Ad Starts */}
 
-        <AdDisplay />
+        <div style={{ width: "98%", border: "1px dashed black", height: "30vh", marginTop: "20px", borderRadius: "10px", zIndex: "-9" }}>
+          <AdCarousel />
+        </div>
         {/* Ad Ends......................................................................................................... */}
 
         {/* Data Starts */}

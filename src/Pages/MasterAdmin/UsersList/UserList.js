@@ -45,8 +45,8 @@ const UserList = () => {
                   userProf === "Tomorrow's Renewal" ? `${url_}/Renewal/tommarow` :
                     userProf === "Week's Renewal" ? `${url_}/Renewal/week` :
                       userProf === "Month's Renewal" ? `${url_}/Renewal/month` :
-                        userProf === "3 Months's Renewal" ? `${url_}/Renewal/threemonth` :
-                          userProf === "6 Months's Renewal" ? `${url_}/Renewal/sixmonth` :
+                        userProf === "Last Week Renewal" ? `${url_}/last_week/Renewal/week` :
+                          userProf === "Total Renewal" ? `${url_}/list/user/end/of/subscriptions` :
                             userProf === "Distributor List" ? `${url_}/all/distributor` :
                               userProf === "Sale Manager List" ? `${url_}/listofsalesmanager/formasteradmin` :
 
@@ -116,7 +116,7 @@ const UserList = () => {
                 onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h4><i class="fa-solid fa-magnifying-glass"></i></h4>
+              <h4><i className="fa-solid fa-magnifying-glass"></i></h4>
             </div>
           </div>
         </div>
@@ -162,11 +162,11 @@ const UserList = () => {
                   {
                     userProf === "Distributor List" ?
                       (
-                        <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={{ color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
+                        <div className={`${style.name} `} ><p className={`${style.status} `}><i className="fa-solid fa-circle" style={{ color: item.status ? "#32e132" : "#ff0000" }}></i></p></div>
                       ) :
                       userProf !== "Sale Manager List" &&
                       (
-                        <div className={`${style.name} `} ><p className={`${style.status} `}><i class="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i></p></div>
+                        <div className={`${style.name} `} ><p className={`${style.status} `}><i className="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i></p></div>
                       )
                   }
                 </div>

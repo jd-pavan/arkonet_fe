@@ -141,16 +141,16 @@ const DistributorSideBar = ({ loggedIn, setLoggedIn }) => {
             {/* <nav> */}
             {loggedIn ? (
 
-                <div class={`${styles.navbarH}`}>
-                    <div class={`${styles.containerH} ${styles.navcontainer}`}>
-                        <input class={`${styles.checkbox}`} type="checkbox" name="" id="" />
-                        <div class={`${styles.hamburgerlines}`}>
-                            <small class={`${styles.line} ${styles.line1}`}></small>
-                            <small class={`${styles.line} ${styles.line2}`}></small>
-                            <small class={`${styles.line} ${styles.line3}`}></small>
+                <div className={`${styles.navbarH}`}>
+                    <div className={`${styles.containerH} ${styles.navcontainer}`}>
+                        <input className={`${styles.checkbox}`} type="checkbox" name="" id="" />
+                        <div className={`${styles.hamburgerlines}`}>
+                            <small className={`${styles.line} ${styles.line1}`}></small>
+                            <small className={`${styles.line} ${styles.line2}`}></small>
+                            <small className={`${styles.line} ${styles.line3}`}></small>
                         </div>
 
-                        <div class={`${styles.menuitems}`}>
+                        <div className={`${styles.menuitems}`}>
                             <li onClick={() => handleLinkClick('dashboard')}><span className={activeLink === 'dashboard' ? 'font-weight-bold ' : ''} style={{ cursor: "pointer" }}>Dashboard</span></li>
                             <li onClick={() => handleLinkClick('investnow')}><span className={activeLink === 'investnow' ? 'font-weight-bold  ' : ' '} style={{ cursor: "pointer" }}>Invest Now</span></li>
                             <li onClick={() => handleLinkClick('profile')}><span className={activeLink === 'profile' ? 'font-weight-bold  ' : ' '} style={{ cursor: "pointer" }}>Profile</span></li>

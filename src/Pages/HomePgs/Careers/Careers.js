@@ -6,36 +6,36 @@ import { useEffect } from "react";
 import SaleApplicationForm from "../SaleApplicationForm/SaleApplicationForm";
 
 function Careers(props) {
-  useEffect(()=>{
-    window.scrollTo(0,0)
-    
-  },[])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+
+  }, [])
   return (
     <div className={style.about}>
       <section
-        class={`${style.breadcrumbs_custom} ${style.bgimage} ${style.section}`}
+        className={`${style.breadcrumbs_custom} ${style.bgimage} ${style.section}`}
         data-preset='{"title":"Breadcrumbs","category":"header","reload":false,"id":"breadcrumbs"}'
       >
-        <div class={`container ${style.container}`}>
-          <div class="breadcrumbs-wrapper">
-            <h2 class={style.breadcrumbs_custom_title}>Careers at TAXKO</h2>
-            <ul class={style.breadcrumbs_custom_path}>
+        <div className={`container ${style.container}`}>
+          <div className="breadcrumbs-wrapper">
+            <h2 className={style.breadcrumbs_custom_title}>Careers at TAXKO</h2>
+            <ul className={style.breadcrumbs_custom_path}>
               <li>
                 <Link to="/">Home</Link>
               </li>
-              <li class={style.active}>Careers</li>
+              <li className={style.active}>Careers</li>
             </ul>
           </div>
         </div>
       </section>
-      <section style={{"padding":"10px"}}>
+      <section style={{ "padding": "10px" }}>
         <div className="container mt-3 mb-3">
           <div className="row">
             <div className="col-sm-12 col-md-12 col-lg-5 col-xl-5">
               <div className="col-12">
                 <img
                   src={img1}
-                  style={{ width: "100%", borderRadius: "10px","margin":"5px 0" }}
+                  style={{ width: "100%", borderRadius: "10px", "margin": "5px 0" }}
                   alt=""
                 />
                 <img
@@ -96,7 +96,7 @@ function Careers(props) {
                   and unleash your potential with TAXKO!
                 </p>
 
-                
+
               </div>
             </div>
           </div>
@@ -110,9 +110,9 @@ function Careers(props) {
           </div>
         </div>
       </section>
-      
+
       <section>
-<SaleApplicationForm />
+        <SaleApplicationForm />
 
       </section>
     </div>

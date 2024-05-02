@@ -323,7 +323,7 @@ ul.submenu {
 
 .SideBar_Main {
   /* border: 1px solid black; */
-  height: 100vh;
+  height: 92vh;
 }
 
 .SideBar_Notification {
@@ -341,9 +341,9 @@ ul.submenu {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: center;
+  /* align-items: center; */
   /* padding: 5px; */
-  /* height: auto; */
+  height: 100%;
 }
 
 .SideBar_Img_container img {
@@ -353,7 +353,31 @@ ul.submenu {
 
 .SideBar_Menus {
   height: 52vh;
+  overflow-y: auto;
 }
+
+
+.SideBar_Menus::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #F5F5F5;
+}
+
+
+.SideBar_Menus::-webkit-scrollbar {
+  width: 3px;
+  background-color: #F5F5F5;
+
+}
+
+
+.SideBar_Menus::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #878685;
+}
+
+
 
 .SideBar_Menus a {
   text-decoration: none;
@@ -376,9 +400,19 @@ ul.submenu {
 }
 
 .SideBar_footer_container img {
-  width: 15rem;
+  width: 11rem;
 }
 
 .SideBar_footer_container h6 {
   font-size: x-small;
+}
+
+@media print {
+
+  /* Styles specific for printing go here  */
+  .main_sideBar {
+
+    display: none;
+  }
+
 }

@@ -31,49 +31,66 @@ const GstrFolder = () => {
   }
 
   const GoTo = (title) => {
-    Navigate('gstrfileupload', {
-      state: {
-        clientId: clientid,
-        Year: year,
-        Title: title
-      },
-    })
+
+    switch (title) {
+      case "GSTR-1":
+        Navigate('monthly', {
+          state: {
+            clientId: clientid,
+            Year: year,
+            Title: title
+          },
+        })
+        break;
+
+      default:
+        break;
+    }
+
+
+    // Navigate('gstrfileupload', {
+    //   state: {
+    //     clientId: clientid,
+    //     Year: year,
+    //     Title: title
+    //   },
+    // })
 
   }
   return (
     <div className="container">
       <div className='row'>
-      <h2 className={`mt-5 d-flex align-items-center ${styles.h1}`}>
-            <div className='text-black' style={{ fontSize: "xxx-large", cursor: "pointer" }} onClick={GoBack}>
-              &#8617;&nbsp;
-            </div>
-            <b className='text-black'>GST</b>
-          </h2>
-          {/* <span className='text-primary ml-5'>F.Y {year}</span> */}
+        <h2 className={`mt-5 d-flex align-items-center ${styles.h1}`}>
+          <div className='text-black' style={{ fontSize: "xxx-large", cursor: "pointer" }} onClick={GoBack}>
+            &#8617;&nbsp;
+          </div>
+          <b className='text-black'>GST</b>
+        </h2>
+        {/* <span className='text-primary ml-5'>F.Y {year}</span> */}
       </div>
-             
-         
-          <div className="row">
-          <div className={`mt-2 ${styles.maindiv}`} id={styles.maindiv}>          
+
+
+      <div className="row">
+        <div className={`mt-2 ${styles.maindiv}`} id={styles.maindiv}>
           <div className={`${styles.folder_div}`}>
-            {folderTitle.map((title, index) => (              
-                <div className={styles.folderlink} onClick={() => GoTo(title)}> {/* Pass the year to SendData */}
-                  <div className={`${styles.card} ${styles[`card${index + 1}`]}`} id={styles.card1}>
-                    <div className={styles.icon}>
-                      <p className={styles.icons}>
-                        <i className={`bi bi-folder-fill ${getFolderColor(index)}`} id={styles.icon_left}></i>
-                        <i className={`fa-solid fa-ellipsis-vertical ${getFolderColor(index)}`} id={styles.icon_right}></i>
-                      </p>
-                    </div>
-                    <div className={`${getFolderColor(index)} ${styles.cont}`}>
-                      <h5>{title}</h5>
-                    </div>
+            {folderTitle.map((title, index) => (
+              <div className={styles.folderlink} onClick={() => GoTo(title)}> {/* Pass the year to SendData */}
+                <div className={`${styles.card} ${styles[`card${index + 1}`]}`} id={styles.card1}>
+                  <div className={styles.icon}>
+                    <p className={styles.icons}>
+                      <i className={`bi bi-folder-fill ${getFolderColor(index)}`} id={styles.icon_left}></i>
+                      <i className={`fa-solid fa-ellipsis-vertical ${getFolderColor(index)}`} id={styles.icon_right}></i>
+                    </p>
                   </div>
-                </div>              
+                  <div className={`${getFolderColor(index)} ${styles.cont}`}>
+                    <h5>{title}</h5>
+                  </div>
+                </div>
+              </div>
             ))}
-            </div>
-            </div>
-          </div>        
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -17,10 +17,10 @@ function Hero() {
             <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
               <div className={style.container}>
                 <p className={style.first_line}> <span className={`${style.head_fs40}`}>
-                <span className={style.string_highlight1}>TAXKO</span> Is India's Leading Filed Tax Data Management Platform<span className={style.string_highlight1}>.</span>
-                  </span></p>
+                  <span className={style.string_highlight1}>TAXKO</span> Is India's Leading Filed Tax Data Management Platform<span className={style.string_highlight1}>.</span>
+                </span></p>
                 <p className={style.second_line}>
-                WE ARE ALL NEW&nbsp;
+                  WE ARE ALL NEW&nbsp;
                   <span className={style.string_highlight}>
                     CLOUD BASED POST FILING &nbsp;
                   </span>
@@ -31,11 +31,11 @@ function Hero() {
           </div>
 
           <div className={style.multilinetype}>
-            <span class={style.line01} style={{"--n":"6"}}>TAXKO </span>
-            <span class={style.line2} style={{"--n":"60"}}>IS INDIA'S LEADING FILED TAX DATA MANAGEMENT PLATFORM.</span><br/><br/>
-            <span class={style.line3} style={{"--n":"17"}}>WE ARE ALL NEW </span>
-            <span class={style.line4} style={{"--n":"24"}}>CLOUD BASED POST FILING </span> 
-            <span class={style.line5} style={{"--n":"74"}}>PLATFORM FOR CORPORATE & INDIVIDUAL TO MANAGE THEIR TAX FILLING DATA.</span>
+            <span className={style.line01} style={{ "--n": "6" }}>TAXKO </span>
+            <span className={style.line2} style={{ "--n": "60" }}>IS INDIA'S LEADING FILED TAX DATA MANAGEMENT PLATFORM.</span><br /><br />
+            <span className={style.line3} style={{ "--n": "17" }}>WE ARE ALL NEW </span>
+            <span className={style.line4} style={{ "--n": "24" }}>CLOUD BASED POST FILING </span>
+            <span className={style.line5} style={{ "--n": "74" }}>PLATFORM FOR CORPORATE & INDIVIDUAL TO MANAGE THEIR TAX FILLING DATA.</span>
           </div>
 
           <Link className={style.section04}>Scroll</Link>

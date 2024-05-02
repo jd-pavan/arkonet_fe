@@ -16,7 +16,7 @@ const ManageDistributor = () => {
   useEffect(() => {
     GetDistributorList();
   }, []);
-  const salesmanager_id=localStorage.getItem("salesmanager_id")
+  const salesmanager_id = localStorage.getItem("salesmanager_id")
 
   const [searchQuery, setSearchQuery] = useState("");
   const [userdata, setuserdata] = useState([]);
@@ -123,7 +123,7 @@ const ManageDistributor = () => {
                 onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h4><i class="fa-solid fa-magnifying-glass"></i></h4>
+              <h4><i className="fa-solid fa-magnifying-glass"></i></h4>
             </div>
           </div>
         </div>
@@ -162,7 +162,7 @@ const ManageDistributor = () => {
 
                   <div className={`${style.name} d-flex flex-column`} >
                     <p className={` `}>
-                    <i className={`bi bi-check-circle-fill mr-2 ${style.approve}`} onClick={() => ApproveDistributor(item.id)}></i>
+                      <i className={`bi bi-check-circle-fill mr-2 ${style.approve}`} onClick={() => ApproveDistributor(item.id)}></i>
                       <i className={`bi bi-x-circle-fill ${style.reject}`} onClick={() => BlockDistributor(item.id)}></i>
                     </p>
                   </div>

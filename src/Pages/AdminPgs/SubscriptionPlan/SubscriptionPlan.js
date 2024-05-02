@@ -7,7 +7,7 @@ import PaymentGateway from '../../../PaymentGateway';
 import Subscription from '../Subscription/Subscription';
 
 const SubscriptionPlan = () => {
-
+  const user_subStatus = useLocation().state.USER_SUB_STATUS;
   const Navigate = useNavigate();
   const location = useLocation();
   const userPAN = localStorage.getItem("pan");
@@ -26,8 +26,10 @@ const SubscriptionPlan = () => {
     if (
       location.pathname === "/subscriptionplan" || location.pathname === "/"
     ) {
+      console.log()
       setIsVisiting(true)
       // getSubscriptionPlan(true);
+
     }
     else {
       checkNoOfClients();
@@ -36,7 +38,6 @@ const SubscriptionPlan = () => {
     getSubscriptionPlan();
 
   }, [isVisiting, isPaid, clientCount])
-
 
   async function getSubscriptionPlan() {
     var requestOptions = {
@@ -135,7 +136,8 @@ const SubscriptionPlan = () => {
           state: {
             subs_pack: plans[selectedCheckbox].subtype,
             subs_amount: plans[selectedCheckbox].subscriptionprice,
-            no_of_client: plans[selectedCheckbox].accesscliet
+            no_of_client: plans[selectedCheckbox].accesscliet,
+            user_subStatus: user_subStatus
           }
         })
     }
@@ -145,8 +147,14 @@ const SubscriptionPlan = () => {
   }
   return (
     <div style={{ margin: "10px 70px" }} className={(location.pathname === "/subscriptionplan" || location.pathname === "/") && style.box_shadow}>
-      <div className={`${style.Subplan_title} text-center mt-4 mb-2`}>
+
+      <div className={`${style.Subplan_title}  mt-4 mb-2`}>
+
+
+        <span className='font-weight-bold h4' style={{ fontSize: "3rem", cursor: "pointer" }} onClick={() => Navigate(-1)}> &#8617;&nbsp;</span>
+
         <h5><b>SUBSCRIPTION PLAN</b></h5>
+        <span></span>
         {(
           location.pathname === "/subscriptionplan" || location.pathname === "/"
         ) && <span className={`${style.seperator}`}></span>}
@@ -158,19 +166,19 @@ const SubscriptionPlan = () => {
         </p>
       </div>
       <div className={`${style.sub_table}`}>
-        <table class="table table-striped ">
+        <table className="table table-striped ">
           <thead>
             <tr>
-              {!isVisiting && <th scope="col" class="text-center"></th>}
-              <th scope="col" class="text-center">TOTAL CLIENTS</th>
-              <th scope="col" class="text-center">SUBSCRIPTIONS</th>
+              {!isVisiting && <th scope="col" className="text-center"></th>}
+              <th scope="col" className="text-center">TOTAL CLIENTS</th>
+              <th scope="col" className="text-center">SUBSCRIPTIONS</th>
 
             </tr>
           </thead>
           <tbody>
             {plans.map((item, index) => (
               <tr key={index}>
-                {!isVisiting && <td scope="row" class="text-center">
+                {!isVisiting && <td scope="row" className="text-center">
                   <input type="checkbox" name={item.subsplan} id="" checked={selectedCheckbox === index}
                     onChange={(e) => handleCheckboxChange(e, index)} value={item.value} /></td>}
                 <td className='text-center'>{item.subtype}</td>

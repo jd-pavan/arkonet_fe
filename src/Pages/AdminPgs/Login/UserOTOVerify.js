@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 
 
 
-const UserOTOVerify = ({ setLoggedIn }) => {
+const UserOTOVerify = ({ setLoggedIn, setAlertMessage }) => {
 
   useEffect(() => {
     setLoggedIn(false)
@@ -48,8 +48,22 @@ const UserOTOVerify = ({ setLoggedIn }) => {
       const response = await fetch(`${url_}/verify_SubUserOtp?otp=${userData.otp}`, requestOptions);
       const result = await response.text()
       if (response.status === 200) {
-        await Swal.fire("Success.", "OTP verified successfully.", "success")
-        localStorage.setItem('otp', userData.otp)
+        // Swal.fire({
+        //   title: 'OTP verified successfully.',
+        //   text: 'This popup will close automatically after 4 seconds.',
+        //   timer: 4000, // 4 seconds
+        //   timerProgressBar: true,
+        //   allowOutsideClick: false,
+        //   allowEscapeKey: false,
+        //   allowEnterKey: false,
+        //   showConfirmButton: false,
+        //   onClose: () => {
+        //     console.log('SweetAlert closed');
+        //   }
+        // })
+        // localStorage.setItem('otp', userData.otp)
+        await Swal.close();
+        setAlertMessage("OTP verified successfully.")
         Navigate("/admin/ULogin");
       } else {
         await Swal.fire("Failed!!", "Invalid OTP. Please try again!!!", "error")
@@ -113,7 +127,7 @@ const UserOTOVerify = ({ setLoggedIn }) => {
                   <path
                     d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
                 </svg></a></h1>
-                <h1><a href="https://twitter.com/arkonetglobal?s=11&t=_tXcbzY9oJ0xsskd5YCcMw%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                <h1><a href="https://twitter.com/arkonetglobal?s=11&t=_tXcbzY9oJ0xsskd5YCcMw%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-twitter-x" viewBox="0 0 16 16">
                   <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
                 </svg></a></h1>
                 <h1><a href="https://www.instagram.com/arkonetglobal/?igshid=YmMyMTA2M2Y%3D%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

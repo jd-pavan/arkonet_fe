@@ -110,7 +110,7 @@ const ViewUsers = () => {
                 onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h1><i class="fa-solid fa-magnifying-glass"></i></h1>
+              <h1><i className="fa-solid fa-magnifying-glass"></i></h1>
             </div>
           </div>
         </div>
@@ -155,7 +155,7 @@ const ViewUsers = () => {
                         <td>{item.pan}</td>
                         <td>{item.mobile}</td>
                         <td>
-                          <i class="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i>
+                          <i className="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i>
                         </td>
                       </tr>
 
@@ -172,7 +172,7 @@ const ViewUsers = () => {
                   <td>PAVAN1999M</td>
                   <td>9307110950</td>
                   <td>
-                    <i class="fa-solid fa-circle" style={{ color: true ? "#32e132" : "#ff0000" }}></i>
+                    <i className="fa-solid fa-circle" style={{ color: true ? "#32e132" : "#ff0000" }}></i>
                   </td>
                 </tr> */}
 

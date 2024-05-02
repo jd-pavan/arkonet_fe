@@ -8,11 +8,11 @@ import { url_ } from '../../../Config';
 
 const MyFolder = () => {
   const Navigate = useNavigate();
-  const clientid = useLocation().state.clientId;
-  const clientname = useLocation().state.clientname;
-  const clientpan = useLocation().state.clientpan;
-  const clientCategory = useLocation().state.clientCategory;
-  const clientPro = useLocation().state.clientProfession;
+
+  const client_Information = useLocation().state.client_information;
+
+
+  console.log(client_Information)
 
   const user_id = window.localStorage.getItem('user_id');
   const storedToken = window.localStorage.getItem('jwtToken');
@@ -44,11 +44,11 @@ const MyFolder = () => {
       redirect: 'follow'
     };
 
-    fetch(`${url_}/getclientimage/${clientpan}`, requestOptions)
+    fetch(`${url_}/getclientimage/${client_Information.pan}`, requestOptions)
       .then(response => response.json())
       .then(res => {
-        // console.log(res.content);
-        setImgContent(res.content)
+        console.log(res.content);
+        // setImgContent(res.content)
       })
       .catch(error => console.log('error', error));
   }
@@ -62,7 +62,7 @@ const MyFolder = () => {
       headers: myHeaders,
       redirect: 'follow'
     };
-    await fetch(`${url_}/maxLastUpdateDateforkycdoc/${clientpan}`, requestOptions)
+    await fetch(`${url_}/maxLastUpdateDateforkycdoc/${client_Information.pan}`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         const date = new Date(result);
@@ -75,7 +75,7 @@ const MyFolder = () => {
       })
 
 
-    await fetch(`${url_}/maxLastUpdateDateforDocument/${clientpan}`, requestOptions)
+    await fetch(`${url_}/maxLastUpdateDateforDocument/${client_Information.pan}`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         // console.log("doc", result);
@@ -92,7 +92,7 @@ const MyFolder = () => {
       })
 
 
-    await fetch(`${url_}/maxLastUpdateDatefile/${clientid}`, requestOptions)
+    await fetch(`${url_}/maxLastUpdateDatefile/${client_Information.clientId}`, requestOptions)
       .then(response => response.json())
       .then(result => {
         const date = new Date(result.lastUpdateDate);
@@ -103,7 +103,7 @@ const MyFolder = () => {
       })
       .catch(error => console.log('error', error));
 
-    await fetch(`${url_}/maxLastUpdateDateGSTfile/${clientid}`, requestOptions)
+    await fetch(`${url_}/maxLastUpdateDateGSTfile/${client_Information.clientId}`, requestOptions)
       .then(response => response.json())
       .then(result => {
         const date = new Date(result.lastUpdateDate);
@@ -128,7 +128,7 @@ const MyFolder = () => {
     };
 
 
-    await fetch(`${url_}/getlastUpdateallGSTonefileinfo/${clientid}`, requestOptions)
+    await fetch(`${url_}/getlastUpdateallGSTonefileinfo/${client_Information.clientId}`, requestOptions)
       .then(response => response.json())
       .then(result => {
         setgstlastestfile(result)
@@ -138,7 +138,7 @@ const MyFolder = () => {
       })
       .catch(error => console.log('error', error));
 
-    await fetch(`${url_}/getlastUpdateallIncome_Taxonefileinfo/${clientid}`, requestOptions)
+    await fetch(`${url_}/getlastUpdateallIncome_Taxonefileinfo/${client_Information.clientId}`, requestOptions)
       .then(response => response.json())
       .then(result => {
         setincometaxlastestfile(result)
@@ -152,7 +152,7 @@ const MyFolder = () => {
 
   const openFileAndDownload = async (contentType, fileName) => {
     try {
-      const response = await fetch(`${url_}/getlastUpdateallGSTactualonefile/${clientid}`, {
+      const response = await fetch(`${url_}/getlastUpdateallGSTactualonefile/${client_Information.clientId}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${storedToken}`,
@@ -190,7 +190,7 @@ const MyFolder = () => {
   const GoToincome = () => {
     Navigate('incomefolder', {
       state: {
-        clientId: clientid
+        clientId: client_Information.clientId
       },
     })
   }
@@ -198,23 +198,23 @@ const MyFolder = () => {
   const GoToGST = () => {
     Navigate('gstfolder', {
       state: {
-        clientId: clientid
+        client_Information: client_Information
       },
     })
   }
   const GoToKYC = () => {
     Navigate('kycfile', {
       state: {
-        clientId: clientid,
-        ClientPan: clientpan
+        clientId: client_Information.clientId,
+        ClientPan: client_Information.pan
       },
     })
   }
   const GoToDoc = () => {
     Navigate('docfile', {
       state: {
-        clientId: clientid,
-        ClientPan: clientpan
+        clientId: client_Information.clientId,
+        ClientPan: client_Information.pan
       },
     })
   }
@@ -223,30 +223,34 @@ const MyFolder = () => {
   const GoToTallyBackup = () => {
     Navigate('tallyclient', {
       state: {
-        clientId: clientid,
-        ClientPan: clientpan
+        clientId: client_Information.clientId,
+        ClientPan: client_Information.pan
       },
     })
   }
 
   const imageSrc = imgcontent ? `data:image/jpeg;base64,${imgcontent}` : imgprofile;
-
+  function GoBack() {
+    window.history.back(); // This will navigate to the previous page in the browser's history
+  }
   return (
     <div>
       <div className='container'>
-      <div className={`${styles.myfolder_btn} mb-2 mt-3 w-100 text-center`}>
-              <span className='font-weight-bold h4'>Client Folders</span>
-            </div>
+        <div className={`${styles.myfolder_btn} mb-2 mt-3 w-100`}>
+          <span className='font-weight-bold h4' style={{ fontSize: "3rem", cursor: "pointer" }} onClick={GoBack}> &#8617;&nbsp;</span>
+          <span className='font-weight-bold h4'>Client Folders</span>
+          <span className='font-weight-bold h4'></span>
+        </div>
         <div className="row d-flex flex-column justify-content-center">
           <div className={`${styles.profileimg}`}>
             <img src={imageSrc} alt="" className='mt-4 mb-4' />
-            <h3>{clientname}</h3>
-            <h5>{clientpan}</h5>
-            <h6>{clientPro}</h6>
+            <h3>{client_Information.name}</h3>
+            <h5>{client_Information.pan}</h5>
+            <h6>{client_Information.profession}</h6>
           </div>
-          <div className={`${styles.myfolder}`}>            
+          <div className={`${styles.myfolder}`}>
             <div className={`${styles.myfolder_folder}`}>
-              {clientCategory === "Income_Tax" && (
+              {client_Information.category === "Income_Tax" && (
                 <div onClick={GoToincome}>
                   <div className={`${styles.folder} text-info`} style={{ backgroundColor: "rgba(0, 255, 255, 0.1)" }}>
                     <div className={`${styles.icons}`}>
@@ -263,7 +267,7 @@ const MyFolder = () => {
                 </div>
               )}
 
-              {clientCategory === "GST" && (
+              {client_Information.category === "GST" && (
                 <div onClick={GoToGST}>
                   <div className={`${styles.folder} text-primary`} style={{ backgroundColor: "rgba(0, 55, 255, 0.1)" }}>
                     <div className={`${styles.icons}`}>
@@ -280,7 +284,7 @@ const MyFolder = () => {
                 </div>
               )}
 
-              {clientCategory === "Both" && (
+              {client_Information.category === "Both" && (
                 <>
                   <div onClick={GoToincome}>
                     <div className={`${styles.folder} text-info`} style={{ backgroundColor: "rgba(0, 255, 255, 0.1)" }}>
@@ -346,7 +350,7 @@ const MyFolder = () => {
 
 
               <div onClick={GoToTallyBackup}>
-                <div className={`${styles.folder}`} style={{ backgroundColor: "#dff1df",color:"#28a745" }}>
+                <div className={`${styles.folder}`} style={{ backgroundColor: "#dff1df", color: "#28a745" }}>
                   <div className={`${styles.icons}`}>
                     <span className="mt-2">
                       <i className={`${styles.folder_icon} bi bi-folder-fill h1`}></i>

@@ -1,0 +1,312 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+
+
+.main_page {
+  width: 909px;
+  height: auto;
+  padding: 10px;
+  font-family: "Roboto", sans-serif;
+  font-size: 13px;
+  margin-bottom: 60px;
+}
+
+.O_F_R {
+  font-size: 11px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: #000;
+  text-align: end;
+}
+
+.main {
+  width: 100%;
+  height: 100%;
+  border: 1px solid black;
+}
+
+.tittle {
+  font-size: 24px;
+  /* font-family: Calibri-Bold_9; */
+  color: #000;
+  text-align: center;
+  width: 100%;
+  display: block;
+  font-weight: 600;
+}
+
+.address {
+  font-size: 12px;
+  /* font-family: Calibri-Bold_9; */
+  color: #000;
+  text-align: center;
+  width: 100%;
+  display: block;
+  font-weight: 400;
+}
+
+.details {
+  display: flex;
+  padding: 5px 10px;
+}
+
+.details_span {
+  width: 50%;
+  display: inline-block;
+  /* border: 1px solid black; */
+}
+
+.first_span_name {
+  font-size: 13px;
+  width: 70px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+.first_span_semicolon {
+  font-weight: 600;
+  width: 10px;
+  font-size: 14px;
+}
+
+
+.invoice_title {
+  font-size: 17px;
+  /* font-family: Calibri-Bold_9; */
+  color: #000;
+  text-align: center;
+  width: 99%;
+  display: block;
+  font-weight: 600;
+  background-color: #f5f5f5;
+  margin: 10px 0px 5px 0px;
+}
+
+.first,
+.second,
+.third,
+.fourth,
+.fifth,
+.seventh,
+.seventh_A_1,
+.eight,
+.nineth,
+.tenth {
+  border-bottom: 1px solid black;
+}
+
+
+.second,
+.third,
+.fourth,
+.seventh,
+.eight,
+.nineth,
+.eleventh {
+  display: flex;
+}
+
+.second_span_name {
+  font-size: 13px;
+  width: 107px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+.second_span_name_date {
+  font-size: 13px;
+  width: 35px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+.details_2 {
+  display: flex;
+  flex-direction: column;
+  padding: 2px 10px;
+}
+
+.details_span {
+  width: 100%;
+}
+
+
+.second_span_name_title {
+  font-size: 13px;
+  /* width: 107px; */
+  display: inline-block;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.sixth table,
+.sixth_tbl td,
+.sixth_tbl th {
+  border-top: 1px solid #595959;
+  border-bottom: 1px solid #595959;
+  border-right: 1px solid #595959;
+  border-collapse: collapse;
+}
+
+.sixth_tbl th {
+  background-color: #bbbaba;
+  padding: 2px;
+
+}
+
+.sixth_tbl td {
+  padding: 4px;
+  text-align: center;
+}
+
+.seventh_A {
+  width: 70%;
+  border-right: 1px solid black;
+}
+
+.seventh_B {
+  width: 30%;
+  padding: 5px;
+}
+
+.seventh_A_1 {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  height: 200px;
+}
+
+.seventh_A_1_tbl table,
+.seventh_A_1_tbl_tr td,
+.seventh_A_1_tbl_tr th {
+  border: 1px solid #595959;
+  border-collapse: collapse;
+}
+
+.seventh_A_1_tbl th,
+.seventh_A_1_tbl td {
+  padding: 4px;
+  text-align: center;
+}
+
+.seventh_A_1_tbl_t {
+  font-weight: 600;
+}
+
+.seventh_A_1_qrcode {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  font-weight: 600;
+}
+
+.seventh_A_1_qrcode span,
+.seventh_A_2 {
+  padding: 5px;
+}
+
+.seventh_A_2 {
+  display: flex;
+}
+
+
+.seventh_A_2_span_name {
+  font-size: 13px;
+  width: 85px;
+  display: inline-block;
+  font-weight: 600;
+}
+
+.seventh_B_span_name {
+  display: inline-block;
+  width: 110px;
+  font-size: 13px;
+
+}
+
+.seventh_B span {
+  margin: 2px 0px;
+
+}
+
+.qrimgContainer img {
+  width: 200px;
+  height: 200px;
+  border: 1px solid black;
+  object-fit: contain;
+}
+
+.seventh_B_span_3 {
+  text-align: end;
+  width: 50%;
+  display: inline-block;
+}
+
+.seventh_B_w {
+  width: 100%;
+}
+
+.eight {
+  width: 100%;
+}
+
+.eigth_A {
+  width: 50%;
+}
+
+.eight {
+  justify-content: space-between;
+}
+
+.eigth_B {
+  width: 31%;
+  border: 1px solid black;
+  height: 25px;
+}
+
+.nineth_A {
+  width: 150px;
+}
+
+.nineth_B_ol li {
+  padding: 5px;
+}
+
+.tenth span {
+  font-weight: 600;
+  text-align: end;
+  width: 100%;
+  display: inline-block;
+}
+
+.eleventh_A {
+  padding: 5px;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 70px;
+}
+
+@media screen {
+  .main_page {
+    display: none;
+  }
+}
+
+@media print {
+
+  /* CSS rules for printing */
+  body {
+    width: 100%;
+    height: 90%;
+
+  }
+
+  .main_page {
+    display: block;
+    width: 1000px;
+  }
+}

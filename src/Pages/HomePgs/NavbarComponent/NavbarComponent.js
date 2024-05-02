@@ -19,7 +19,7 @@ const NavbarComponent = ({ scrollToRef }) => {
   const maxWidth = 600; // Set your desired maximum width
 
   const handleScreenChange = () => {
-    
+
     if (window.innerWidth <= maxWidth) {
       setIsExpanded(!isExpanded);
     }
@@ -27,7 +27,7 @@ const NavbarComponent = ({ scrollToRef }) => {
 
 
 
-  
+
 
   return (
     <div className={`${style.container}`}>
@@ -48,37 +48,37 @@ const NavbarComponent = ({ scrollToRef }) => {
             <div className={style.nav_toggle} onClick={handleScreenChange}>
               <span className={style.toggle_icon}></span>
             </div>
-            
-            <span class={`${style.loginbtn} ${style.viewmenu_item}`} >
-                    <i class="fa-solid fa-user"></i>
-                    <Link  className={style.login}> Login
-                    <ul class={style.dropdown_content} role="menu">
-                      <li style={{ "--delay": "1" }}>
-                        <Link onClick={(e) => {e.preventDefault();navigate("/admin");}}>CA Login</Link>
-                      </li>
-                      <li style={{ "--delay": "2" }}>
-                        <Link onClick={(e) => {e.preventDefault();navigate("/client");}}>Tax Payer Login</Link>
-                      </li>
-                      <li style={{ "--delay": "3" }}>
-                        <Link onClick={(e) => {e.preventDefault();navigate("/distributor");}}>Distributor Login</Link>
-                      </li>
-                      <li style={{ "--delay": "3" }}>
-                        <Link onClick={(e) => {e.preventDefault();navigate("/sales");}}>Sale Manager Login</Link>
-                      </li> 
-                    </ul>
-                    </Link>
-                    <Link class={style.last_link}>
-                      Register
-                      <ul class={style.dropdown_content} role="menu">
-                      <li style={{ "--delay": "1" }}>
-                      <Link onClick={(e) => {e.preventDefault();navigate("admin/User_registration");}}>CA Registration</Link>
-                      </li>
-                      <li style={{ "--delay": "2" }}>
-                      <Link data-toggle="modal" data-target="#clientregistrationform" onClick={(e) => {e.preventDefault();}}>TaxPayer Registration</Link>
-                      </li>
-                    </ul>
-                    </Link>
-                  </span>
+
+            <span className={`${style.loginbtn} ${style.viewmenu_item}`} >
+              <i className="fa-solid fa-user"></i>
+              <Link className={style.login}> Login
+                <ul className={style.dropdown_content} role="menu">
+                  <li style={{ "--delay": "1" }}>
+                    <Link onClick={(e) => { e.preventDefault(); navigate("/admin"); }}>CA Login</Link>
+                  </li>
+                  <li style={{ "--delay": "2" }}>
+                    <Link onClick={(e) => { e.preventDefault(); navigate("/client"); }}>Tax Payer Login</Link>
+                  </li>
+                  <li style={{ "--delay": "3" }}>
+                    <Link onClick={(e) => { e.preventDefault(); navigate("/distributor"); }}>Distributor Login</Link>
+                  </li>
+                  <li style={{ "--delay": "3" }}>
+                    <Link onClick={(e) => { e.preventDefault(); navigate("/sales"); }}>Sale Manager Login</Link>
+                  </li>
+                </ul>
+              </Link>
+              <Link className={style.last_link}>
+                Register
+                <ul className={style.dropdown_content} role="menu">
+                  <li style={{ "--delay": "1" }}>
+                    <Link onClick={(e) => { e.preventDefault(); navigate("admin/User_registration"); }}>CA Registration</Link>
+                  </li>
+                  <li style={{ "--delay": "2" }}>
+                    <Link data-toggle="modal" data-target="#clientregistrationform" onClick={(e) => { e.preventDefault(); }}>TaxPayer Registration</Link>
+                  </li>
+                </ul>
+              </Link>
+            </span>
           </section>
           <section className={style.header_content_right}>
             <nav className={style.header_nav} role="navigation">
@@ -87,13 +87,13 @@ const NavbarComponent = ({ scrollToRef }) => {
                   <Link to="" className={style.nav__link} onClick={handleScreenChange}>Home</Link>
                 </li>
                 <li className={style.list_item}>
-                  <Link to="/features"  className={style.nav__link} onClick={handleScreenChange}>Features</Link>
+                  <Link to="/features" className={style.nav__link} onClick={handleScreenChange}>Features</Link>
                 </li>
                 <li className={style.list_item}>
-                  <Link to="/subscription"  className={style.nav__link} onClick={handleScreenChange}>Subscriptions</Link>
+                  <Link to="/subscription" className={style.nav__link} onClick={handleScreenChange}>Subscriptions</Link>
                 </li>
                 <li className={style.list_item}>
-                  <Link to="/products"  className={style.nav__link} onClick={handleScreenChange}>Products</Link>
+                  <Link to="/products" className={style.nav__link} onClick={handleScreenChange}>Products</Link>
                 </li>
                 <li className={style.list_item}>
                   <Link to="/AboutUs" className={style.nav__link} onClick={handleScreenChange}>About</Link>
@@ -105,45 +105,45 @@ const NavbarComponent = ({ scrollToRef }) => {
                   <Link to="Career" className={style.nav__link} onClick={handleScreenChange}>CAREERS</Link>
                 </li>
                 <li className={`${style.list_item}`}>
-                <span class={`${style.loginbtn} ${style.hidebtn}`}>
-                    <i class="fa-solid fa-user"></i>
+                  <span className={`${style.loginbtn} ${style.hidebtn}`}>
+                    <i className="fa-solid fa-user"></i>
                     <Link className={style.login}> Login
-                    <ul class={style.dropdown_content} role="menu">
-                      <li style={{ "--delay": "1" }}>
-                        <Link onClick={(e) => {e.preventDefault();navigate("/admin");}}>CA Login</Link>
-                      </li>
-                      <li style={{ "--delay": "2" }}>
-                        <Link onClick={(e) => {e.preventDefault();navigate("/client");}}>Tax Payer Login</Link>
-                      </li>
-                      <li style={{ "--delay": "3" }}>
-                        <Link onClick={(e) => {e.preventDefault();navigate("/distributor/");}}>Distributor Login</Link>
-                      </li>
-                       <li style={{ "--delay": "3" }}>
-                        <Link onClick={(e) => {e.preventDefault();navigate("/sales");}}>Sale Manager Login</Link>
-                      </li> 
-                    </ul>
+                      <ul className={style.dropdown_content} role="menu">
+                        <li style={{ "--delay": "1" }}>
+                          <Link onClick={(e) => { e.preventDefault(); navigate("/admin"); }}>CA Login</Link>
+                        </li>
+                        <li style={{ "--delay": "2" }}>
+                          <Link onClick={(e) => { e.preventDefault(); navigate("/client"); }}>Tax Payer Login</Link>
+                        </li>
+                        <li style={{ "--delay": "3" }}>
+                          <Link onClick={(e) => { e.preventDefault(); navigate("/distributor/"); }}>Distributor Login</Link>
+                        </li>
+                        <li style={{ "--delay": "3" }}>
+                          <Link onClick={(e) => { e.preventDefault(); navigate("/sales"); }}>Sale Manager Login</Link>
+                        </li>
+                      </ul>
                     </Link>
-                    <Link class={style.last_link}>
+                    <Link className={style.last_link}>
                       Register
-                      <ul class={style.dropdown_content} role="menu">
-                      <li style={{ "--delay": "1" }}>
-                        <Link onClick={(e) => {e.preventDefault();navigate("admin/User_registration");}}>CA Registration</Link>
-                      </li>
-                      <li style={{ "--delay": "2" }}>
-                        <Link data-toggle="modal" data-target="#clientregistrationform" onClick={(e) => {e.preventDefault();}}>TaxPayer Registration</Link>
-                      </li>
-                    </ul>
+                      <ul className={style.dropdown_content} role="menu">
+                        <li style={{ "--delay": "1" }}>
+                          <Link onClick={(e) => { e.preventDefault(); navigate("admin/User_registration"); }}>CA Registration</Link>
+                        </li>
+                        <li style={{ "--delay": "2" }}>
+                          <Link data-toggle="modal" data-target="#clientregistrationform" onClick={(e) => { e.preventDefault(); }}>TaxPayer Registration</Link>
+                        </li>
+                      </ul>
                     </Link>
                   </span>
                 </li>
               </ul>
-              
+
             </nav>
-            
+
           </section>
         </div>
       </header>
-      
+
     </div>
   );
 };

@@ -4,26 +4,30 @@ import styles from './loginpage.module.css';
 import InputField from '../../../components/InputField/InputField'
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import AlertComponent from '../../../components/AlertComponent/AlertComponent';
 
 
 
 
-const CheckPan = ({ setLoggedIn }) => {
+const CheckPan = ({ setAlertMessage }) => {
   const Navigate = useNavigate();
 
   const storedToken = window.localStorage.getItem('jwtToken');
   const UserCategory = localStorage.getItem("Category");
 
+
   const [userPan, setuserPan] = useState({
     pan: ""
   })
 
-  useEffect(() => {
-    setLoggedIn(false)
-  }, [])
+  // useEffect(() => {
+  //   setLoggedIn(false)
+  // }, [])
   const handleChange = (e) => {
+    const userPAN = e.target.value;
+    const uppercaseName = userPAN.toUpperCase();
 
-    setuserPan({ ...userPan, [e.target.name]: e.target.value });
+    setuserPan({ ...userPan, [e.target.name]: uppercaseName });
   };
 
 
@@ -117,12 +121,46 @@ const CheckPan = ({ setLoggedIn }) => {
 
         if (localStorage.getItem("Category") === "User") {
           // console.log(true)
-          await Swal.fire("OTP Sent.", "OTP sent to registered email id.", "success");
+          // await Swal.fire("OTP Sent.", "OTP sent to registered email id.", "success");
+
+          // await Swal.fire({
+          //   title: 'OTP Sent.',
+          //   text: 'OTP sent to registered email id.',
+          //   timer: 4000, // 4 seconds
+          //   timerProgressBar: true,
+          //   allowOutsideClick: false,
+          //   allowEscapeKey: false,
+          //   allowEnterKey: false,
+          //   showConfirmButton: false,
+          //   onClose: () => {
+          //     console.log('SweetAlert closed');
+          //     // You can add additional actions here if needed
+          //   }
+          // });
+          await Swal.close();
+          setAlertMessage("OTP sent to registered email id.")
+
           Navigate("/admin/userotpverify");
         } else {
 
           // console.log(false)
-          await Swal.fire("OTP Sent.", "OTP sent to registered email id.", "success");
+          // await Swal.fire("OTP Sent.", "OTP sent to registered email id.", "success");
+
+
+          await Swal.fire({
+            title: 'OTP Sent.',
+            text: 'OTP sent to registered email id.',
+            timer: 4000, // 4 seconds
+            timerProgressBar: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            showConfirmButton: false,
+            onClose: () => {
+              console.log('SweetAlert closed');
+              // You can add additional actions here if needed
+            }
+          });
           Navigate("/admin/setpass");
 
         }
@@ -136,6 +174,7 @@ const CheckPan = ({ setLoggedIn }) => {
     }
   };
 
+
   return (
     <>
       <div className="container">
@@ -144,7 +183,7 @@ const CheckPan = ({ setLoggedIn }) => {
         <div className={styles.right}>
           <div className={styles.right_body}>
             <div className={styles.header}>
-              <h5 style={{ "color": "#9ba4ab", "cursor": "pointer" }} onClick={(e) => { Navigate("/") }}><i class="fa-regular fa-circle-left" style={{ "fontSize": "1.5rem", "color": "#ffd401" }}></i> &nbsp;Back to Website</h5>
+              <h5 style={{ "color": "#9ba4ab", "cursor": "pointer" }} onClick={(e) => { Navigate("/") }}><i className="fa-regular fa-circle-left" style={{ "fontSize": "1.5rem", "color": "#ffd401" }}></i> &nbsp;Back to Website</h5>
               <div className={styles.greet}>
                 <h3>Welcome</h3>
               </div>
@@ -157,7 +196,7 @@ const CheckPan = ({ setLoggedIn }) => {
 
               <div className={styles.form}>
                 <div className={styles.user_id}>
-                  <InputField placeholder='Enter your PAN' onChange={handleChange} name='pan' value={userPan.pan} lblname='PAN' />
+                  <InputField placeholder='Enter your PAN' onChange={handleChange} name='pan' value={userPan.pan} lblname='PAN' maxLength={10} />
 
                 </div>
 
@@ -170,7 +209,7 @@ const CheckPan = ({ setLoggedIn }) => {
 
               <div className={styles.link}>
                 <Link to="User_registration">New to TAXKO? Click Here</Link>
-                <Link to="forgetpass">Forget Password</Link>
+                {/* <Link to="forgetpass">Forget Password</Link> */}
               </div>
             </div>
 
@@ -184,7 +223,7 @@ const CheckPan = ({ setLoggedIn }) => {
                   <path
                     d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
                 </svg></a></h1>
-                <h1><a href="https://twitter.com/arkonetglobal?s=11&t=_tXcbzY9oJ0xsskd5YCcMw%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                <h1><a href="https://twitter.com/arkonetglobal?s=11&t=_tXcbzY9oJ0xsskd5YCcMw%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-twitter-x" viewBox="0 0 16 16">
                   <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
                 </svg></a></h1>
                 <h1><a href="https://www.instagram.com/arkonetglobal/?igshid=YmMyMTA2M2Y%3D%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -197,9 +236,6 @@ const CheckPan = ({ setLoggedIn }) => {
           </div>
         </div>
       </div>
-
-
-
 
 
 

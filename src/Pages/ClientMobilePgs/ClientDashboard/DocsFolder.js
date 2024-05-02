@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const DocsFolder = (props) => {
   return (
     <div className='col-6' id="docs" onClick={props.handleCardClick}>
-      <Link  >
+      <Link to="docs">
         <div className={`${style.uniclass} ${style.card4}`}>
           <div className={`${style.icons} `}>
             <div className={`${style.lefticons} `}>

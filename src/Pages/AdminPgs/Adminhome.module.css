@@ -18,11 +18,28 @@
   letter-spacing: 0.3em;
   text-align: center;
 }
-  @media only screen and (max-width: 600px) {
-  .sidebarview{
-      display: none;
+
+@media only screen and (max-width: 600px) {
+  .sidebarview {
+    display: none;
   }
 }
-.navclass{
+
+.navclass {
   display: none;
+}
+
+@media print {
+
+  /* CSS rules for printing */
+  .navclass {
+    display: none;
+  }
+
+  .main_nav_page {
+    display: none;
+  }
+
+
+
 }

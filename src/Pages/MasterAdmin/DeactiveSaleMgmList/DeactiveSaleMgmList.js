@@ -204,7 +204,7 @@ const DeactiveSaleMgmList = () => {
                 onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h4><i class="fa-solid fa-magnifying-glass"></i></h4>
+              <h4><i className="fa-solid fa-magnifying-glass"></i></h4>
             </div>
           </div>
         </div>
@@ -269,9 +269,9 @@ const DeactiveSaleMgmList = () => {
                   }
                   {userProf === "Sale Manager Target" && <div className={`${style.name} `} >
                     <p className={`${style.status} `}>
-                      <i id="deactivate" class="fa-solid fa-ban" title='Deactivate' style={{ "marginRight": "10px", "cursor": "pointer" }} onClick={(e) => { confirm(e, item.pan) }}></i>
-                      {item.status === true && <i id="stop" class="fa-solid fa-circle-stop" title='Temporary Stop' style={{ "marginRight": "5px", "cursor": "pointer" }} onClick={(e) => { confirm(e, item.pan) }}></i>}
-                      {item.status === false && <i id="resume" class="fa-solid fa-circle-play" title='Resume Service' style={{ "cursor": "pointer" }} onClick={(e) => { confirm(e, item.pan) }}></i>}
+                      <i id="deactivate" className="fa-solid fa-ban" title='Deactivate' style={{ "marginRight": "10px", "cursor": "pointer" }} onClick={(e) => { confirm(e, item.pan) }}></i>
+                      {item.status === true && <i id="stop" className="fa-solid fa-circle-stop" title='Temporary Stop' style={{ "marginRight": "5px", "cursor": "pointer" }} onClick={(e) => { confirm(e, item.pan) }}></i>}
+                      {item.status === false && <i id="resume" className="fa-solid fa-circle-play" title='Resume Service' style={{ "cursor": "pointer" }} onClick={(e) => { confirm(e, item.pan) }}></i>}
                     </p></div>}
 
                 </div>

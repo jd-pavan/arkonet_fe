@@ -3,11 +3,15 @@ import style from './ResetPass.module.css'
 // import swal from 'sweetalert';
 import { url_ } from '../../../Config';
 import swal from 'sweetalert';
+import Swal from 'sweetalert2';
+import { Link, json, useNavigate } from 'react-router-dom';
 
 
-const ResetPass = () => {
+const ResetPass = ({ setAlertMessage }) => {
 
-
+  const Navigate = useNavigate();
+  const [otpSent, setOTPSent] = useState(false)
+  const [otpVerified, setotpVerified] = useState(false)
   const [data, setData] = useState({
     pan: "",
     otp: "",
@@ -17,7 +21,16 @@ const ResetPass = () => {
 
   const handleChange = (e) => {
 
-    setData({ ...data, [e.target.name]: e.target.value });
+    switch (e.target.name) {
+      case "pan":
+        const UpperCasePAN = e.target.value
+        setData({ ...data, [e.target.name]: UpperCasePAN.toUpperCase() });
+        break;
+
+      default: setData({ ...data, [e.target.name]: e.target.value });
+        break;
+    }
+
 
 
 
@@ -25,11 +38,21 @@ const ResetPass = () => {
 
 
   const SendOTP = () => {
+
+
     const otpurl = `${url_}/send-otp`;
 
 
 
     try {
+      Swal.fire({
+        title: 'Sending OTP...',
+        text: 'Please wait...',
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          Swal.showLoading();
+        },
+      });
 
       const formdata = new FormData();
       formdata.append("pan", data.pan);
@@ -45,15 +68,13 @@ const ResetPass = () => {
           response.json();
           console.log(response.status)
           if (response.status === 200) {
-            swal("Success.", "OTP is sent registered email. Verify the OTP", "success");
-            setData({
-              pan: ""
-            })
+            // Swal.fire("Success.", "OTP is sent to registered email. Verify the OTP", "success");
+            Swal.close();
+            setAlertMessage("OTP is sent to registered email. Verify the OTP.")
+            setOTPSent(true)
           } else {
-            swal("Failed", "Enter valid OTP", "error");
-            setData({
-              pan: ""
-            })
+            Swal.fire("Failed.", "Failed To send OTP", "error");
+
           }
         })
 
@@ -87,8 +108,10 @@ const ResetPass = () => {
           response.json();
           console.log(response.status)
           if (response.status === 200) {
-            swal("Success.", "OTP Verified.", "success");
-
+            // swal("Success.", "OTP Verified.", "success");
+            setAlertMessage("OTP Verified.")
+            setotpVerified(true);
+            console.log(data.otp)
           } else {
             swal("Failed", "Invalid OTP!!", "error");
 
@@ -105,7 +128,7 @@ const ResetPass = () => {
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
 
 
 
@@ -114,6 +137,7 @@ const ResetPass = () => {
 
       console.log("New:", data.newPassword)
       console.log("Confirm:", data.confirmpassword)
+      console.log("Otp:", data.otp)
 
       const verifyurl = `${url_}/reset-password`;
 
@@ -129,33 +153,46 @@ const ResetPass = () => {
           redirect: 'follow'
         };
 
-        fetch(verifyurl, requestOptions)
-          .then(response => {
-            response.json();
-            console.log(response.status)
-            if (response.status === 200) {
-              swal("Success.", "Password changed successfully.", "success");
-              setData({
-                newPassword: "",
-                confirmpassword: "",
-                otp: ""
+        const response = await fetch(verifyurl, requestOptions)
+        // const result = await response.json();
 
-              })
-            } else {
-              swal("Failed", "Failed to change password!!", "error");
-              setData({
-                newPassword: "",
-                confirmpassword: ""
-              })
-            }
+        // console.log(result)
+        console.log(response)
+
+
+
+        if (response.status !== 200) {
+          const result = await response.json();
+          console.log(result)
+          if (result.status === "NOT_FOUND") {
+            swal("Failed", `${result.message}`, "error");
+            setData({
+              ...data,
+              newPassword: "",
+              confirmpassword: ""
+            })
+
+          } else {
+            swal("Failed", "Failed to change password!!", "error");
+            setData({
+              ...data,
+              newPassword: "",
+              confirmpassword: ""
+            })
+          }
+
+        } else {
+          await swal("Success.", "Password changed successfully.", "success");
+          setData({
+            newPassword: "",
+            confirmpassword: "",
+            otp: ""
           })
-
-          .catch(error => console.log('error', error));
-
-
-
-      } catch (error) {
-        console.warn("Error on function calling...")
+          Navigate("/admin/")
+        }
+      }
+      catch (error) {
+        console.log(error)
       }
 
 
@@ -170,17 +207,25 @@ const ResetPass = () => {
   return (
     <div>
       <div className="container">
-        <div className={`${style.title} row m-5 mt-5 `}>Forget Password</div>
+        <div className='d-flex justify-content-between align-items-center pr-5'>
+
+          <div className={`${style.title} row m-5 mt-5 `}>
+            Forget Password
+          </div>
+          <div className={` ${style.back_to_login_btn} `}>
+            <button onClick={() => Navigate("/admin/")}>Back to LOGIN</button>
+          </div>
+        </div>
         <div className={`row m-4 d-flex flex-column ${style.reset_input}`}>
           <label htmlFor=""><b>Enter Registered PAN</b></label>
-          <input type="text" value={data.pan} onChange={handleChange} name='pan' placeholder='Enter Registered PAN....' autoComplete='off' />
+          <input type="text" value={data.pan} onChange={handleChange} name='pan' placeholder='Enter Registered PAN....' autoComplete='off' maxLength={10} disabled={otpSent} />
         </div>
         <div className="row m-2 d-flex justify-content-end mr-4">
           <span onClick={SendOTP} className={`${style.line} ${style.hover}`}>Send OTP</span>
         </div>
         <div className='row m-4 mt-5'>
           <div className={`col-6 ${style.reset_input}`}>
-            <input type="text" onChange={handleChange} value={data.otp} name='otp' placeholder='Enter the OTP....' autoComplete='off' />
+            <input type="text" onChange={handleChange} value={data.otp} name='otp' placeholder='Enter the OTP....' autoComplete='off' maxLength={6} disabled={otpVerified} />
           </div>
           <div className={`col-6 ${style.btn} d-flex justify-content-center`}>
             <button onClick={VerifyOTP}>Verify</button>

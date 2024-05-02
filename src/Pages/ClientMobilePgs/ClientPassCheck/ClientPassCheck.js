@@ -204,6 +204,7 @@ function ClientPassCheck() {
           })
         //const client_id = data.client.clientId;            
         //localStorage.setItem("client_id", client_id);
+        // localStorage.setItem("gstin", "27AAAAA1111A123");
         storeJwtData(data.users[0]);
 
         Navigate(`clienthome`, { state: { clientid: data.users[0].clientId } });

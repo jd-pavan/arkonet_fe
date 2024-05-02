@@ -11,7 +11,7 @@ import MasterAdmin from './Pages/MasterAdmin/MasterAdmin';
 import HomeRoute from './Pages/HomePgs/HomeRoute';
 import DistributorHome from './Pages/DistributorPgs/DistributorHome';
 import SalesHome from './Pages/SalesPersonPgs/SalesHome';
-
+import './App.css'
 
 function App() {
 
@@ -29,7 +29,6 @@ function App() {
           <Route path='/sales/*' element={<SalesHome />} />
         </Routes>
       </Router>
-
     </div>
 
   );

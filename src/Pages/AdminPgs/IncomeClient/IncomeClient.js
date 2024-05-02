@@ -54,17 +54,18 @@ const IncomeClient = () => {
     totalIncomeClient();
   }, [totalIncomeClient]);
 
-
-  const Gotoincome = (cid, cname, cpan, ccategory, cprofession) => {
+  function GoToUpdateBack(itemsclientId) {
+    Navigate(`Cupdate/${itemsclientId}`, { state: { sentTotitle: "noNavigate" } })
+  }
+  const Goto = (client_data) => {
     Navigate('myfolder', {
       state: {
-        clientId: cid,
-        clientname: cname,
-        clientpan: cpan,
-        clientCategory: ccategory,
-        clientProfession: cprofession
+
+        client_information: client_data
       },
     });
+    // console.log(client_data)
+
   }
   function GoBack() {
     window.history.back(); // This will navigate to the previous page in the browser's history
@@ -127,7 +128,7 @@ const IncomeClient = () => {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{items.name}</td>
-                  <td onClick={() => Gotoincome(items.clientId, items.name, items.pan, items.category, items.profession)} className='text-primary' style={{ cursor: "pointer" }}>{items.pan}</td>
+                  <td onClick={() => Goto(items)} className='text-primary' style={{ cursor: "pointer" }}>{items.pan}</td>
                   <td>{items.mobile}</td>
                   <td>
                     <Link to="update">
@@ -138,9 +139,7 @@ const IncomeClient = () => {
                     </Link>
                   </td>
                   <td>
-                    <Link to={`Cupdate/${items.clientId}`}>
-                      <h6>Edit</h6>
-                    </Link>
+                    <span onClick={() => GoToUpdateBack(items.clientId)} className={styles.edit_btn}><h6>Edit</h6></span>
                   </td>
                 </tr>
               ))}

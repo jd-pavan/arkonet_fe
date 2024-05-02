@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { pdfjs } from "react-pdf";
 import style from "./PdfViewerModal.module.css";
-import { Worker, Viewer,} from '@react-pdf-viewer/core';
+import { Worker, Viewer, } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 
 // import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
@@ -13,85 +13,84 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 const PdfViewerModal = (props) => {
-  
+
   const [pdfBlob, setPdfBlob] = useState(null);
-const [isChecked, setIsChecked] = useState(false);
-const [iserror,setError]=useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [iserror, setError] = useState(false);
 
 
-const [termFiles,setTermFiles]=useState([
-  {
-    id:"privacy_policy",
-    name:"Privacy Policy",
-    file:null,//require("../../../Files/Privacy_Policy.pdf"),
-    viewRef:useRef(null),
-  },
-  {
-    id:"service_terms",
-    name:"Terms of Service",
-    file:null,//require("../../../Files/Terms_of_Service.pdf"),
-    viewRef:useRef(null),
-  }
-])
+  const [termFiles, setTermFiles] = useState([
+    {
+      id: "privacy_policy",
+      name: "Privacy Policy",
+      file: null,//require("../../../Files/Privacy_Policy.pdf"),
+      viewRef: useRef(null),
+    },
+    {
+      id: "service_terms",
+      name: "Terms of Service",
+      file: null,//require("../../../Files/Terms_of_Service.pdf"),
+      viewRef: useRef(null),
+    }
+  ])
 
   const fetchPdf = async () => {
-    
-    const updateItem=[...termFiles]
+
+    const updateItem = [...termFiles]
 
     var requestOptions = {
       method: "GET",
       redirect: "follow",
     };
 
-   try {
-     const response = await fetch(
-       `${url_}/TermsOfServiceDownload/Privacy_Policy`,
-       requestOptions
-     );
-     if (response.status === 200) {
+    try {
+      const response = await fetch(
+        `${url_}/TermsOfServiceDownload/Privacy_Policy`,
+        requestOptions
+      );
+      if (response.status === 200) {
 
-      const result = await response.blob();
-      const url = URL.createObjectURL(result);
-      updateItem[0].file=url
-      
-     }
-   } catch (error) {
-     console.log(error);
-   }
+        const result = await response.blob();
+        const url = URL.createObjectURL(result);
+        updateItem[0].file = url
 
-
-
-   try {
-    const response = await fetch(
-      `${url_}/TermsOfServiceDownload/Terms_of_Service`,
-      requestOptions
-    );
-    if (response.status === 200) {
-
-     const result = await response.blob();
-     const url = URL.createObjectURL(result);
-     updateItem[1].file=url
-      
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
-  }
-  setTermFiles(updateItem)
+
+
+
+    try {
+      const response = await fetch(
+        `${url_}/TermsOfServiceDownload/Terms_of_Service`,
+        requestOptions
+      );
+      if (response.status === 200) {
+
+        const result = await response.blob();
+        const url = URL.createObjectURL(result);
+        updateItem[1].file = url
+
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setTermFiles(updateItem)
   };
- function confirmTheTerms(){
-  if(isChecked)
-  {
-    props.onData(true);
-    props.onClose();
+  function confirmTheTerms() {
+    if (isChecked) {
+      props.onData(true);
+      props.onClose();
+    }
+    else {
+      setError(true)
+    }
+
   }
-  else{
-    setError(true)
-  }
- 
- }
- 
+
   useEffect(() => {
-    
+
     fetchPdf();
   }, []);
   return (
@@ -122,7 +121,7 @@ const [termFiles,setTermFiles]=useState([
             })}
           </div>
           <div></div>
-          <div className={style.terms}>
+          {/* <div className={style.terms}>
             <input
               name="confirmterms"
               id="confirmterms"
@@ -138,12 +137,12 @@ const [termFiles,setTermFiles]=useState([
               }}
             />
             I agree to these Terms and Conditions..
-          </div>
-          
-          {iserror&&<div className={style.terms}><p className={style.errormsg}>Please confirm to proceed..</p></div>}
+          </div> */}
+
+          {/* {iserror&&<div className={style.terms}><p className={style.errormsg}>Please confirm to proceed..</p></div>} */}
           <div className={style.terms}>
-            
-            <button
+
+            {/* <button
               type="button"
               className="btn"
               style={{
@@ -154,7 +153,7 @@ const [termFiles,setTermFiles]=useState([
               onClick={confirmTheTerms}
             >
               Confirm
-            </button>
+            </button> */}
             <button
               type="button"
               className="btn btn-secondary"

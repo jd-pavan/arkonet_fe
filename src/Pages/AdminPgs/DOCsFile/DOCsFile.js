@@ -125,8 +125,7 @@ const DOCsFile = () => {
 
 
 
-  async function viewImage()
-  {
+  async function viewImage() {
 
     try {
       var myHeaders = new Headers();
@@ -145,18 +144,18 @@ const DOCsFile = () => {
           const fileBlob = new Blob([result], {
             type: `image/jpeg`,
           });
-         
-        
 
-            const blobUrl = URL.createObjectURL(fileBlob);
-            // console.log(blobUrl)
-      
-      
-            const pdfWindow = window.open(blobUrl, "_blank");
-            pdfWindow.addEventListener("beforeunload", () => {
-              URL.revokeObjectURL(blobUrl);
-            });
-          
+
+
+          const blobUrl = URL.createObjectURL(fileBlob);
+          // console.log(blobUrl)
+
+
+          const pdfWindow = window.open(blobUrl, "_blank");
+          pdfWindow.addEventListener("beforeunload", () => {
+            URL.revokeObjectURL(blobUrl);
+          });
+
         }).catch((error) => console.log(error));
     } catch (error) {
       console.error(
@@ -272,15 +271,20 @@ const DOCsFile = () => {
         const updatedItems = [...DOCFile];
         if (result.imageName.split(".")[1] === "pdf") {
           updatedItems[0].fileType = "pdf";
+          updatedItems[0].Filedate = result.lastUpdateDate1;
+          updatedItems[0].FileName = result.imageName;
 
         }
         else {
           updatedItems[0].fileType = "image";
+          updatedItems[0].Filedate = result.lastUpdateDate1;
+          updatedItems[0].FileName = result.imageName;
           getImageData();
         }
 
         updatedItems[0].isExist = true;
         setDOCFile(updatedItems);
+        console.log(updatedItems)
 
       })
       .catch(error => console.log('error', error));
@@ -408,8 +412,8 @@ const DOCsFile = () => {
               e.preventDefault();
               Navigate(-1);
             }}><h3>
-              <i class="fa-solid fa-angle-left"></i></h3></Link>
-              <h3>Documents</h3>
+              <i className="fa-solid fa-angle-left"></i></h3></Link>
+          <h3>Documents</h3>
         </div>
         <div className={`${style.rightear}`} ><h3>&nbsp;</h3></div>
       </div>
@@ -427,7 +431,7 @@ const DOCsFile = () => {
                 {/* <label htmlFor="fileinput">
                   <div className={`${style.pusdouploadport}`} >
                     <div className={`${style.logo}`} >
-                      <h1 className={`${style.h1}`} ><i class="fa-solid fa-upload"></i></h1>
+                      <h1 className={`${style.h1}`} ><i className="fa-solid fa-upload"></i></h1>
                     </div>
                     <div className={`${style.text}`} ><p>Select a file or Drag here</p></div>
                     <div className={`${style.btn}`} ><div className={`${style.psudobutton}`} > {item.isExist ? "Update File" : "Select a file"}</div></div>
@@ -444,20 +448,26 @@ const DOCsFile = () => {
                       <>
                         <i
                           className="bi bi-file-earmark-pdf-fill text-danger"
-                          style={{ "font-size": "4rem","cursor":"pointer" }} onClick={item.isExist && openFileAndDownload}
+                          style={{ "font-size": "4rem", "cursor": "pointer" }} onClick={item.isExist && openFileAndDownload}
                         >
 
                         </i>
+                        <div>{item.FileName}</div>
+                        <div>{item.Filedate}</div>
                       </>
                     ) : (
-                      <img
-                        id="file-image"
-                        src={item.imgsrc}
-                        alt="Preview"
-                        className={`${style.img}`}
-                        style={{"cursor":"pointer"}}
-                        onClick={(e)=>{viewImage();}}
-                      />
+                      <>
+                        <img
+                          id="file-image"
+                          src={item.imgsrc}
+                          alt="Preview"
+                          className={`${style.img}`}
+                          style={{ "cursor": "pointer" }}
+                          onClick={(e) => { viewImage(); }}
+                        />
+                        <div>{item.FileName}</div>
+                        <div>{item.Filedate}</div>
+                      </>
                     )}
                   </div>
                 </div>

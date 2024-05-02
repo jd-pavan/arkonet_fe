@@ -37,12 +37,28 @@ const NEWSubLogin = () => {
   const [UserRemainingDays, setUserRemainingDays] = useState();
 
   const [blinkStyle, setBlinkStyle] = useState(false);
+  function DateConvert(ConvertingDate) {
 
+    if (ConvertingDate === null) {
+      return null;
+    } else {
+
+
+
+      const date = new Date(ConvertingDate);
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      const formattedDate = date.toLocaleDateString('en-GB', options);
+      return formattedDate;
+
+    }
+
+  }
   const Remainingdays = () => {
-    // setUserRemainingDays(CalculateRemainingDays(End_Date))
-    const daysDiff = (Math.floor((new Date(End_Date) - new Date()) / (1000 * 60 * 60 * 24))) + 1;
-    setUserRemainingDays(daysDiff)
-    // console.log(daysDiff)
+    const EndingDate = End_Date.slice(0, 10)
+    const daysDiff = (Math.floor((new Date(EndingDate) - new Date()) / (1000 * 60 * 60 * 24)) + 1);
+
+    setUserRemainingDays(Math.abs(daysDiff))
+    console.log(EndingDate)
   }
 
   const GetData = async () => {
@@ -129,7 +145,7 @@ const NEWSubLogin = () => {
 
   const handleItemClick = (clickedData) => {
 
-    console.log("Clicked Data:", clickedData);
+    console.log("Clicked Data:", clickedData.pan);
     setValues({
       email: clickedData.email || "",
       mobile: clickedData.mobile || "",
@@ -137,6 +153,12 @@ const NEWSubLogin = () => {
       name: clickedData.name || "",
       SubUserId: clickedData.id || ""
     });
+    setIsvalid({
+      NameValid: true,
+      PanValid: true,
+      EmailValid: true,
+      MobileValid: true
+    })
   };
   const [errorMsg, setErrorMsg] = useState({
     NameMsg: "",
@@ -144,97 +166,194 @@ const NEWSubLogin = () => {
     EmailMsg: "",
     MobileMsg: ""
   })
+  const [isValid, setIsvalid] = useState({
+    NameValid: false,
+    PanValid: false,
+    EmailValid: false,
+    MobileValid: false
+  })
 
   const handleChange = (e) => {
-    // const { name, value } = e.target;
-    // switch (name) {
-    //   case "name":
-    //     const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
-    //     if (specialCharRegex.test(value)) {
-    //       setErrorMsg({
-    //         NameMsg: "Special charachter not allowed!!!"
-    //       })
-    //     } else {
-    //       setValues({ ...values, [e.target.name]: e.target.value });
-    //       setErrorMsg({
-    //         NameMsg: ""
-    //       })
-    //     }
-    //     break;
-    //   case "pan":
-    //     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+    const { name, value } = e.target;
+    switch (name) {
+      case "name":
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+        if (specialCharRegex.test(value)) {
+          // console.log("Special character not allowed!!!")
+          setErrorMsg({
+            ...errorMsg,
+            NameMsg: "Special character not allowed!!!"
+          })
+          setIsvalid({
+            ...isValid, NameValid: false
+          })
+        } else {
+          setValues({ ...values, [name]: value });
+          setErrorMsg({
+            ...errorMsg,
+            NameMsg: ""
+          })
+          setIsvalid({
+            ...isValid, NameValid: true
+          })
+        }
+        break;
+      case "pan":
 
-    //     if (!panRegex.test(value)) {
-    //       setErrorMsg({
-    //         PanMsg: "Invalid PAN !!!"
-    //       })
-    //     } else {
-    //       setValues({ ...values, [e.target.name]: e.target.value });
-    //       setErrorMsg({
-    //         PanMsg: ""
-    //       })
-    //     }
-    //     break;
-    //   case "email":
-    //     // Validate email format
-    //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const panPattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+        const userPAN = value;
+        const uppercaseName = userPAN.toUpperCase();
+        // // //---Basic PAN Validation
+        setValues({ ...values, [name]: uppercaseName });
+        // console.log(uppercaseName)
+        // console.log(panPattern.test(uppercaseName))
+        if (panPattern.test(uppercaseName)) {
+          setErrorMsg({
+            ...errorMsg,
+            PanMsg: ""
+          })
+          setIsvalid({
+            ...isValid, PanValid: true
+          })
+        } else {
 
-    //     if (!emailRegex.test(value)) {
-    //       setValues({ ...values, [e.target.name]: e.target.value });
-    //       setErrorMsg({
-    //         EmailMsg: ""
-    //       });
-    //     } else {
+          setErrorMsg({
+            ...errorMsg,
+            PanMsg: "Invalid PAN !!!"
+          })
+          setIsvalid({
+            ...isValid, PanValid: false
+          })
+        }
+        if (value.length === 10) {
+          SubUserIsExits(name, value);
+        }
 
-    //       setErrorMsg({
-    //         EmailMsg: "Invalid Email !!!"
-    //       });
-    //     }
+        break;
+      case "email":
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        setValues({ ...values, [name]: value });
+        if (!emailRegex.test(value)) {
+          setErrorMsg({
+            ...errorMsg,
+            EmailMsg: "Invalid Email !!!"
+          });
+          setIsvalid({
+            ...isValid, EmailValid: false
+          })
+        } else {
+          setErrorMsg({
+            ...errorMsg,
+            EmailMsg: ""
+          });
+          setIsvalid({
+            ...isValid, EmailValid: true
+          })
+        }
+        break;
+      case "mobile":
+        setValues({ ...values, [name]: value.replace(/\D/g, "") });
+        e.target.value = value.replace(/\D/g, "");
+        // Basic mobile validation
+        // setValues({ ...values, [name]: value });
+        const mobilePattern = /^[789]\d{9}$/;
+        if (!mobilePattern.test(value)) {
+          setErrorMsg({
+            ...errorMsg,
+            MobileMsg: "Invalid mobile number !!!"
+          });
+          setIsvalid({
+            ...isValid, MobileValid: false
+          })
+        } else {
+          setErrorMsg({
+            ...errorMsg,
+            MobileMsg: ""
+          });
+          setIsvalid({
+            ...isValid, MobileValid: true
+          })
+        }
+        break;
+      default:
+      // setValues({ ...values, [name]: value });
 
-    //     console.log(value)
-
-    //     break;
-
-    //   default:
-    //     break;
-    // }
+    }
 
 
-    setValues({ ...values, [e.target.name]: e.target.value.toUpperCase() });
+
+
+
   }
+
+  const SubUserIsExits = async (name, value) => {
+
+    try {
+
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${storedToken}`);
+
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow"
+      };
+
+
+      const response = await fetch(`${url_}/SubUserPanCheck/${value}`, requestOptions);
+      const result = await response.json();
+      if (response.status === 200) {
+        // const panPattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+        const userPAN = value;
+        const uppercaseName = userPAN.toUpperCase();
+        // //---Basic PAN Validation
+        setValues({ ...values, [name]: uppercaseName });
+        // console.log(uppercaseName)
+        // console.log(panPattern.test(uppercaseName))
+        // if (panPattern.test(uppercaseName)) {
+        //   setErrorMsg({
+        //     ...errorMsg,
+        //     PanMsg: ""
+        //   })
+        //   setIsvalid({
+        //     ...isValid, PanValid: true
+        //   })
+        // } else {
+
+        //   setErrorMsg({
+        //     ...errorMsg,
+        //     PanMsg: "Invalid PAN !!!"
+        //   })
+        // }
+      } else {
+        Swal.fire("", `${result.message}`, "warning");
+        setValues({ ...values, [name]: "" });
+      }
+    } catch (error) {
+      console.log('error', error);
+    }
+  }
+
+  // console.log(value)
 
   const handleUpdate = async () => {
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(values.email)) {
-      Swal.fire('Invalid email format');
-      return;
-    }
-
-    // Validate mobile format (assuming a simple check for numeric value and length here)
-    const mobileRegex = /^[0-9]+$/;
-    if (!mobileRegex.test(values.mobile) || values.mobile.length !== 10) {
-      Swal.fire('Invalid mobile number');
-      return;
-    }
-
-    // Validate PAN format (assuming a simple check for alphanumeric and length here)
-    const panRegex = /^[A-Za-z0-9]+$/;
-    if (!panRegex.test(values.pan) || values.pan.length !== 10) {
-      Swal.fire('Invalid PAN');
-      return;
-    }
+    console.log(values)
+    console.log(isValid)
 
 
 
     if (
-      !values.name ||
-      !values.email ||
-      !values.pan ||
-      !values.mobile
+
+      !isValid.EmailValid ||
+
+      !isValid.MobileValid ||
+
+      !isValid.NameValid ||
+      !isValid.PanValid
     ) {
-      Swal.fire("Please fill in all fields")
+      Swal.fire("Please fill the valid details in all fields")
     } else {
       try {
         // Set up headers for the request
@@ -268,6 +387,7 @@ const NEWSubLogin = () => {
         if (response.status === 200) {
           await Swal.fire("Success.", "Data updated successful.", "success")
           setValues({
+
             pan: "",
             email: "",
             mobile: "",
@@ -276,16 +396,20 @@ const NEWSubLogin = () => {
           window.location.reload();
         } else {
           Swal.fire("Failed!", "Failed to update!!", "error")
-          setValues({
-            pan: "",
-            email: "",
-            mobile: "",
-            name: ""
-          })
+          // setValues({
+          //   ...values,
+          //   pan: "",
+          //   email: "",
+          //   mobile: "",
+          //   name: ""
+          // })
         }
       } catch (error) {
         console.log('error', error);
       }
+
+      // console.log(values)
+      // console.log(isValid)
     }
   };
 
@@ -349,7 +473,7 @@ const NEWSubLogin = () => {
                   borderTopRightRadius: "50px"
                 }} className='container'>
                   <div className='d-flex justify-content-between align-items-center'>
-                    <span style={{ fontSize: "1rem" }}><b>SUB LOGIN {index + 1}</b></span>
+                    <span style={{ fontSize: "1rem" }}><b>SUB LOGIN {item.id}</b></span>
 
                     {
                       item.name === null ? (
@@ -382,14 +506,14 @@ const NEWSubLogin = () => {
 
 
                   <div className='row mt-4'>
-                    <div className='col-md-3 col-sm-12 mb-2 d-flex justify-content-center border border-warning' style={{ height: "2rem" }}><b>{item.name}</b></div>
+                    <div className='col-md-2 col-sm-12 mb-2 d-flex justify-content-center border border-warning' style={{ height: "2rem" }}><b>{item.name}</b></div>
                     <div className='col-md-2 col-sm-12 mb-2 d-flex justify-content-center border border-warning' style={{ height: "2rem" }}><b>{item.pan}</b></div>
                     <div className='col-md-2 col-sm-12 mb-2 d-flex justify-content-center border border-warning' style={{ height: "2rem" }}><b>{item.mobile}</b></div>
-                    <div className='col-md-3 col-sm-12 mb-2 d-flex justify-content-center border border-warning' style={{ height: "2rem" }}><b>{item.email}</b></div>
+                    <div className='col-md-4 col-sm-12 mb-2 d-flex justify-content-center border border-warning' style={{ height: "2rem" }}><b>{item.email}</b></div>
                     <div className='col-md-1 col-sm-12 mb-2 d-flex justify-content-center border border-warning' style={{ height: "2rem" }} >
 
                       {item.name === null && item.id === SubUserId ? (
-                        <b className={blinkStyle ? style.blink : style.NOTblink}><i className={blinkStyle ? "bi bi-pencil-square text-danger" : "bi bi-pencil-square"} onClick={() => handleItemClick(item)} data-toggle="modal" data-target="#exampleModal1"></i></b>
+                        <b className={blinkStyle ? style.blink : style.NOTblink}><i className={blinkStyle ? "bi bi-pencil-square text-danger" : "bi bi-pencil-square"} ></i></b>
                       ) : (
                         <b className={style.NOTblink}><i className="bi bi-pencil-square" onClick={() => handleItemClick(item)} data-toggle="modal" data-target="#exampleModal1"></i></b>
                       )}
@@ -453,9 +577,9 @@ const NEWSubLogin = () => {
                 <div className=' mt-4 mb-2 ml-3'>
                   <h4><b>Assign clients to SUB-Login {SubUserId}</b></h4>
                 </div>
-                <button className={`${style.close}`} type="button" class="close" data-dismiss="modal" aria-label="Close">
+                {/* <button className={`${style.close}`} type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
-                </button>
+                </button> */}
               </div>
               <div className="modal-body " style={{ height: "50vh", overflowY: "auto" }}>
                 <>
@@ -514,34 +638,34 @@ const NEWSubLogin = () => {
 
       {/* ///////////////////////////////////////////////////////////////// Update SUB USER /////////////////////////////////////////////////////////////// */}
 
-      <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
+      <div className="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
               <div className=' mt-4 mb-2 ml-3'>
                 <h4><b>UPDATE SUB-LOGIN</b></h4>
               </div>
-              <button className={`${style.close}`} type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
+              {/* <button className={`${style.close} close`} type="button" data-dismiss="modal" aria-label="Close"> */}
+              {/* <span aria-hidden="true">&times;</span>
+            </button> */}
             </div>
-            <div class="modal-body">
+            <div className="modal-body">
               <>
                 <div className='d-flex flex-column justify-content-center'>
 
-                  <InputField placeholder='Enter name...' onChange={handleChange} lblname='Name' name='name' value={values.name} />
-                  {/* //  validationmsg={errorMsg.NameMsg}  */}
-                  <InputField placeholder='Enter PAN...' onChange={handleChange} lblname='PAN' name='pan' value={values.pan} maxLength={10} />
-                  {/* // validationmsg={errorMsg.PanMsg}  */}
-                  <InputField placeholder='Enter email...' onChange={handleChange} lblname='Email' name='email' value={values.email} />
-                  {/* // validationmsg={errorMsg.EmailMsg}  */}
-                  <InputField placeholder='Enter mobile...' onChange={handleChange} lblname='Mobile' name='mobile' value={values.mobile} maxLength={10} />
-                  {/* // validationmsg={errorMsg.MobileMsg}  */}
+                  <InputField placeholder='Enter name...' onChange={handleChange} lblname='Name' name='name' value={values.name} validationmsg={errorMsg.NameMsg} />
+
+                  <InputField placeholder='Enter PAN...' onChange={handleChange} lblname='PAN' name='pan' value={values.pan} validationmsg={errorMsg.PanMsg} maxLength={10} />
+
+                  <InputField placeholder='Enter email...' onChange={handleChange} lblname='Email' name='email' value={values.email} validationmsg={errorMsg.EmailMsg} />
+
+                  <InputField placeholder='Enter mobile...' onChange={handleChange} lblname='Mobile' name='mobile' value={values.mobile} maxLength={10} validationmsg={errorMsg.MobileMsg} />
+
 
                 </div>
               </>
             </div>
-            <div class="modal-footer">
+            <div className="modal-footer">
 
               <div className='mt-3 d-flex justify-content-center w-100'>
                 <button className={`${style.buysublogin_btn} d-flex justify-content-center`} onClick={handleUpdate}><b>UPDATE</b></button>
@@ -550,11 +674,9 @@ const NEWSubLogin = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div >
 
 
-      {/* ///////////////////////////////////////////////////////////////// Assign Clients /////////////////////////////////////////////////////////////// */}
-      {/* ///////////////////////////////////////////////////////////////// Assign Clients /////////////////////////////////////////////////////////////// */}
       {/* ///////////////////////////////////////////////////////////////// Assign Clients /////////////////////////////////////////////////////////////// */}
 
 

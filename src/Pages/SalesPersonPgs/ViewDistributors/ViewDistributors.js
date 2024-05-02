@@ -25,7 +25,7 @@ const ViewDistributors = () => {
   const GetUserDATA = async () => {
 
 
-const salesmanager_id=localStorage.getItem("salesmanager_id")
+    const salesmanager_id = localStorage.getItem("salesmanager_id")
 
 
 
@@ -91,7 +91,7 @@ const salesmanager_id=localStorage.getItem("salesmanager_id")
                 onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h2><i class="fa-solid fa-magnifying-glass"></i></h2>
+              <h2><i className="fa-solid fa-magnifying-glass"></i></h2>
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@ const salesmanager_id=localStorage.getItem("salesmanager_id")
                         <td>{item.pan}</td>
                         <td>{item.mobile}</td>
                         {/* <td>
-                          <i class="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i>
+                          <i className="fa-solid fa-circle" style={{ color: item.paid ? "#32e132" : "#ff0000" }}></i>
                         </td> */}
                       </tr>
 
@@ -153,7 +153,7 @@ const salesmanager_id=localStorage.getItem("salesmanager_id")
                   <td>PAVAN1999M</td>
                   <td>9307110950</td>
                   <td>
-                    <i class="fa-solid fa-circle" style={{ color: true ? "#32e132" : "#ff0000" }}></i>
+                    <i className="fa-solid fa-circle" style={{ color: true ? "#32e132" : "#ff0000" }}></i>
                   </td>
                 </tr> */}
 

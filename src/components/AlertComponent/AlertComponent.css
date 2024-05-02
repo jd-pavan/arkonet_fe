@@ -1,0 +1,46 @@
+.alert {
+  position: fixed;
+  top: 20px;
+  right: -100%;
+  z-index: 9999;
+  width: 45%;
+}
+
+.alert.visible {
+  animation: slideInRight 0.8s forwards;
+}
+
+.alert.notvisible {
+  animation: slideIOutRight 1.8s backwards;
+}
+
+@keyframes slideInRight {
+  from {
+    right: -100%;
+  }
+
+  to {
+    right: 20px;
+  }
+}
+
+@keyframes slideIOutRight {
+  from {
+    right: 20px;
+  }
+
+  to {
+    right: -100%;
+  }
+}
+
+.close {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  font-size: 20px;
+}

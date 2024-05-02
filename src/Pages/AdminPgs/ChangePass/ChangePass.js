@@ -21,7 +21,7 @@ const ChangePass = () => {
     const storedToken = window.localStorage.getItem('jwtToken');
 
     if (data.newPassword === data.confirmpass) {
-      const changeurl = `${url_}/changePassword/${user_id}`;
+
 
       try {
         var myHeaders = new Headers();
@@ -40,12 +40,12 @@ const ChangePass = () => {
           redirect: 'follow'
         };
 
-        const response = await fetch(changeurl, requestOptions);
-        const result = await response.text();
+        const response = await fetch(`${url_}/changePassword/${user_id}`, requestOptions);
+
         console.log(response.status);
-        console.log(result);
-        if (response.status === 401) {
-          swal.fire("Failed!", `${result}`, "error");
+        if (response.status !== 200) {
+          const result = await response.json();
+          swal.fire("Failed!", `${result.message}`, "error");
         } else {
           swal.fire("Success", `Password changed successful.`, "success");
           setData({
@@ -55,7 +55,7 @@ const ChangePass = () => {
           });
         }
       } catch (error) {
-        swal.fire("Failed!", `${error}`, "error");
+        console.log(error)
       }
 
     } else {

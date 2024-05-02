@@ -66,7 +66,7 @@ const Help = () => {
       </div>
       <div>
         <table className={`table table-striped ${style.helpTable}`}>
-          <thead class="table-light">
+          <thead className="table-light">
             <tr>
               <th scope="col">Name</th>
               <th scope="col">Quarry</th>

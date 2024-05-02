@@ -91,6 +91,9 @@ function ClientLogin() {
       <div className={`${style.maincontainer}`}>
         {/* Header */}
         <div className={`${style.header}`}>
+          <p id={`${style.welcome}`} onClick={() => Navigate("/")} style={{ cursor: "pointer" }}>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<h2>Back to website</h2>
+          </p>
           <p id={`${style.welcome}`}>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Welcome to
           </p>
@@ -153,7 +156,7 @@ function ClientLogin() {
             >
               <i className="bi-twitter-x fs-1 inverted"></i>
               {/* <i
-                class="bi-twitter-x fs-3"
+                className="bi-twitter-x fs-3"
                 style={{ color: "#05022c" }}
               ></i> */}
             </a>

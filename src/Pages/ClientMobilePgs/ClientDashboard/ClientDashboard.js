@@ -32,6 +32,7 @@ function ClientDashboard() {
     //clientid:localStorage.getItem("client_id"),
     client_id_it: localStorage.getItem("client_id_it"),
     client_id_gst: localStorage.getItem("client_id_gst"),
+    userid_id_gst: localStorage.getItem("user_id_gst"),
     name: localStorage.getItem("name").split(" ")[0],
     PAN: localStorage.getItem("pan"),
     profession: localStorage.getItem("profession"),
@@ -53,7 +54,7 @@ function ClientDashboard() {
 
   })
 
-
+  const [gstClientData, setGSTClientData] = useState([]);
   const [dashboardFolders, setDashboardFolders] = useState([
     {
       name: "income_tax",
@@ -90,14 +91,37 @@ function ClientDashboard() {
   useEffect(() => {
 
 
+    GetClient();
     GetData();
-
     // getAllData()
     getClientImage();
     fetchLastUpdateDates();
 
 
   }, []);
+  const GetClient = async () => {
+
+    try {
+
+      const myHeaders = new Headers();
+      myHeaders.append("Authorization", `Bearer ${clientInfo.storedToken}`);
+
+      const requestOptions = {
+        method: "GET",
+        headers: myHeaders,
+        redirect: "follow"
+      };
+
+      const response = await fetch(`${url_}/getClientById/${clientInfo.userid_id_gst}/${clientInfo.client_id_gst}`, requestOptions)
+      const result = await response.json();
+      setGSTClientData(result);
+      console.log(result)
+
+
+    } catch (error) {
+      console.warn("Error on function calling...")
+    }
+  }
 
   const GetData = async () => {
     try {
@@ -417,7 +441,12 @@ function ClientDashboard() {
           })
         }
         else {
-          navigate("gstfolder")
+          navigate("gstfolder", {
+            state: {
+
+              client_information: gstClientData,
+            },
+          });
         }
         break;
 

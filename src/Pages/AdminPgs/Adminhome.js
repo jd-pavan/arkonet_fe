@@ -52,11 +52,31 @@ import SubUserLogin from './Login/SubUserLogin';
 import UserOTOVerify from './Login/UserOTOVerify';
 import FamilyGroup from './FamilyGroup/FamilyGroup';
 import NotificationsCA from './NotificationsCA/NotificationsCA';
+import InvoicePrintTemplate from '../../components/InvoicePrintTemplate/InvoicePrintTemplate';
+import Attendence from './Attendence/Attendence';
+import AttendenceReport from './Attendence/AttendenceReport';
+
+
+import GSTFolderCA from './GstFolder/GstFolder';
+import GstMonthlyCA from './GstMonthly/GstMonthly';
+import MonthFolderCA from './MonthFolders/MonthFolders';
+import GSTRFilingCA from './GSTRFiling/GSTRFiling';
+import CreateInvoiceCA from './CreateInvoice/CreateInvoice';
+import GST2ACA from './GST2A/GST2A';
+import TodaysReport from './Attendence/TodaysReport';
+import CheckInReport from './Attendence/CheckInReport';
+import CheckOutReport from './Attendence/CheckOutReport';
+import AbsentReport from './Attendence/AbsentReport';
+import TransferRequests from './TransferRequests/TransferRequests';
+import GSTR3BFilling from './GSTR3BFilling/GSTR3BFilling';
+import AlertComponent from '../../components/AlertComponent/AlertComponent';
+
 
 const Adminhome = () => {
 
 
-  const [loggedIn, setLoggedIn] = useState(localStorage.getItem('LogedIn'));
+  const [alertMessage, setAlertMessage] = useState("null");
+  const [loggedIn, setLoggedIn] = useState(false);
   //  console.log('admin', loggedIn);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
@@ -68,16 +88,17 @@ const Adminhome = () => {
   }, [isMobile]);
 
   return (
-    <div>
+    <div >
       {/* <Switch> */}
+
 
       <div className="container-fluid">
         <div className="row">
-          <div className={`col-sm-3 col-md-3 col-lg-3 col-xl-3`}>
+          <div className={`col-sm-3 col-md-3 col-lg-3 col-xl-3 ${styles.main_nav_page}`}>
             <LeftSide loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
           </div>
 
-          <div className={isMobile ? `w-100` : `w-75 `}>
+          <div className={isMobile ? `w-100` : `w-75`}>
 
             <nav className={styles.navclass}>
               <img src={taxko} alt="" />
@@ -96,16 +117,23 @@ const Adminhome = () => {
               <Route exact path='paymenttest' element={<PaymentGateway />} />
               <Route exact path='setpass' element={<CheckPassSetPass />} />
               <Route exact path='sublogin' element={<SubUserLogin setLoggedIn={setLoggedIn} />} />
-              <Route exact path='userotpverify' element={<UserOTOVerify setLoggedIn={setLoggedIn} />} />
+              <Route exact path='userotpverify' element={<UserOTOVerify setLoggedIn={setLoggedIn} setAlertMessage={setAlertMessage} />} />
+              <Route exact path="transferRequest" element={<Protected Cmp={TransferRequests} />} />
+              <Route exact path="logdetails" element={<Protected Cmp={Attendence} />} />
+              <Route exact path="logdetails/logdata" element={<Protected Cmp={TodaysReport} />} />
+              <Route exact path="logdetails/logreport" element={<Protected Cmp={AttendenceReport} />} />
+              <Route exact path="logdetails/logreport/CheckInReport" element={<Protected Cmp={CheckInReport} />} />
+              <Route exact path="logdetails/logreport/CheckOutReport" element={<Protected Cmp={CheckOutReport} />} />
+              <Route exact path="logdetails/logreport/AbsentReport" element={<Protected Cmp={AbsentReport} />} />
               {/* <Route exact path='notification' element={<Notification />} /> */}
 
 
 
 
-              <Route exact path='' element={<CheckPan setLoggedIn={setLoggedIn} />} />
+              <Route exact path='' element={<CheckPan setAlertMessage={setAlertMessage} />} />
               <Route exact path='Ulogin' element={<Login setLoggedIn={setLoggedIn} />} />
               <Route path="User_registration" element={<Registration />} />
-              <Route path="forgetpass" element={<ResetPass />} />
+              <Route path="Ulogin/forgetpass" element={<ResetPass setAlertMessage={setAlertMessage} />} />
               <Route path="help" element={<HelpView />} />
               <Route path="help/helpclientmailview" element={<HelpClientMailView />} />
               <Route path="help/createnewticket" element={<CreateNewTicket />} />
@@ -132,14 +160,21 @@ const Adminhome = () => {
               <Route path="dashboard/clientreg" element={<Protected Cmp={URegistration} />} />
 
               <Route path="dashboard/clientlist" element={<Protected Cmp={ClientList} />} />
+              <Route path="dashboard/clientlist/Cupdate/:id" element={<Protected Cmp={Uupdate} />} />
               <Route path="dashboard/clientlist/myfolder" element={<Protected Cmp={MyFolder} />} />
               <Route path="dashboard/clientlist/myfolder/kycfile" element={<Protected Cmp={KYCFile} />} />
               <Route path="dashboard/clientlist/myfolder/docfile" element={<Protected Cmp={DOCsFile} />} />
               <Route path="dashboard/clientlist/myfolder/incomefolder" element={<Protected Cmp={DocFolder} />} />
               <Route path="dashboard/clientlist/myfolder/incomefolder/fileupload" element={<Protected Cmp={FileUpload} />} />
-              <Route path="dashboard/clientlist/myfolder/gstfolder" element={<Protected Cmp={Gst} />} />
-              <Route path="dashboard/clientlist/myfolder/gstfolder/gstrfolder" element={<Protected Cmp={GstrFolder} />} />
-              <Route path="dashboard/clientlist/myfolder/gstfolder/gstrfolder/gstrfileupload" element={<Protected Cmp={GstrFileUpload} />} />
+              <Route path="dashboard/clientlist/myfolder/gstfolder" element={<Protected Cmp={GSTFolderCA} />} />
+              <Route path="dashboard/clientlist/myfolder/gstfolder/gstmonthly" element={<Protected Cmp={GstMonthlyCA} />} />
+              <Route path="dashboard/clientlist/myfolder/gstfolder/gstmonthly/month/gstr3b" element={<Protected Cmp={GSTR3BFilling} />} />
+              <Route path="dashboard/clientlist/myfolder/gstfolder/gstmonthly/gstfile" element={<Protected Cmp={GstrFileUpload} />} />
+              <Route path="dashboard/clientlist/myfolder/gstfolder/gstmonthly/month" element={<Protected Cmp={MonthFolderCA} />} />
+              <Route path="dashboard/clientlist/myfolder/gstfolder/gstmonthly/month/gst2a" element={<Protected Cmp={GST2ACA} />} />
+              <Route path="dashboard/clientlist/myfolder/gstfolder/gstmonthly/month/gstfile" element={<Protected Cmp={GSTRFilingCA} />} />
+              <Route path="dashboard/clientlist/myfolder/gstfolder/gstmonthly/month/gstfile/invoice" element={<Protected Cmp={CreateInvoiceCA} />} />
+              {/* <Route path="dashboard/clientlist/myfolder/gstfolder/gstrfolder/gstrfileupload" element={<Protected Cmp={GstrFileUpload} />} /> */}
 
 
 
@@ -152,9 +187,15 @@ const Adminhome = () => {
               <Route path="dashboard/tc/myfolder/docfile" element={<Protected Cmp={DOCsFile} />} />
               <Route path="dashboard/tc/myfolder/incomefolder" element={<Protected Cmp={DocFolder} />} />
               <Route path="dashboard/tc/myfolder/incomefolder/fileupload" element={<Protected Cmp={FileUpload} />} />
-              <Route path="dashboard/tc/myfolder/gstfolder" element={<Protected Cmp={Gst} />} />
-              <Route path="dashboard/tc/myfolder/gstfolder/gstrfolder" element={<Protected Cmp={GstrFolder} />} />
-              <Route path="dashboard/tc/myfolder/gstfolder/gstrfolder/gstrfileupload" element={<Protected Cmp={GstrFileUpload} />} />
+              <Route path="dashboard/tc/myfolder/gstfolder" element={<Protected Cmp={GSTFolderCA} />} />
+              <Route path="dashboard/tc/myfolder/gstfolder/gstmonthly" element={<Protected Cmp={GstMonthlyCA} />} />
+              <Route path="dashboard/tc/myfolder/gstfolder/gstmonthly/month/gstr3b" element={<Protected Cmp={GSTR3BFilling} />} />
+              <Route path="dashboard/tc/myfolder/gstfolder/gstmonthly/gstfile" element={<Protected Cmp={GstrFileUpload} />} />
+              <Route path="dashboard/tc/myfolder/gstfolder/gstmonthly/month" element={<Protected Cmp={MonthFolderCA} />} />
+              <Route path="dashboard/tc/myfolder/gstfolder/gstmonthly/month/gst2a" element={<Protected Cmp={GST2ACA} />} />
+              <Route path="dashboard/tc/myfolder/gstfolder/gstmonthly/month/gstfile" element={<Protected Cmp={GSTRFilingCA} />} />
+              <Route path="dashboard/tc/myfolder/gstfolder/gstmonthly/month/gstfile/invoice" element={<Protected Cmp={CreateInvoiceCA} />} />
+              {/* <Route path="dashboard/tc/myfolder/gstfolder/gstrfolder/gstrfileupload" element={<Protected Cmp={GstrFileUpload} />} /> */}
               {/* <Route path="dashboard/tc/file/:id/fileupload/:id/:year" element={<Protected Cmp={FileUpload} />} /> */}
 
               <Route path="dashboard/tic" element={<Protected Cmp={IncomeClient} />} />
@@ -165,9 +206,15 @@ const Adminhome = () => {
               <Route path="dashboard/tic/myfolder/docfile" element={<Protected Cmp={DOCsFile} />} />
               <Route path="dashboard/tic/myfolder/incomefolder" element={<Protected Cmp={DocFolder} />} />
               <Route path="dashboard/tic/myfolder/incomefolder/fileupload" element={<Protected Cmp={FileUpload} />} />
-              <Route path="dashboard/tic/myfolder/gstfolder" element={<Protected Cmp={Gst} />} />
-              <Route path="dashboard/tic/myfolder/gstfolder/gstrfolder" element={<Protected Cmp={GstrFolder} />} />
-              <Route path="dashboard/tic/myfolder/gstfolder/gstrfolder/gstrfileupload" element={<Protected Cmp={GstrFileUpload} />} />
+              <Route path="dashboard/tic/myfolder/gstfolder" element={<Protected Cmp={GSTFolderCA} />} />
+              <Route path="dashboard/tic/myfolder/gstfolder/gstmonthly" element={<Protected Cmp={GstMonthlyCA} />} />
+              <Route path="dashboard/tic/myfolder/gstfolder/gstmonthly/month/gstr3b" element={<Protected Cmp={GSTR3BFilling} />} />
+              <Route path="dashboard/tic/myfolder/gstfolder/gstmonthly/gstfile" element={<Protected Cmp={GstrFileUpload} />} />
+              <Route path="dashboard/tic/myfolder/gstfolder/gstmonthly/month" element={<Protected Cmp={MonthFolderCA} />} />
+              <Route path="dashboard/tic/myfolder/gstfolder/gstmonthly/month/gst2a" element={<Protected Cmp={GST2ACA} />} />
+              <Route path="dashboard/tic/myfolder/gstfolder/gstmonthly/month/gstfile" element={<Protected Cmp={GSTRFilingCA} />} />
+              <Route path="dashboard/tic/myfolder/gstfolder/gstmonthly/month/gstfile/invoice" element={<Protected Cmp={CreateInvoiceCA} />} />
+              {/* <Route path="dashboard/tic/myfolder/gstfolder/gstrfolder/gstrfileupload" element={<Protected Cmp={GstrFileUpload} />} /> */}
 
 
               <Route path="dashboard/gstclients" element={<Protected Cmp={GstClients} />} />
@@ -178,9 +225,15 @@ const Adminhome = () => {
               <Route path="dashboard/gstclients/myfolder/incomefolder/fileupload" element={<Protected Cmp={FileUpload} />} />
               <Route path="dashboard/gstclients/myfolder/kycfile" element={<Protected Cmp={KYCFile} />} />
               <Route path="dashboard/gstclients/myfolder/docfile" element={<Protected Cmp={DOCsFile} />} />
-              <Route path="dashboard/gstclients/myfolder/gstfolder" element={<Protected Cmp={Gst} />} />
-              <Route path="dashboard/gstclients/myfolder/gstfolder/gstrfolder" element={<Protected Cmp={GstrFolder} />} />
-              <Route path="dashboard/gstclients/myfolder/gstfolder/gstrfolder/gstrfileupload" element={<Protected Cmp={GstrFileUpload} />} />
+              <Route path="dashboard/gstclients/myfolder/gstfolder" element={<Protected Cmp={GSTFolderCA} />} />
+              <Route path="dashboard/gstclients/myfolder/gstfolder/gstmonthly" element={<Protected Cmp={GstMonthlyCA} />} />
+              <Route path="dashboard/gstclients/myfolder/gstfolder/gstmonthly/month/gstr3b" element={<Protected Cmp={GSTR3BFilling} />} />
+              <Route path="dashboard/gstclients/myfolder/gstfolder/gstmonthly/gstfile" element={<Protected Cmp={GstrFileUpload} />} />
+              <Route path="dashboard/gstclients/myfolder/gstfolder/gstmonthly/month" element={<Protected Cmp={MonthFolderCA} />} />
+              <Route path="dashboard/gstclients/myfolder/gstfolder/gstmonthly/month/gst2a" element={<Protected Cmp={GST2ACA} />} />
+              <Route path="dashboard/gstclients/myfolder/gstfolder/gstmonthly/month/gstfile" element={<Protected Cmp={GSTRFilingCA} />} />
+              <Route path="dashboard/gstclients/myfolder/gstfolder/gstmonthly/month/gstfile/invoice" element={<Protected Cmp={CreateInvoiceCA} />} />
+              {/* <Route path="dashboard/gstclients/myfolder/gstfolder/gstrfolder/gstrfileupload" element={<Protected Cmp={GstrFileUpload} />} /> */}
 
 
 
@@ -200,15 +253,17 @@ const Adminhome = () => {
               <Route exact path="userUpdate" element={<Protected Cmp={UserUpdate} />} />
               <Route exact path="UserSubscriptionPage" element={<Protected Cmp={UserSubscriptionPage} />} />
               <Route exact path="UserSubscriptionPage/subscriptionplan" element={<Protected Cmp={SubscriptionPlan} />} />
-              <Route exact path="UserSubscriptionPage/subscriptionplan/subcription" element={<Protected Cmp={Subscription} />} />
+              <Route exact path="UserSubscriptionPage/subscriptionplan/subcription" element={<Protected setLoggedIn={setLoggedIn} Cmp={Subscription} />} />
 
               <Route path="/refferal/user/:referralParam" element={<Registration />} />
 
             </Routes>
 
-            <ChatBot />
-            <WhatsappChat />
-
+            {/* <ChatBot /> */}
+            {/* <WhatsappChat /> */}
+            {alertMessage !== "null" &&
+              <AlertComponent ResponseMessage={alertMessage} />
+            }
 
           </div>
         </div>

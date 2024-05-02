@@ -26,7 +26,14 @@ import ChatBot from "../../components/ChatBot/ChatBot"
 import ClientTallyView from "./ClientTallyBackup/ClientTallyView";
 import ProfileUpdate from "./ProfileUpdate/ProfileUpdate";
 import GSTRFiling from "./GSTRFiling/GSTRFiling";
-import ClientNotification from "./ClientNotification/ClientNotification";
+import GSTR3B from "./GSTR3B/GSTR3B";
+import GST2A from "./GST2A/GST2A";
+import CreateInvoice from "./CreateInvoice/CreateInvoice";
+import MonthFolder from "./MonthFolders/MonthFolders";
+import ClientTestPages from "./ClientTestPages/ClientTestPages";
+import TransferCA from "./TransferCA/TransferCA";
+import ClientBankDetails from "./ClientBankDetails/ClientBankDetails";
+import GSTR3BFilling from "../AdminPgs/GSTR3BFilling/GSTR3BFilling";
 
 function ClientPages() {
   return (
@@ -43,9 +50,21 @@ function ClientPages() {
         <Route path="clientdashboard/clientincometax/clientfileview" element={<ClientFileView />} />
 
 
+        <Route path="clientdashboard/testpages" element={<ClientTestPages />} />
+
+
         <Route path="clientdashboard/gstfolder" element={<GstFolder />} />
         <Route path="clientdashboard/gstfolder/gstmonthly" element={<GstMonthly />} />
+
         <Route path="clientdashboard/gstfolder/gstmonthly/gstfile" element={<GstFileView />} />
+
+        <Route path="clientdashboard/gstfolder/gstmonthly/month" element={<MonthFolder />} />
+        <Route path="clientdashboard/gstfolder/gstmonthly/month/gstfile" element={<GSTRFiling />} />
+        <Route path="clientdashboard/gstfolder/gstmonthly/month/gstr3B" element={<GSTR3BFilling />} />
+        <Route path="clientdashboard/gstfolder/gstmonthly/month/gst2a" element={<GST2A />} />
+        <Route path="clientdashboard/gstfolder/gstmonthly/month/gstfile/invoice" element={<CreateInvoice />} />
+        <Route path="clientdashboard/gstfolder/gstmonthly/month/gst2a/invoice" element={<CreateInvoice />} />
+
 
         <Route path="clientdashboard/kyc" element={<KYC />} />
         <Route path="clientdashboard/docs" element={<DOCs />} />
@@ -60,17 +79,12 @@ function ClientPages() {
         <Route path="help" element={<ClientHelp />} />
         <Route path="changepass" element={<ClientPassChange />} />
         <Route path="updateinfo" element={<ProfileUpdate />} />
-
-        <Route path="notificationsClient" element={<ClientNotification />} />
-
-
-        {/* <Route path="gstr" element={<GSTRFiling />} />     */}
-
-
+        <Route path="bankdetails" element={<ClientBankDetails />} />
+        <Route path="transferCA" element={<TransferCA />} />
 
 
       </Routes>
-      <ChatBot />
+      {/* <ChatBot /> */}
 
     </SidebarProvider>
 

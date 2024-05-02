@@ -141,9 +141,9 @@ const DistributorsPayment = () => {
 
         {/* Top Port Starts */}
         <h4 className=' mt-2 d-flex justify-content-around align-items-center w-100'>
-          
+
           <b>Distributor's Payment</b>
-          
+
         </h4>
         <div className={`${style.top} `}>
           <div className={`${style.inputbox} `}>
@@ -153,7 +153,7 @@ const DistributorsPayment = () => {
                 onChange={(e) => setSearchQuery(e.target.value)} />
             </div>
             <div className={`${style.seachlogo} `}>
-              <h4><i class="fa-solid fa-magnifying-glass"></i></h4>
+              <h4><i className="fa-solid fa-magnifying-glass"></i></h4>
             </div>
           </div>
         </div>

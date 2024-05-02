@@ -67,7 +67,7 @@ const FileUpload = () => {
     try {
       const response = await fetch(`${url_}/getfile/${user_id}/${clientid}/${year}`, requestOptions);
       const data = await response.json();
-      // console.log(data)
+      console.log(data)
       setDbfilelength(data.length)
       const extractedNames = data.map(file => {
         const fileid = file.id;
@@ -273,6 +273,15 @@ const FileUpload = () => {
       console.log("clientid", clientid);
       console.log("accountyear", year);
       console.log("filename", filename);
+
+      Swal.fire({
+        title: 'Uploading.',
+        text: 'Please wait...',
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          Swal.showLoading();
+        },
+      });
 
       const myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${storedToken}`);
@@ -504,111 +513,111 @@ const FileUpload = () => {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   return (
-<>
-    <div className="container mt-4">
-      {/* <div className="row m-3"> */}
-        <div className="row m-3" style={{"minWidth":"300px"}} id="maindiv">
+    <>
+      <div className="container mt-4">
+        {/* <div className="row m-3"> */}
+        <div className="row m-3" style={{ "minWidth": "300px" }} id="maindiv">
           {/* <div className="container"> */}
-            {/* <div className="uphead"> */}
-              {/* <div className="row"> */}
-                <div className="col-9 col-xl-6 col-lg-6">
-                  <h3 className={`d-flex align-items-center ${style.h1}`}>
-                    <div style={{ fontSize: "xx-large", cursor: "pointer" }} onClick={GoBack}>
-                      &#8617;&nbsp;
-                    </div>
-                    <b>Income Tax</b>
-                  </h3>
-                  <p className={`h6 ${style.headpara}`}>A.Y {year}</p>
-                </div>
-                <div className="col-3 d-flex align-items-center">
-                  <label className={`${style.switch}`}>
-                    <input type="checkbox" checked={fileResponse} onChange={handleToggle} />
-                    <span className={`${style.slider} ${style.round}`}></span>
-                  </label>
-                </div>
-              {/* </div> */}
-            {/* </div> */}
+          {/* <div className="uphead"> */}
+          {/* <div className="row"> */}
+          <div className="col-9 col-xl-6 col-lg-6">
+            <h3 className={`d-flex align-items-center ${style.h1}`}>
+              <div style={{ fontSize: "xx-large", cursor: "pointer" }} onClick={GoBack}>
+                &#8617;&nbsp;
+              </div>
+              <b>Income Tax</b>
+            </h3>
+            <p className={`h6 ${style.headpara}`}>A.Y {year}</p>
+          </div>
+          <div className="col-3 d-flex align-items-center">
+            <label className={`${style.switch}`}>
+              <input type="checkbox" checked={fileResponse} onChange={handleToggle} />
+              <span className={`${style.slider} ${style.round}`}></span>
+            </label>
+          </div>
+          {/* </div> */}
+          {/* </div> */}
           {/* </div> */}
         </div>
-        
-      {/* </div> */}
-      <div className={`${style.neckbar}`}>
-              <div className="d-flex">
-                <div className="col-4 col-sm-4 col-md-6 col-lg-9 col-xl-9" id="select">
-                  {dbfilelength > 0
-                    ? <button type="button" className="btn btn-danger" onClick={toggleCodeVisibility}>Select</button>
-                    : null}
-                  {/* <button type="button" className="btn btn-danger" onClick={toggleCodeVisibility}>Select</button> */}
-                </div>
-                <div className="col-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 d-flex justify-content-center" id="delet">
-                  <h2 className="icons">
-                    {codeVisible && (
-                      <i className="fa-solid fa-trash-can" onClick={DeleteFile}></i>
-                    )}
-                  </h2>
-                </div>
-                <div className="col-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 d-flex justify-content-center" id="share">
-                  <h2 className="icons">
-                    {codeVisible && (
-                      <i className="fa-solid fa-share-from-square" ></i>
-                    )}
-                  </h2>
+
+        {/* </div> */}
+        <div className={`${style.neckbar}`}>
+          <div className="d-flex">
+            <div className="col-4 col-sm-4 col-md-6 col-lg-9 col-xl-9" id="select">
+              {dbfilelength > 0
+                ? <button type="button" className="btn btn-danger" onClick={toggleCodeVisibility}>Select</button>
+                : null}
+              {/* <button type="button" className="btn btn-danger" onClick={toggleCodeVisibility}>Select</button> */}
+            </div>
+            <div className="col-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 d-flex justify-content-center" id="delet">
+              <h2 className="icons">
+                {codeVisible && (
+                  <i className="fa-solid fa-trash-can" onClick={DeleteFile}></i>
+                )}
+              </h2>
+            </div>
+            <div className="col-4 col-sm-4 col-md-3 col-lg-3 col-xl-3 d-flex justify-content-center" id="share">
+              <h2 className="icons">
+                {codeVisible && (
+                  <i className="fa-solid fa-share-from-square" ></i>
+                )}
+              </h2>
+            </div>
+          </div>
+        </div>
+      </div >
+
+      <div className='row m-4 justify-content-center'>
+        {/* <div className="row m-4"> */}
+        {filenameStatusArray.map(item => (
+          <div className={`col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6`} key={item.fileId}>
+            {item.status ? (
+              <div>
+                <div className={style.file_upload}>
+                  {codeVisible && (
+                    <label className={style.checkbox_label}>
+                      <input
+                        type="checkbox"
+                        className={style.checkbox}
+                        onChange={event => handleCheckboxChange(event, item.fileId)}
+                      />
+                      <span className={style.checkbox_custom}>
+                        <span className={style.checkbox_tick}></span>
+                      </span>
+                    </label>
+                  )}
+
+                  {item.filename.toLowerCase().includes('excel') ? (
+                    <i className="bi bi-file-earmark-excel-fill text-success" onDoubleClick={(e) => { e.preventDefault(); openFileAndDownload('xlsx', 'spreadsheet.xlsx', item.fileId) }}></i>
+                  ) : (
+                    <i className="bi bi-file-earmark-pdf-fill text-danger" onDoubleClick={(e) => { e.preventDefault(); openFileAndDownload('pdf', 'document.pdf', item.fileId) }}></i>
+                  )}
+
+                  <h6 className={style.filename_text} >
+                    {item.filename}
+                  </h6>
                 </div>
               </div>
-            </div>
-    </div >
-    
-    <div className='row m-4 justify-content-center'>
-              {/* <div className="row m-4"> */}
-                {filenameStatusArray.map(item => (
-                  <div className={`col-12 col-sm-6 col-md-6 col-lg-6 col-xl-6`} key={item.fileId}>
-                    {item.status ? (
-                      <div>
-                        <div className={style.file_upload}>
-                          {codeVisible && (
-                            <label className={style.checkbox_label}>
-                              <input
-                                type="checkbox"
-                                className={style.checkbox}
-                                onChange={event => handleCheckboxChange(event, item.fileId)}
-                              />
-                              <span className={style.checkbox_custom}>
-                                <span className={style.checkbox_tick}></span>
-                              </span>
-                            </label>
-                          )}
-
-                          {item.filename.toLowerCase().includes('excel') ? (
-                            <i className="bi bi-file-earmark-excel-fill text-success" onDoubleClick={(e) => { e.preventDefault(); openFileAndDownload('xlsx', 'spreadsheet.xlsx', item.fileId) }}></i>
-                          ) : (
-                            <i className="bi bi-file-earmark-pdf-fill text-danger" onDoubleClick={(e) => { e.preventDefault(); openFileAndDownload('pdf', 'document.pdf', item.fileId) }}></i>
-                          )}
-
-                          <h6 className={style.filename_text} >
-                            {item.filename}
-                          </h6>
-                        </div>
-                      </div>
 
 
-                    ) : (
-                      <div className={style.file_upload}>
-                        <div className={style.image_upload_wrap}>
-                          <input className={style.file_upload_input} type='file' onChange={(event) => handleFileUpload(event, item.filename)} onClick={checkSubsriptionStatus} />
-                          <div className={style.drag_text}>
-                            <img src={upload} alt="" />
-                            <h4>Upload File</h4>
-                          </div>
-                        </div>
-                        <h6 className={style.filename_text} key={item.filename}>{item.filename}</h6>
-                      </div>
-                    )}
+            ) : (
+              <div className={style.file_upload}>
+                <div className={style.image_upload_wrap}>
+                  <input className={style.file_upload_input} type='file' onChange={(event) => handleFileUpload(event, item.filename)} onClick={checkSubsriptionStatus} />
+                  <div className={style.drag_text}>
+                    <img src={upload} alt="" />
+                    <h4>Upload File</h4>
                   </div>
-                ))}
+                </div>
+                <h6 className={style.filename_text} key={item.filename}>{item.filename}</h6>
+              </div>
+            )}
+          </div>
+        ))}
 
-              {/* </div> */}
-            </div>
-</>
+        {/* </div> */}
+      </div>
+    </>
   );
 }
 

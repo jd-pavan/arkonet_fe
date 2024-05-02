@@ -3,14 +3,17 @@
   flex-direction: column;
   align-items: center;
 }
-.profileimg img{
+
+.profileimg img {
   width: 10rem;
   height: 10rem;
-    }
-  
+}
+
 
 .myfolder_btn {
-  /* justify-content: space-evenly; */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .myfolder_folder {
@@ -41,9 +44,10 @@
 .myfolder_folder a {
   text-decoration: none;
 }
+
 @media (max-width:768px) {
-  .profileimg img{
+  .profileimg img {
     width: 8rem;
     height: 8rem;
-      }
+  }
 }

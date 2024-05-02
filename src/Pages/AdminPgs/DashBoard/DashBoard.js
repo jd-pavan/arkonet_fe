@@ -20,7 +20,7 @@ const DashBoard = () => {
   const username = localStorage.getItem("user_name");
   const userpan = localStorage.getItem("pan");
   const userPro = localStorage.getItem("profession");
-  const logintime = TimeConvert(localStorage.getItem("logintime"));
+  const logintime = localStorage.getItem("logintime");
 
 
 
@@ -54,17 +54,34 @@ const DashBoard = () => {
   const user_id = window.localStorage.getItem('user_id');
   const storedToken = window.localStorage.getItem('jwtToken');
 
-  function TimeConvert(ConvertingDate) {
+  function TimeConvert(time24) {
 
-    if (ConvertingDate === null) {
-      return null;
-    } else {
-      const date = new Date(ConvertingDate);
-      const options = { hour: 'numeric', minute: 'numeric', hour12: true };
-      const formattedTime = date.toLocaleTimeString('en-US', options);
-      return formattedTime;
+    // if (time24 === null) {
+    //   return null;
+    // } else {
+    // const date = new Date(ConvertingDate);
+    // const options = { hour: 'numeric', minute: 'numeric', hour12: true };
+    // const formattedTime = date.toLocaleTimeString('en-US', options);
+    // return formattedTime;
 
-    }
+    // Split the time string into hours, minutes, and seconds
+    const [hours, minutes, seconds] = time24.split(':').map(Number);
+
+    // Create a Date object with today's date and the provided time
+    const date = new Date();
+    date.setHours(hours, minutes, seconds);
+
+    // Get the time in 12-hour format
+    const time12 = date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+    console.log(time12)
+    return time12;
+
+    // }
 
   }
 
@@ -196,13 +213,24 @@ const DashBoard = () => {
     await fetch(`${url_}/filedNotfiledCountsBySubUserid/${user_id}/${sub_userid}`, requestOptions)
       .then((response) => response.json())
       .then((data) => {
+        // data.sort((a, b) => {
+        //   const yearA = parseInt(a.accountyear.split('-')[0]);
+        //   const yearB = parseInt(b.accountyear.split('-')[0]);
+
+        //   return yearA - yearB;
+        // });
+        // // console.log(data.reverse())
+        // setFiledata(data.reverse())
+
+
+
         data.sort((a, b) => {
           const yearA = parseInt(a.accountyear.split('-')[0]);
           const yearB = parseInt(b.accountyear.split('-')[0]);
 
           return yearA - yearB;
         });
-        console.log(data.reverse())
+        // console.log(data.reverse())
         setFiledata(data.reverse())
 
       })
@@ -275,6 +303,7 @@ const DashBoard = () => {
     currentYear = currentYear - 1
   }
   const fyyear = `${currentYear}-${(currentYear + 1).toString().slice(-2)}`
+  // const fyyear = `2024-25`
 
   const totalClient = () => {
 
@@ -430,7 +459,7 @@ const DashBoard = () => {
       const response = await fetch(`${url_}/getGSTData?userid=${user_id}`, requestOptions);
       const result = await response.json();
       // console.log(result["GSTR-1"]);
-      // console.log(result);
+      console.log(result);
 
 
       let data = [];
@@ -445,27 +474,38 @@ const DashBoard = () => {
         });
       });
 
-      // // console.log(data);
-      setgstdata(data)
 
+      // Get the current month and year
+      let currentDate = new Date();
+      let currentMonth = currentDate.getMonth() + 1; // JavaScript months are zero-indexed, so we add 1
+      let currentYear = currentDate.getFullYear();
 
+      // Calculate the month and year for 6 months ago
+      let sixMonthsAgo = new Date(currentYear, currentMonth - 11);
+      let sixMonthsAgoMonth = sixMonthsAgo.getMonth() + 1; // Again, adding 1 to account for zero indexing
+      let sixMonthsAgoYear = sixMonthsAgo.getFullYear();
 
+      // Filter the data for the current month and the preceding six months
+      let filteredData = data.filter(entry => {
+        let entryMonthYear = entry.month.split(" ");
+        let entryMonth = entryMonthYear[0];
+        let entryYear = parseInt(entryMonthYear[1]);
 
+        // Convert month name to number
+        let monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let entryMonthNumber = monthNames.indexOf(entryMonth) + 1;
 
-      // const currentMonth = new Date().getMonth();
+        // Check if the entry month and year are within the last 6 months
+        if ((entryYear > sixMonthsAgoYear || (entryYear === sixMonthsAgoYear && entryMonthNumber >= sixMonthsAgoMonth)) &&
+          (entryYear < currentYear || (entryYear === currentYear && entryMonthNumber <= currentMonth))) {
+          return true;
+        } else {
+          return false;
+        }
+      });
 
-      // // Filter the data for months up to and including the current month
-      // const filteredData = data.filter(entry => {
-      //   const entryMonth = new Date(entry.month + ' 1, 2023').getMonth();
-      //   return entryMonth <= currentMonth;
-      // });
-
-      // // Reverse the order of the filtered data
-      // const reversedData = filteredData.reverse();
-
-      // // console.log(reversedData);
-      // setgstdata(reversedData)
-
+      console.log(filteredData);
+      setgstdata(filteredData.reverse())
 
 
     } catch (error) {
@@ -473,7 +513,7 @@ const DashBoard = () => {
     }
   };
   const displayData = showAll ? gstdata : gstdata.slice(0, 6);
-
+  // console.log(gstdata.slice(0, 6))
   const GST_LatestUpdate = () => {
 
     const url = `${url_}/GSTmaxLastUpdateDate/${user_id}`;
@@ -541,10 +581,10 @@ const DashBoard = () => {
           'Authorization': `Bearer ${storedToken}`
         }
       })
-        .then(response => response.text())
+        .then(response => response.json())
         .then(res => {
-          setImgContent(res.content)
           // console.log(res)
+          setImgContent(res.content)
 
         })
         .catch(error => {
@@ -563,7 +603,11 @@ const DashBoard = () => {
     saveAs(fileBlob, "TAXKO_Instruction_Sample_File.xlsx");
   }
 
-  useEffect(() => { getProfileImage() }, [])
+  useEffect(() => {
+    if (Sub_category !== "Sub User") {
+      getProfileImage()
+    }
+  }, [])
   const imageSrc = imgcontent ? `data:image/jpeg;base64,${imgcontent}` : imgprofile;
 
 
@@ -733,7 +777,7 @@ const DashBoard = () => {
                     <thead>
                       <tr>
                         <th scope="col">Assessment Year</th>
-                        <th scope="col" className={`${styles.green} `}>
+                        <th scope="col" className={` text-success ${styles.green} `}>
                           Filed
                         </th>
                         <th scope="col" className={`text-danger `}>
@@ -747,7 +791,7 @@ const DashBoard = () => {
                           <tr key={index}>
                             <td>{items.accountyear}</td>
                             <td
-                              className={`${styles.green} `}
+                              className={` text-success ${styles.green} `}
                               onClick={() =>
                                 GOTO("IncomeFD", items.accountyear)
                               }
@@ -799,7 +843,7 @@ const DashBoard = () => {
                   <div
                     className={`h6 card-link ${styles.black}`}
                     style={{ cursor: "pointer" }}
-                    onClick={() => GOTO("Pending", fyyear)}
+                    onClick={() => GOTO("Pending")}
                   >
                     Pending
                     <h6 className={`text-danger font-weight-bold`}>
@@ -809,7 +853,7 @@ const DashBoard = () => {
                   <div
                     className={`h6 card-link ${styles.black}`}
                     style={{ cursor: "pointer" }}
-                    onClick={() => GOTO("Pending", fyyear)}
+                    onClick={() => GOTO("Discount")}
                   >
                     Discount
                     <h6 className={`text-success font-weight-bold`}>
@@ -847,7 +891,7 @@ const DashBoard = () => {
                         </th>
                         <th colSpan="2">
                           <h4 className="font-weight-bold text-primary">
-                            GSTR-3B
+                            GSTR-2A
                           </h4>
                         </th>
                       </tr>
@@ -900,27 +944,36 @@ const DashBoard = () => {
 
                   <div className="top d-flex justify-content-between">
                     <small>Last updated on {gstlatestupdatedata}</small>
-                    {showAll ? (
-                      <h6>
-                        <span
-                          className={`font-weight-bold text-primary`}
-                          onClick={() => setShowAll(false)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          Less...
-                        </span>
-                      </h6>
-                    ) : (
-                      <h6>
-                        <span
-                          className={`font-weight-bold text-primary`}
-                          onClick={() => setShowAll(true)}
-                          style={{ cursor: "pointer" }}
-                        >
-                          More...
-                        </span>
-                      </h6>
-                    )}
+                    {
+                      gstdata.length > 6 ?
+                        <>
+                          {showAll ? (
+                            <h6>
+                              <span
+                                className={`font-weight-bold text-primary`}
+                                onClick={() => setShowAll(false)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                Less...
+                              </span>
+                            </h6>
+                          ) : (
+                            <h6>
+                              <span
+                                className={`font-weight-bold text-primary`}
+                                onClick={() => setShowAll(true)}
+                                style={{ cursor: "pointer" }}
+                              >
+                                More...
+                              </span>
+                            </h6>
+                          )}
+                        </>
+                        :
+                        <>
+
+                        </>
+                    }
                   </div>
                 </div>
               </div>

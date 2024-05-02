@@ -125,7 +125,7 @@ const ViewUserCategory = () => {
                                 onChange={(e) => setSearchQuery(e.target.value)} />
                         </div>
                         <div className={`${style.seachlogo} `}>
-                            <h1><i class="fa-solid fa-magnifying-glass"></i></h1>
+                            <h1><i className="fa-solid fa-magnifying-glass"></i></h1>
                         </div>
                     </div>
                 </div>
@@ -169,7 +169,7 @@ const ViewUserCategory = () => {
                                                 <td>{item.registration.pan}</td>
                                                 <td>{item.registration.mobile}</td>
                                                 <td>
-                                                    <i class="fa-solid fa-circle"
+                                                    <i className="fa-solid fa-circle"
                                                         style={
                                                             subendDate === null ? { color: "#d2cccc" } :
                                                                 subendDate ? { color: "#32e132" } : { color: "#ff0000" }

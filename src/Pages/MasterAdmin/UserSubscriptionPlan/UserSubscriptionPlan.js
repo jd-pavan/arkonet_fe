@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
 import React from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 // import taxko from "../../Images/Taxko.jpg";
 // import arkonet from "../../Images/Arkonet.jpg";
 import samplepdf from "../../../Files/TestPDFfile.pdf"
@@ -420,9 +420,20 @@ const UserSubscriptionPage = () => {
   };
 
   const ForceStopUpdate = async (forceStopStartStatus) => {
-
+    swal.fire({
+      title: 'Updating.',
+      text: 'Please wait...',
+      showConfirmButton: false,
+      onBeforeOpen: () => {
+        swal.showLoading();
+      },
+    });
+    console.log("clicked")
 
     try {
+
+
+
       var myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
@@ -575,7 +586,7 @@ const UserSubscriptionPage = () => {
   }
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   function trialactivation() {
-    Swal.fire({
+    swal.fire({
       title: "Are you sure?",
       text: "This client will be given trial of 15 days.!",
       icon: "warning",
@@ -615,6 +626,13 @@ const UserSubscriptionPage = () => {
     console.log(message)
 
 
+    console.log("aceesclient", "250");
+    console.log("userid", USERSUBSCRIPTIONDATA.USERID);
+    console.log("attachmentContent", emptyFile);
+    console.log("subscriptionprice", "0");
+    console.log("subscriptiontype", "Trial");
+    console.log("subject", "Trial Pack Subscription");
+    console.log("text", formattedMsg);
 
 
 
@@ -624,10 +642,10 @@ const UserSubscriptionPage = () => {
     myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
     var formdata = new FormData();
-    formdata.append("aceesclient", 250);
-    formdata.append("userid", USERSUBSCRIPTIONDATA.USERID);
+    formdata.append("aceesclient", "250");
+    formdata.append("userid", `${USERSUBSCRIPTIONDATA.USERID}`);
     formdata.append("attachmentContent", emptyFile);
-    formdata.append("subscriptionprice", 0);
+    formdata.append("subscriptionprice", "0");
     formdata.append("subscriptiontype", "Trial");
     formdata.append("subject", "Trial Pack Subscription");
     formdata.append("text", formattedMsg);
@@ -783,18 +801,18 @@ const UserSubscriptionPage = () => {
 
                         {/* ////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-                        <div class="modal fade" id="myModal">
-                          <div class="modal-dialog modal-xl">
-                            <div class="modal-content">
+                        <div className="modal fade" id="myModal">
+                          <div className="modal-dialog modal-xl">
+                            <div className="modal-content">
 
                               {/* <!-- Modal Header --> */}
-                              {/* <div class="modal-header">
-                                  <small type="button" class="close" data-dismiss="modal">&times;</small>
+                              {/* <div className="modal-header">
+                                  <small type="button" className="close" data-dismiss="modal">&times;</small>
                                 </div> */}
 
                               {/* <!-- Moda body --> */}
 
-                              <div class="modal-body">
+                              <div className="modal-body">
 
 
 
@@ -885,7 +903,7 @@ const UserSubscriptionPage = () => {
                           }}
 
                         >
-                          <p className={`${style.cardp}`} onClick={() => { Swal.fire("User is already approved.") }}>
+                          <p className={`${style.cardp}`} onClick={() => { swal.fire("User is already approved.") }}>
                             ACTIVATED
                           </p>
                         </span>
@@ -927,14 +945,14 @@ const UserSubscriptionPage = () => {
         <div className={`${style.mainadbominal}`}>
           <div className={`${style.card3}`}>
             <p className={`${style.cardp}`} id="referfriendbtn" onClick={openPanel}> REFER A FRIEND</p>
-            {isRefferFriend && <h1><i class="fa-solid fa-caret-down" style={{ color: "#707070" }}></i></h1>}
+            {isRefferFriend && <h1><i className="fa-solid fa-caret-down" style={{ color: "#707070" }}></i></h1>}
           </div>
           <div className={`${style.card3}`} >
             <p className={`${style.cardp}`} onClick={copyReferralLink}> COPY REFERAL LINK</p>
           </div>
           <div className={`${style.card3}`}>
             <p className={`${style.cardp}`} id="suggessionbtn" onClick={openPanel}> SUGGESSION</p>
-            {isSuggession && <h1><i class="fa-solid fa-caret-down" style={{ color: "#707070" }}></i></h1>}
+            {isSuggession && <h1><i className="fa-solid fa-caret-down" style={{ color: "#707070" }}></i></h1>}
           </div>
         </div>
 

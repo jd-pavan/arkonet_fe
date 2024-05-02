@@ -3,7 +3,7 @@ import DropDown from '../../../components/DropDown/DropDown'
 import Uprofesion_obj from '../../../ObjData/AProf.json'
 import States_obj from '../../../ObjData/States.json'
 
-import swal from 'sweetalert';
+
 import { url_ } from '../../../Config';
 import styles from './UserData.module.css';
 import profileimg from '../../../Images/profile.png'
@@ -110,12 +110,12 @@ const UserData = () => {
         body: JSON.stringify(values),
       })
         .then(res => {
-          swal("Success", "Data updated successfully.", "success");
+          Swal.fire("Success", "Data updated successfully.", "success");
           window.history.back();
           console.log(values)
         })
         .catch(error => {
-          swal("Failed!", " Failed to update.!!!!", "error");
+          Swal.fire("Failed!", " Failed to update.!!!!", "error");
           console.log(error)
         });
     } catch (error) {
@@ -245,6 +245,15 @@ const UserData = () => {
 
   const SaveBankData = async (event) => {
     event.preventDefault();
+
+    Swal.fire({
+      title: 'Updating.',
+      text: 'Please wait...',
+      showConfirmButton: false,
+      onBeforeOpen: () => {
+        Swal.showLoading();
+      },
+    });
     var myHeaders = new Headers();
     myHeaders.append(
       "Authorization",
@@ -274,7 +283,7 @@ const UserData = () => {
       const result = await response.text();
       console.log(result);
       if (response.status === 200) {
-        await swal(
+        await Swal.fire(
           'Success.',
           `${result}`,
           'success'
@@ -282,7 +291,7 @@ const UserData = () => {
         window.location.reload();
 
       } else {
-        swal(
+        Swal.fire(
           'Failed!',
           `Failed to save data!!!`,
           'error'
@@ -297,7 +306,14 @@ const UserData = () => {
 
   const UpdateBankData = async (e) => {
     e.preventDefault();
-
+    Swal.fire({
+      title: 'Updating.',
+      text: 'Please wait...',
+      showConfirmButton: false,
+      onBeforeOpen: () => {
+        Swal.showLoading();
+      },
+    });
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
@@ -322,7 +338,7 @@ const UserData = () => {
       const result = await response.text();
       console.log(result);
       if (response.status === 200) {
-        await swal(
+        await Swal.fire(
           'Success.',
           `${result}`,
           'success'
@@ -330,7 +346,7 @@ const UserData = () => {
 
 
       } else {
-        swal(
+        Swal.fire(
           'Failed!',
           `Failed to update data!!!`,
           'error'
@@ -344,13 +360,13 @@ const UserData = () => {
     window.history.back(); // This will navigate to the previous page in the browser's history
   }
 
-  const GOTOUserSubPlan = (id, pan,name,mobile) => {
+  const GOTOUserSubPlan = (id, pan, name, mobile) => {
     Navigate('userSubPlan', {
       state: {
         USERSUBID: id,
         USERSUBPAN: pan,
-        USERNAME:name,
-        USERMOBILE:mobile,
+        USERNAME: name,
+        USERMOBILE: mobile,
 
       },
     });

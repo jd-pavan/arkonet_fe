@@ -26,6 +26,13 @@ import SalesManagersList from './SalesManagersList/SalesManagersList';
 import SalesDash from '../SalesPersonPgs/SalesDash/SalesDash';
 import DeactiveSaleMgmList from './DeactiveSaleMgmList/DeactiveSaleMgmList';
 import SaleManagerPayment from './SaleManagerPayment/SaleManagerPayment';
+import Attendence from './Attendence/Attendence';
+import AttendenceReport from './Attendence/AttendenceReport';
+import TodaysReport from './Attendence/TodaysReport';
+import CheckInReport from './Attendence/CheckInReport';
+import CheckOutReport from './Attendence/CheckOutReport';
+import AbsentReport from './Attendence/AbsentReport';
+import ManageAds from './ManageAds/ManageAds';
 // import ChatBot from '../../components/ChatBot/ChatBot';
 // import WhatsappChat from '../../components/WhatsappChat';
 
@@ -37,10 +44,10 @@ const MasterAdmin = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
 
   useEffect(() => {
-      window.addEventListener("resize", () => {
-          const ismobile = window.innerWidth < 1024;
-          if (ismobile !== isMobile) setIsMobile(ismobile);
-      }, false);
+    window.addEventListener("resize", () => {
+      const ismobile = window.innerWidth < 1024;
+      if (ismobile !== isMobile) setIsMobile(ismobile);
+    }, false);
   }, [isMobile]);
 
   return (
@@ -51,15 +58,15 @@ const MasterAdmin = () => {
         {showIntoro ? null : ( */}
         <div className="row">
           <div className={`col-sm-3 col-md-3 col-lg-3 col-xl-3`}>
-            <MasterSideBar loggedIn={loggedIn} setLoggedIn={setLoggedIn}  />
+            <MasterSideBar loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
           </div>
 
-          <div className={isMobile ?`w-100`:`w-75 `}>
+          <div className={isMobile ? `w-100` : `w-75 `}>
 
 
             <Routes>
 
-              <Route exact path='' element={<MasterLogIn setLoggedIn={setLoggedIn}  />} />
+              <Route exact path='' element={<MasterLogIn setLoggedIn={setLoggedIn} />} />
               {/* <Route exact path='intropage' element={<IntroPage />} /> */}
 
               <Route exact path='admindashboard' element={<AdminDetails />} />
@@ -80,7 +87,7 @@ const MasterAdmin = () => {
 
               <Route exact path='admindashboard/clientview' element={<MasterClientView />} />
 
-              <Route exact path='addsalesManager' element={<SalesRegistration />} />              
+              <Route exact path='addsalesManager' element={<SalesRegistration />} />
               <Route exact path='admindashboard/salemgmlist' element={<SalesManagersList />} />
               <Route exact path='salemgmlist' element={<SalesManagersList />} />
 
@@ -98,9 +105,18 @@ const MasterAdmin = () => {
               <Route exact path='userlist' element={<UserList />} />
               <Route exact path='distributor' element={<ManageDistributor />} />
               <Route exact path='distriPayments' element={<DistributorsPayment />} />
+              <Route exact path='manageAds' element={<ManageAds />} />
               {/* <Route exact path='sidebar' element={<SideBar />} /> */}
               <Route exact path="changepass" element={<MasterChangePass />} />
+              {/* <Route exact path="logdetails" element={<Attendence />} /> */}
 
+              {/* <Route exact path="logdetails" element={<Attendence />} /> */}
+              <Route exact path="logdetails" element={<Attendence />} />
+              <Route exact path="logdetails/logdata" element={<TodaysReport />} />
+              <Route exact path="logdetails/logreport" element={<AttendenceReport />} />
+              <Route exact path="logdetails/logreport/CheckInReport" element={<CheckInReport />} />
+              <Route exact path="logdetails/logreport/CheckOutReport" element={<CheckOutReport />} />
+              <Route exact path="logdetails/logreport/AbsentReport" element={<AbsentReport />} />
 
             </Routes>
             {/* <WhatsappChat/> */}

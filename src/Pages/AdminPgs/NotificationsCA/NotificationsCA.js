@@ -4,7 +4,9 @@ import { url_ } from '../../../Config';
 import Swal from 'sweetalert2';
 
 const NotificationsCA = () => {
+  const [imgcontent, setImgContent] = useState();
   const [filename, setFilename] = useState("No file selected.");
+  const [searchQuery, setSearchQuery] = useState("");
   const [formdata, setFormdata] = useState({
     details: "",
     noti_img: ``
@@ -106,7 +108,7 @@ const NotificationsCA = () => {
   const [selectAllIncome_Tax, setSelectAllIncomeTax] = useState(false);
   const [selectAllGST, setSelectAllGST] = useState(false);
   const [notiCategory, setNotiCategory] = useState("");
-  const [notiClienName, setNotiClienName] = useState("");
+  const [notiClientName, setNotiClientName] = useState("");
 
   const handleCheckboxChange = (checkboxName) => {
     // Toggle checkbox state
@@ -179,7 +181,49 @@ const NotificationsCA = () => {
   const [singlesNoti, setSinglesNoti] = useState([]);
   const [multiplesNoti, setMultiplesNoti] = useState([]);
   const [multiNoti, setMultiNoti] = useState([]);
+
+  const [singleClientNoti, setSingleClientNoti] = useState([]);
+  const [multipleClientNoti, setMultipleClientNoti] = useState([]);
+  const [allIncomeTaxClientNoti, setAllIncomeTaxClientNoti] = useState([]);
+  const [allGSTClientNoti, setAllGSTClientNoti] = useState([]);
+  const [allClientNoti, setAllClientNoti] = useState([]);
+
+
+
+
+
+  const GroupedArrayFunction = (data) => {
+    const groupedData = {};
+
+    data.forEach(notification => {
+      const notificationTo = notification.notificationTo;
+      if (!groupedData.hasOwnProperty(notificationTo)) {
+        groupedData[notificationTo] = [];
+      }
+      groupedData[notificationTo].push(notification);
+    });
+
+    // Create an array to store the first object from each group
+    const firstObjectsArray = [];
+
+    // Loop through the groupedData object and push the first object from each group
+    for (const groupKey in groupedData) {
+      if (groupedData.hasOwnProperty(groupKey)) {
+        const group = groupedData[groupKey];
+        if (group.length > 0) {
+          firstObjectsArray.push(group[0]);
+        }
+      }
+    }
+
+    // console.log(firstObjectsArray);
+    return firstObjectsArray;
+
+  }
+  const [combinedData, setCombinedData] = useState([]);
   const GetSentNotifications = async () => {
+
+    var FinalArray = [];
     try {
       var myHeaders = new Headers();
       myHeaders.append("Authorization", `Bearer ${storedToken}`);
@@ -190,60 +234,102 @@ const NotificationsCA = () => {
         redirect: 'follow'
       };
 
-      const response1 = await fetch(`${url_}/GetSingleCategoey/${user_id}`, requestOptions);
+      const response1 = await fetch(`${url_}/getNotificationDataByUseridAndCategory/${user_id}/Single`, requestOptions);
       const result1 = await response1.json();
 
-      // Filter notifications starting with "TT"
-      const ttNotifications = result1.filter(
-        (item) => item.notificationTo.startsWith("TT")
-      );
-
-      // Filter and group notifications excluding those starting with "TT"
-      const filteredData = result1.filter(
-        (item) => !item.notificationTo.startsWith("TT")
-      );
-      const groupedNotifications = filteredData.reduce((acc, notification) => {
-        const existingGroup = acc.find(group => group.notificationTo === notification.notificationTo);
-        if (existingGroup) {
-          existingGroup.data.push(notification);
-        } else {
-          acc.push({
-            notificationTo: notification.notificationTo,
-            data: [notification]
-          });
-        }
-        return acc;
-      }, []);
-      // Combine "TT" notifications with grouped notifications
-      const combinedArray = {
-        "A": ttNotifications,
-        "B": groupedNotifications
-      };
-      // console.log("GetSingleCategoey", combinedArray);
-      setSinglesNoti(combinedArray.A)
-      setMultiplesNoti(combinedArray.B)
-
-      const response2 = await fetch(`${url_}/GetMultipleCategory/${user_id}`, requestOptions);
-      const result2 = await response2.json();
-      // console.log("GetMultipleCategory", result2);
-
-      const groupedData = {};
-
-      for (const item of result2) {
-        const category = item.category;
-        if (!groupedData[category]) {
-          groupedData[category] = [];
-        }
-        groupedData[category].push(item);
+      if (result1.length > 0) {
+        result1.forEach(element => {
+          // Check if the element is not already present in combinedData
+          if (!FinalArray.some(item => item.id === element.id)) {
+            FinalArray.push(element);
+          }
+        });
       }
+      setSingleClientNoti(result1)
 
-      const groupedArray = Object.keys(groupedData).map(key => ({
-        category: key,
-        notifications: groupedData[key]
-      }));
+      // console.log(result1)
+      // console.log(combinedData)
 
-      console.log(groupedArray)
-      setMultiNoti(groupedArray)
+      const response2 = await fetch(`${url_}/getNotificationDataByUseridAndCategory/${user_id}/Multiple_Clients`, requestOptions);
+      const result2 = await response2.json();
+      // console.log(result2.length)
+      const MultipleNoti = GroupedArrayFunction(result2)
+      if (MultipleNoti.length > 0) {
+        MultipleNoti.forEach(element => {
+          // Check if the element is not already present in combinedData
+          if (!FinalArray.some(item => item.id === element.id)) {
+            FinalArray.push(element);
+          }
+        });
+      }
+      setMultipleClientNoti(MultipleNoti)
+
+      // console.log(AllNoti)
+      // console.log(combinedData)
+
+      const response3 = await fetch(`${url_}/getNotificationDataByUseridAndCategory/${user_id}/All_Income_Tax_Clients`, requestOptions);
+      const result3 = await response3.json();
+      // console.log(result3.length)
+      const AllIncomeTaxNoti = GroupedArrayFunction(result3)
+      if (AllIncomeTaxNoti.length > 0) {
+        AllIncomeTaxNoti.forEach(element => {
+          // Check if the element is not already present in combinedData
+          if (!FinalArray.some(item => item.id === element.id)) {
+            FinalArray.push(element);
+          }
+        });
+      }
+      setAllIncomeTaxClientNoti(AllIncomeTaxNoti)
+
+      // console.log(AllNoti)
+      // console.log(combinedData)
+
+      const response4 = await fetch(`${url_}/getNotificationDataByUseridAndCategory/${user_id}/All_GST_Clients`, requestOptions);
+      const result4 = await response4.json();
+      const AllGSTNoti = GroupedArrayFunction(result4)
+      if (AllGSTNoti.length > 0) {
+        AllGSTNoti.forEach(element => {
+          // Check if the element is not already present in combinedData
+          if (!FinalArray.some(item => item.id === element.id)) {
+            FinalArray.push(element);
+          }
+        });
+      }
+      setAllGSTClientNoti(AllGSTNoti)
+
+      // console.log(AllNoti)
+      // console.log(combinedData)
+
+      const response5 = await fetch(`${url_}/getNotificationDataByUseridAndCategory/${user_id}/All_Clients`, requestOptions);
+      const result5 = await response5.json();
+      const AllNoti = GroupedArrayFunction(result5)
+
+      if (AllNoti.length > 0) {
+        AllNoti.forEach(element => {
+          // Check if the element is not already present in combinedData
+          if (!FinalArray.some(item => item.id === element.id)) {
+            FinalArray.push(element);
+
+          }
+        });
+      }
+      setAllClientNoti(AllNoti)
+
+      // console.log(AllNoti)
+      // console.log(combinedData)
+
+
+      const NewFinalArray = FinalArray.sort((a, b) => {
+        const dateA = new Date(a.sendDate.replace(" at", ""));
+        const dateB = new Date(b.sendDate.replace(" at", ""));
+        return dateB - dateA;
+      });
+      console.log(FinalArray)
+      setCombinedData(NewFinalArray)
+
+
+
+
 
 
     } catch (error) {
@@ -276,20 +362,41 @@ const NotificationsCA = () => {
     if (checkedCheckboxes.length === 0) {
       Swal.fire("Select atleast one client!!!");
     } else {
-      // console.log(formdata.noti_img)
-      // console.log(formdata.details)
-      // console.log(checkedCheckboxes.join(','))
-      // console.log(todate)
-      // console.log(user_name)
-      // console.log(`${checkedCheckboxes.length === 1 ? `${notiClienName}` :
-      //   selectAll ? 'All Clients' :
-      //     selectAllIncome_Tax ? 'All Income Tax Clients' :
-      //       selectAllGST ? 'All GST Clients' :
-      //         'Multiple Clients'
-      //   }`)
-      // console.log(user_id)
-      // console.log(`${selectAll ? `ALL${multiNoti.length + 1}` : "Single"}`)
+
+
+      // console.log("file", formdata.noti_img);
+      // console.log("text", formdata.details);
+      // console.log("clientIds", checkedCheckboxes.join(','));
+      // console.log("sendDate", todate);
+      // console.log("from", user_name);
+      // console.log("to", (`${checkedCheckboxes.length === 1 ? `Single` :
+      //   selectAll ? `AllClients_${allClientNoti.length + 1}` :
+      //     selectAllIncome_Tax ? `AllIncomeTaxClients_${allIncomeTaxClientNoti.length + 1}` :
+      //       selectAllGST ? `AllGSTClients_${allGSTClientNoti.length + 1}` :
+      //         `MultipleClients_${multipleClientNoti.length + 1}`
+      //   }`));
+      // console.log("userid", user_id);
+      // console.log("category", (`${checkedCheckboxes.length === 1 ? `Single` :
+      //   selectAll ? `All_Clients` :
+      //     selectAllIncome_Tax ? `All_Income_Tax_Clients` :
+      //       selectAllGST ? `All_GST_Clients` :
+      //         'Multiple_Clients'
+      //   }`));
+
+
+
+
       try {
+
+        Swal.fire({
+          title: 'Sending Notifications...',
+          text: 'Please wait...',
+          showConfirmButton: false,
+          onBeforeOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
         var myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
@@ -299,14 +406,19 @@ const NotificationsCA = () => {
         APIformdata.append("clientIds", checkedCheckboxes.join(','));
         APIformdata.append("sendDate", todate);
         APIformdata.append("from", user_name);
-        APIformdata.append("to", (`${checkedCheckboxes.length === 1 ? `TT${notiClienName}` :
-          selectAll ? 'All Clients' :
-            selectAllIncome_Tax ? 'All Income Tax Clients' :
-              selectAllGST ? 'All GST Clients' :
-                'Multiple Clients'
+        APIformdata.append("to", (`${checkedCheckboxes.length === 1 ? `${notiClientName}` :
+          selectAll ? `AllClients_${allClientNoti.length + 1}` :
+            selectAllIncome_Tax ? `AllIncomeTaxClients_${allIncomeTaxClientNoti.length + 1}` :
+              selectAllGST ? `AllGSTClients_${allGSTClientNoti.length + 1}` :
+                `MultipleClients_${multipleClientNoti.length + 1}`
           }`));
         APIformdata.append("userid", user_id);
-        APIformdata.append("category", `${selectAll ? `ALL${multiNoti.length + 1}` : "Single"}`);
+        APIformdata.append("category", (`${checkedCheckboxes.length === 1 ? `Single` :
+          selectAll ? `All_Clients` :
+            selectAllIncome_Tax ? `All_Income_Tax_Clients` :
+              selectAllGST ? `All_GST_Clients` :
+                'Multiple_Clients'
+          }`));
 
         var requestOptions = {
           method: 'POST',
@@ -333,42 +445,55 @@ const NotificationsCA = () => {
   }
 
 
-  const handlePreview = (pdata, pCategory) => {
-    console.log(pdata, pCategory)
-    if (pCategory === "Singles") {
+  const handlePreview = async (pdata) => {
+    // console.log(pdata.imagePath)
+    // console.log(pdata.imagePath === null)
+    // console.log(pdata.imagePath === null)
+    // setEmailData({
+    //   To: pdata.category === "Singles" ? pdata.notificationTo : (pdata.category).replace("_", " "),
+    //   DateTime: pdata.sendDate,
+    //   Message: pdata.text === "undefined" ? "" : pdata.text,
+    //   Img: ""
+    // })
+    if (pdata.imagePath === null) {
       setEmailData({
-        To: pdata.notificationTo,
+        To: pdata.category === "Single" ? pdata.notificationTo : (pdata.category).replace(/_/g, " "),
         DateTime: pdata.sendDate,
         Message: pdata.text === "undefined" ? "" : pdata.text,
         Img: ""
       })
-    } else if (pCategory === "Multiples") {
-      setEmailData({
-        To: pdata.notificationTo,
-        DateTime: pdata.data[0].sendDate,
-        Message: pdata.data[0].text === "undefined" ? "" : pdata.data[0].text,
-        Img: ""
-      })
-    } else if (pCategory === "All") {
-      setEmailData({
-        To: (pdata.category).slice(0, 3),
-        DateTime: pdata.notifications[0].sendDate,
-        Message: pdata.notifications[0].text,
-        Img: ""
-      })
-
-
+      setImgContent("")
     } else {
       setEmailData({
-        To: "",
-        DateTime: "",
-        Message: "",
+        To: pdata.category === "Single" ? pdata.notificationTo : (pdata.category).replace(/_/g, " "),
+        DateTime: pdata.sendDate,
+        Message: pdata.text === "undefined" ? "" : pdata.text,
         Img: ""
       })
+      clickMe(pdata.id);
+
     }
+
   }
 
+  const clickMe = async (imgId) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${storedToken}`);
 
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+
+    const response = await fetch(`${url_}/notification/${imgId}`, requestOptions)
+    const result = await response.json();
+    // console.log(result)
+
+    setImgContent(result.content)
+  }
+  // console.log(combinedData)
+  const imageSrc = imgcontent ? `data: image / jpeg; base64, ${imgcontent} ` : 0;
   useEffect(() => {
     handleClients("ALL");
     GetSentNotifications();
@@ -413,7 +538,7 @@ const NotificationsCA = () => {
           </> : <>
             <button data-toggle="modal" data-target=".bd-example-modal-xl" >SEND</button>
           </>} */}
-          <button data-toggle="modal" data-target=".bd-example-modal-xl" >SEND</button>
+          <button data-toggle="modal" data-target=".bd-example-modal-xl" >NEXT</button>
 
         </div>
       </div>
@@ -421,32 +546,16 @@ const NotificationsCA = () => {
         <h4 className='mt-3 mb-2'><b>Notifications</b></h4>
         <div className={style.noti_lists} >
 
-          {singlesNoti.map((item, index) => (
+          {combinedData.map((item, index) => (
             <div className={`${style.noti_list} row`} key={index}>
-              <span className="col-3">{index + 1}</span>
-              <span className="col-3">{(item.notificationTo).slice(2)}</span>
-              <span className="col-3">{(item.sendDate).slice(0, 16)}</span>
-              <span className="col-3" data-toggle="modal" data-target="#exampleModalCenter" onClick={() => handlePreview(item, "Singles")}>Preview...</span>
+              <span className="col">{index + 1}</span>
+              <span className="col-3">{item.category === "Single" ? item.notificationTo : (item.category).replace(/_/g, " ")}</span>
+              <span className="col-5">{item.sendDate}</span>
+              <span className="col-3" data-toggle="modal" data-target="#exampleModalCenter" onClick={() => handlePreview(item)}>Preview...</span>
             </div>
-          ))}
-
-          {multiplesNoti.map((item, index) => (
-            <div className={`${style.noti_list} row`} key={index}>
-              <span className="col-3">{singlesNoti.length + index + 1}</span>
-              <span className="col-3">{item.notificationTo}</span>
-              <span className="col-3">{item.data[0].sendDate}</span>
-              <span className="col-3" data-toggle="modal" data-target="#exampleModalCenter" onClick={() => handlePreview(item, "Multiples")}>Preview...</span>
-            </div>
-          ))}
 
 
-          {multiNoti.map((item, index) => (
-            <div className={`${style.noti_list} row`} key={index}>
-              <span className="col-3">{singlesNoti.length + multiplesNoti.length + index + 1}</span>
-              <span className="col-3">{(item.category).slice(0, 3)}</span>
-              <span className="col-3">{item.notifications[0].sendDate}</span>
-              <span className="col-3" data-toggle="modal" data-target="#exampleModalCenter" onClick={() => handlePreview(item, "All")}>Preview...</span>
-            </div>
+
           ))}
 
 
@@ -470,33 +579,93 @@ const NotificationsCA = () => {
               <div className={style.Select_All}>
                 <div className={`col ${style.Select_All_Option}`}>
                   {clientCategory === "ALL" ? <>
-                    <input
-                      type="checkbox"
-                      id="SelectAll"
-                      checked={selectAll}
-                      onChange={handleSelectAll}
-                    />
-                    <label htmlFor="SelectAll"> Select All</label>
-                  </> :
-                    clientCategory === "Income_Tax" ? <>
+
+
+                    <span>
                       <input
                         type="checkbox"
                         id="SelectAll"
-                        checked={selectAllIncome_Tax}
-                        onChange={handleSelectAllIncomeTax}
+                        checked={selectAll}
+                        onChange={handleSelectAll}
                       />
-                      <label htmlFor="SelectAll"> Select all income tax</label>
-                    </> :
-                      clientCategory === "GST" ? <>
+                      <label htmlFor="SelectAll"> Select All</label>
+                    </span>
+                    <span style={{ marginRight: "10rem", width: "50%" }} className='ml-3'>
+                      <input
+                        type="text"
+                        className={`form-control ${style.round}`}
+                        placeholder="Search Client by Name / PAN / Mobile"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                      />
+                      <span className={style.search}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
+                          <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                        </svg>
+                      </span>
+                    </span>
+
+
+
+
+                  </> :
+                    clientCategory === "Income_Tax" ? <>
+
+                      <span>
                         <input
                           type="checkbox"
                           id="SelectAll"
-                          checked={selectAllGST}
-                          onChange={handleSelectAllGST}
+                          checked={selectAllIncome_Tax}
+                          onChange={handleSelectAllIncomeTax}
                         />
-                        <label htmlFor="SelectAll"> Select all GST</label>
+                        <label htmlFor="SelectAll"> Select all income tax</label>
+                      </span>
+                      <span style={{ marginRight: "10rem", width: "50%" }} className='ml-3'>
+                        <input
+                          type="text"
+                          className={`form-control ${style.round}`}
+                          placeholder="Search Client by Name / PAN / Mobile"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <span className={style.search}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                          </svg>
+                        </span>
+                      </span>
+                    </> :
+                      clientCategory === "GST" ? <>
+
+
+                        <span>
+                          <input
+                            type="checkbox"
+                            id="SelectAll"
+                            checked={selectAllGST}
+                            onChange={handleSelectAllGST}
+                          />
+                          <label htmlFor="SelectAll"> Select all GST</label>
+
+                        </span>
+                        <span style={{ marginRight: "10rem", width: "50%" }} className='ml-3'>
+                          <input
+                            type="text"
+                            className={`form-control ${style.round}`}
+                            placeholder="Search Client by Name / PAN / Mobile"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                          />
+                          <span className={style.search}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16">
+                              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" />
+                            </svg>
+                          </span>
+                        </span>
                       </> :
-                        <></>}
+                        <>
+
+                        </>}
 
                 </div>
 
@@ -515,26 +684,33 @@ const NotificationsCA = () => {
                       </thead>
                       <tbody>
 
-                        {tcdata.map((item, index) => (
-                          <tr key={index} >
-                            <td className="text-center">
-                              <input
-                                type="checkbox"
-                                id={item.clientId}
-                                checked={checkedCheckboxes.includes(item.clientId)}
-                                onChange={() => {
-                                  handleCheckboxChange(item.clientId);
-                                  setNotiClienName(item.name);
-                                }
-                                }
-                              />
-                            </td>
-                            <td className='text-center'>{item.name}</td>
-                            <td className={`text-center ${style.table_tr}`}>{item.pan}</td>
-                            <td className={`text-center ${style.table_tr}`}>{item.mobile}</td>
+                        {tcdata
+                          .filter(item =>
+                            item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            item.pan.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            item.mobile.toLowerCase().includes(searchQuery.toLowerCase())
+                          )
 
-                          </tr>
-                        ))}
+                          .map((item, index) => (
+                            <tr key={index} >
+                              <td className="text-center">
+                                <input
+                                  type="checkbox"
+                                  id={item.clientId}
+                                  checked={checkedCheckboxes.includes(item.clientId)}
+                                  onChange={() => {
+                                    handleCheckboxChange(item.clientId);
+                                    setNotiClientName(item.name);
+                                  }
+                                  }
+                                />
+                              </td>
+                              <td className='text-center'>{item.name}</td>
+                              <td className={`text-center ${style.table_tr}`}>{item.pan}</td>
+                              <td className={`text-center ${style.table_tr}`}>{item.mobile}</td>
+
+                            </tr>
+                          ))}
 
 
 
@@ -553,19 +729,19 @@ const NotificationsCA = () => {
       </div>
 
 
-      <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLongTitle">Sent to....</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div className="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLongTitle">Sent to....</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">
-              <div class="email-container">
+            <div className="modal-body">
+              <div className="email-container">
 
-                <div class="email-content">
+                <div className="email-content">
                   <p><strong>To:</strong> {(emailData.To).replace("TT", " ")}</p>
                   <p><strong>Date Time:</strong> {emailData.DateTime}</p>
                   <p><strong>Message:</strong></p>
@@ -573,12 +749,16 @@ const NotificationsCA = () => {
                     {emailData.Message}
                   </p>
 
-                  <div class={style.image_container}>
-                    <img src="https://via.placeholder.com/400" alt="Placeholder Image" />
+                  <div className={style.image_container}>
+                    {imageSrc ? <>
+                      <img src={imageSrc} alt="Placeholder_Image" width="400" style={{ objectFit: "contain" }} />
+                    </> : <>
+                      <hr />
+                    </>}
                   </div>
                 </div>
                 <hr />
-                <div class="email-footer">
+                <div className="email-footer">
 
                 </div>
               </div>

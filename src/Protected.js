@@ -6,8 +6,9 @@ const Protected = (props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-
-    if (!localStorage.length > 0) {
+    // localStorage.length < 2 && 
+    const LocalstorageValue = localStorage.getItem('LogedIn');
+    if (!LocalstorageValue) {
       navigate('/admin/');
     }
   }, [navigate]);

@@ -31,6 +31,7 @@ export default class InputType extends React.Component {
     }
     if (this.props.name === "name") {
       properties.isNameNull = this.props.isNameNull;
+      properties.maxLength = 50;
     }
     if (this.props.name === "profession") {
       properties.value_array = Aprofesion_obj;
@@ -52,10 +53,10 @@ export default class InputType extends React.Component {
     if (this.props.name === "telephone") {
       properties.maxLength = 11;
     }
-    if(this.props.name === "pin_code")
-    {     properties.maxLength=6;
-         properties.isValidPIN=this.props.isValidPIN;
-     }
+    if (this.props.name === "pin_code") {
+      properties.maxLength = 6;
+      properties.isValidPIN = this.props.isValidPIN;
+    }
     if (this.props.name === "pan") {
       properties.maxLength = 10;
       properties.isValidPAN = this.props.isValidPAN;

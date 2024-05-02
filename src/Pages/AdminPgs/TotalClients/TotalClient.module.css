@@ -40,9 +40,21 @@
   top: 20%;
 }
 
-@media (max-width:768px), (min-width: 576px) and (max-width: 768px) {
-  .container{
+@media (max-width:768px),
+(min-width: 576px) and (max-width: 768px) {
+  .container {
     width: fit-content !important;
     min-width: 750px;
   }
+}
+
+
+.clist_tbl_row th,
+.clist_tbl_row td {
+  text-align: center;
+}
+
+.edit_btn {
+  color: blue;
+  cursor: pointer;
 }

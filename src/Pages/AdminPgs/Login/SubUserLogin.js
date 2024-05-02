@@ -121,11 +121,29 @@ const SubUserLogin = ({ setLoggedIn }) => {
     }
   }
 
+  function getCurrentDateTime() {
+    const now = new Date();
+
+    // Get the current date
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const todaydate = `${year}-${month}-${day}`;
+
+    // Get the current time
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const logintime = `${hours}:${minutes}:${seconds}`;
+
+    return { todaydate, logintime };
+  }
+
 
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    const { todaydate, logintime } = getCurrentDateTime();
 
 
     var myHeaders = new Headers();
@@ -203,12 +221,14 @@ const SubUserLogin = ({ setLoggedIn }) => {
         localStorage.setItem('Sub_user_pan', Sub_user_pan);
         localStorage.setItem('email', Sub_user_email);
         localStorage.setItem('End_Date', End_Date);
-        localStorage.setItem('logintime', CurrentTimeNow);
+        localStorage.setItem('logintime', logintime);
+
+        localStorage.setItem('logindate', todaydate);
 
         localStorage.removeItem("User_Pan")
 
 
-
+        todayLoginData(Sub_user_pan, logintime, todaydate);
         const sub_status = await checkSubscriptionStatus();
         console.log(sub_status)
         localStorage.setItem(`subscription_status`, sub_status);
@@ -282,6 +302,32 @@ const SubUserLogin = ({ setLoggedIn }) => {
     }
   };
 
+  const todayLoginData = async (subUserPAN, checkIntime, workingDate) => {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append("Authorization", `Bearer ${localStorage.getItem("jwtToken")}`);
+
+      const raw = JSON.stringify({
+        "checkIn": checkIntime,
+        "checkOut": "",
+        "workingDate": workingDate
+      });
+
+      const requestOptions = {
+        method: "PUT",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+      };
+
+      const response = await fetch(`${url_}/SubUserCheckInOROut/${subUserPAN}`, requestOptions)
+      const result = await response.json();
+      console.log(result)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
 
     <div className="container">
@@ -331,7 +377,7 @@ const SubUserLogin = ({ setLoggedIn }) => {
                 <path
                   d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
               </svg></a></h1>
-              <h1><a href="https://twitter.com/arkonetglobal?s=11&t=_tXcbzY9oJ0xsskd5YCcMw%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+              <h1><a href="https://twitter.com/arkonetglobal?s=11&t=_tXcbzY9oJ0xsskd5YCcMw%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-twitter-x" viewBox="0 0 16 16">
                 <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
               </svg></a></h1>
               <h1><a href="https://www.instagram.com/arkonetglobal/?igshid=YmMyMTA2M2Y%3D%22" target='_blank'><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

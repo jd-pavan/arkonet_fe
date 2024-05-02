@@ -7,50 +7,75 @@ import state_list from "../../../ObjData/States.json";
 import style from "./BulkImport.module.css";
 import instruct_sample_file from "../../../Files/TAXKO_Instruction_Sample_File.xlsx"
 
-const BulkImport = ({fileInputRef}) => {
+const BulkImport = ({ fileInputRef }) => {
   const user_id = window.localStorage.getItem("user_id");
   const storedToken = window.localStorage.getItem("jwtToken");
   const [failedRecords, setFailedRecords] = useState([]);
-  
+
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-
+    console.log(file)
     if (file) {
       if (file.name.endsWith('.xlsx')) {
         const reader = new FileReader();
 
-      reader.onload = (e) => {
-        try {
-          const data = e.target.result;
-          const workbook = XLSX.read(data, { type: "binary" });
-          const jsonData = parseExcel(workbook);
-          // console.log(jsonData)
-          if(jsonData && jsonData.Income_Tax && jsonData.GST)
-            {saveAsJSON(jsonData);}
-          else {
-            e.target.value = null 
-            Swal.fire({
-              title: "Incorrect data format!",
-              text: `Please go through the file instructions.!
-                    Download Sample instruction file.?`,
-              icon: "info",
-              iconColor: "red",
-              confirmButtonText:"Download Sample",
-              showCancelButton:true
-            }).then((result) => {
-              if (result.isConfirmed) {
-                downloadSampleFile()
-              }
-            });
-          };
-        } catch (error) {
-          console.error("Error parsing Excel file:", error);
-        }
-      };
+        reader.onload = (e) => {
+          try {
+            const data = e.target.result;
+            const workbook = XLSX.read(data, { type: "binary" });
+            const jsonData = parseExcel(workbook);
+            console.log(jsonData)
 
-      reader.readAsBinaryString(file);
-        
+            if (Object.keys(jsonData).length === 0) {
+              console.log(jsonData)
+            }
+
+            if (jsonData || jsonData.Income_Tax || jsonData.GST) {
+
+
+              const hasIncomeTax = 'Income_Tax' in jsonData;
+              const hasGST = 'GST' in jsonData;
+
+              if (hasIncomeTax && hasGST) {
+                saveAsJSON(jsonData)
+              } else if (hasIncomeTax) {
+                saveAsJSON({ ...jsonData, GST: [] })
+              } else if (hasGST) {
+                saveAsJSON({ ...jsonData, Income_Tax: [] })
+              } else {
+                return 'None';
+              }
+
+
+
+
+
+            }
+            else {
+              e.target.value = null
+              Swal.fire({
+                title: "Incorrect data format!",
+                text: `Please go through the file instructions.!
+                    Download Sample instruction file.?`,
+                icon: "info",
+                iconColor: "red",
+                confirmButtonText: "Download Sample",
+                showCancelButton: true
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  downloadSampleFile()
+                }
+              });
+            };
+          } catch (error) {
+            Swal.fire("", "No data found", "warning")
+            console.error("Error parsing Excel file:", error);
+          }
+        };
+
+        reader.readAsBinaryString(file);
+
       } else {
         e.target.value = null;
         Swal.fire(
@@ -59,48 +84,54 @@ const BulkImport = ({fileInputRef}) => {
           "error"
         );
         downloadSampleFile()
-        
-        
+
+
       }
-      
+
     }
   };
 
   const parseExcel = (workbook) => {
-    const sheetNames=workbook.SheetNames;
-    
+    const sheetNames = workbook.SheetNames;
+
     if (sheetNames.includes("Income_Tax") && sheetNames.includes("GST")) {
       const result = {};
       workbook.SheetNames.forEach((sheetName) => {
         const sheet = workbook.Sheets[sheetName];
 
-        const clienRegFields=[          
-            "pan",
-            "name",
-            "dob",
-            "profession",
-            "telephone",
-            "mobile",
-            "email",
-            "address",
-            "pin_code",
-            "state",
-            "invest_now_email"        
+        const clienRegFields = [
+          "pan",
+          "name",
+          "dob",
+          "profession",
+          "telephone",
+          "mobile",
+          "email",
+          "address",
+          "pin_code",
+          "state",
+          "invest_now_email"
         ]
-        const columnNames =  XLSX.utils.sheet_to_json(sheet, { header: 1 })[0];
-      //  console.log( clienRegFields.length === columnNames.length &&
-      //   clienRegFields.every((element, index) => element === columnNames[index]))
-        
-        if( clienRegFields.length === columnNames.length &&
+        const columnNames = XLSX.utils.sheet_to_json(sheet, { header: 1 })[0];
+        console.log(clienRegFields.length === columnNames.length &&
           clienRegFields.every((element, index) => element === columnNames[index]))
-              result[sheetName] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+        if (clienRegFields.length === columnNames.length &&
+          clienRegFields.every((element, index) => element === columnNames[index]))
+          result[sheetName] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
         else
           return null
       });
+      // if (!result) {
+      //   return "nodata";
+      // } else {
       return result;
+      // }
+
     }
-    
   };
+
+
 
   const saveAsJSON = async (jsonData) => {
     Swal.fire({
@@ -112,7 +143,9 @@ const BulkImport = ({fileInputRef}) => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, start.!",
+      cancelButtonText: "Cancel"
     }).then((result) => {
+      console.log(result)
       if (result.isConfirmed) {
         const jsonString = JSON.stringify(jsonData, null, 2);
 
@@ -144,29 +177,29 @@ const BulkImport = ({fileInputRef}) => {
 
         const FailedIT = Income_Tax.filter((item) => {
           return (
-            !item.pan  ||
-            !item.name  ||
-            !item.profession  ||
-            !item.mobile  ||
-            !item.email  ||
-            !item.state 
+            !item.pan ||
+            !item.name ||
+            !item.profession ||
+            !item.mobile ||
+            !item.email ||
+            !item.state
           );
         });
         const FailedGST = GST.filter((item) => {
           return (
-            !item.pan  ||
-            !item.name  ||
-            !item.profession  ||
-            !item.mobile  ||
-            !item.email  ||
-            !item.state 
+            !item.pan ||
+            !item.name ||
+            !item.profession ||
+            !item.mobile ||
+            !item.email ||
+            !item.state
           );
         });
-        FailedIT.map((item) => {          
-          item.error= "Blank Mandatory field";
+        FailedIT.map((item) => {
+          item.error = "Blank Mandatory field";
         });
-        FailedGST.map((item) => {          
-          item.error= "Blank Mandatory field";
+        FailedGST.map((item) => {
+          item.error = "Blank Mandatory field";
         });
         // console.log(FailedIT,FailedGST)
 
@@ -176,40 +209,43 @@ const BulkImport = ({fileInputRef}) => {
           item.userid = user_id;
           item.category = "Income_Tax";
           item.residential_status = "";
-          item.state=formatStates(item.state)
+          item.state = formatStates(item.state)
         });
         FilterGST.map((item) => {
           item.dob = formatDate(item.dob);
           item.userid = user_id;
           item.category = "GST";
           item.residential_status = "";
-          item.state=formatStates(item.state)
+          item.state = formatStates(item.state)
         });
 
-        const Both=FilterIT.filter(item => FilterGST.map(item => item.pan).includes(item.pan))
+        const Both = FilterIT.filter(item => FilterGST.map(item => item.pan).includes(item.pan))
         Both.map((item) => {
           item.category = "Both";
         });
 
-        const ITFiltered=FilterIT.filter(item => !FilterGST.map(item => item.pan).includes(item.pan))
-        const GSTFiltered=FilterGST.filter(item => !FilterIT.map(item => item.pan).includes(item.pan))
+        const ITFiltered = FilterIT.filter(item => !FilterGST.map(item => item.pan).includes(item.pan))
+        const GSTFiltered = FilterGST.filter(item => !FilterIT.map(item => item.pan).includes(item.pan))
 
-        const combinedRecord=[...Both,...ITFiltered,...GSTFiltered]
+        const combinedRecord = [...Both, ...ITFiltered, ...GSTFiltered]
 
         // console.log(combinedRecord)
 
 
-        handleRegistration(combinedRecord,FailedIT,FailedGST)
+        handleRegistration(combinedRecord, FailedIT, FailedGST)
+      }
+      else if (result.dismiss === Swal.DismissReason.cancel) {
+        // User clicked "Cancel" or outside the dialog
+        window.location.reload(); // Reload the page
       }
     });
   };
 
-  async function downloadSampleFile()
-  {
+  async function downloadSampleFile() {
     const response = await fetch(instruct_sample_file);
     const arrayBuffer = await response.arrayBuffer();
     const fileBlob = new Blob([arrayBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    saveAs(fileBlob, "TAXKO_Instruction_Sample_File.xlsx");
+    saveAs(fileBlob, "TAXKO_Instruction_Sample_File .xlsx");
   }
 
   const handleConvertToExcel = (jsonData) => {
@@ -239,7 +275,7 @@ const BulkImport = ({fileInputRef}) => {
     return statename[0].val;
   }
 
-  const handleRegistration = async (data,FailedIT,FailedGST) => {
+  const handleRegistration = async (data, FailedIT, FailedGST) => {
     // console.log(data)
     Swal.fire({
       icon: "warning",
@@ -265,16 +301,15 @@ const BulkImport = ({fileInputRef}) => {
         };
         const response = await fetch(`${url_}/createclient`, requestOptions);
         if (!response.ok) {
-        const result = await response.text();
+          const result = await response.text();
 
           throw new Error(
-            `${
-              result.includes("Already Exists")
-                ? "Record already exists."
-                : 
-                result.includes("email is already registered")?
+            `${result.includes("Already Exists")
+              ? "Record already exists."
+              :
+              result.includes("email is already registered") ?
                 'Email is already registered.'
-                :result
+                : result
             }`
           );
         }
@@ -297,7 +332,7 @@ const BulkImport = ({fileInputRef}) => {
         error: item.error,
       }));
 
-      const allFailedRecords=[...FailedIT,...FailedGST,...failedRecords1].map(({ userid, category, ...rest }) => rest)
+      const allFailedRecords = [...FailedIT, ...FailedGST, ...failedRecords1].map(({ userid, category, ...rest }) => rest)
 
 
       if (allFailedRecords.length > 0) {
@@ -309,7 +344,7 @@ const BulkImport = ({fileInputRef}) => {
           customClass: style.swal_wide,
           confirmButtonText: "Generate Excel file",
           showCancelButton: true,
-          
+
         }).then((result) => {
           if (result.isConfirmed) {
             handleConvertToExcel(allFailedRecords);
@@ -317,12 +352,12 @@ const BulkImport = ({fileInputRef}) => {
           window.location.reload()
         });
       }
-      else{
+      else {
         Swal.close();
         await Swal.fire({
           position: 'center',
           icon: 'success',
-          text:"Record import completed.!",
+          text: "Record import completed.!",
           showConfirmButton: false,
           timer: 5000
         })
@@ -336,10 +371,10 @@ const BulkImport = ({fileInputRef}) => {
 
   const generateTableHTML = (failedRecords) => {
     return `
-    <div class="table-responsive" style="height: 400px; overflow: auto"> 
-      <table class="table">
+    <div className="table-responsive" style="height: 400px; overflow: auto"> 
+      <table className="table">
         <thead>
-          <tr class="table-active">
+          <tr className="table-active">
             <th>Client name</th>
             <th>PAN</th>           
             <th>Error</th>           
@@ -347,16 +382,16 @@ const BulkImport = ({fileInputRef}) => {
         </thead>
         <tbody>
           ${failedRecords
-            .map(
-              (record, index) => `
+        .map(
+          (record, index) => `
             <tr key=${index}>
               <td style={{"textAlign":"left"}}>${record.name}</td>
               <td>${record.pan}</td>
               <td className=${style.single_line}>${record.error}</td>
             </tr>
           `
-            )
-            .join("")}
+        )
+        .join("")}
         </tbody>
       </table>
       </div>
@@ -377,12 +412,12 @@ const BulkImport = ({fileInputRef}) => {
 
     return `${year}-${month}-${day}`;
   }
-  
+
 
 
   return (
-    <div style={{"display":"none"}}>
-      <input type="file" onChange={handleFileUpload} ref={fileInputRef}/>
+    <div style={{ "display": "none" }}>
+      <input type="file" onChange={handleFileUpload} ref={fileInputRef} />
     </div>
   );
 };
