@@ -891,7 +891,7 @@ const DashBoard = () => {
                         </th>
                         <th colSpan="2">
                           <h4 className="font-weight-bold text-primary">
-                            GSTR-2A
+                            GSTR-3B
                           </h4>
                         </th>
                       </tr>
